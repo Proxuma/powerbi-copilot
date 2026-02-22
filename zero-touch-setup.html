@@ -37,13 +37,54 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
 .header-stat .num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;color:var(--green);line-height:1.1}
 .header-stat .label{font-size:12px;opacity:.5;margin-top:2px}
 
+/* ── OS picker ── */
+.os-picker{background:var(--card);border-bottom:1px solid var(--border);padding:14px 0}
+.os-picker-inner{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap}
+.os-picker-label{font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+.os-btn{display:flex;align-items:center;gap:7px;padding:8px 18px;border-radius:8px;border:2px solid var(--border);background:var(--card);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text);transition:border-color .2s,background .2s,color .2s}
+.os-btn:hover{border-color:var(--teal);background:rgba(15,118,110,0.03)}
+.os-btn.active{border-color:var(--teal);background:rgba(15,118,110,0.06);color:var(--teal)}
+.os-btn svg{width:18px;height:18px;flex-shrink:0}
+
+/* ── OS-conditional content ── */
+.os{display:none}
+body[data-os="mac"] .os[data-os~="mac"],
+body[data-os="linux"] .os[data-os~="linux"],
+body[data-os="win"] .os[data-os~="win"]{display:block}
+span.os{display:none}
+body[data-os="mac"] span.os[data-os~="mac"],
+body[data-os="linux"] span.os[data-os~="linux"],
+body[data-os="win"] span.os[data-os~="win"]{display:inline}
+td.os{display:none}
+body[data-os="mac"] td.os[data-os~="mac"],
+body[data-os="linux"] td.os[data-os~="linux"],
+body[data-os="win"] td.os[data-os~="win"]{display:table-cell}
+tr.os{display:none}
+body[data-os="mac"] tr.os[data-os~="mac"],
+body[data-os="linux"] tr.os[data-os~="linux"],
+body[data-os="win"] tr.os[data-os~="win"]{display:table-row}
+li.os{display:none}
+body[data-os="mac"] li.os[data-os~="mac"],
+body[data-os="linux"] li.os[data-os~="linux"],
+body[data-os="win"] li.os[data-os~="win"]{display:list-item}
+div.os.code-block{display:none}
+body[data-os="mac"] div.os.code-block[data-os~="mac"],
+body[data-os="linux"] div.os.code-block[data-os~="linux"],
+body[data-os="win"] div.os.code-block[data-os~="win"]{display:block}
+p.os{display:none}
+body[data-os="mac"] p.os[data-os~="mac"],
+body[data-os="linux"] p.os[data-os~="linux"],
+body[data-os="win"] p.os[data-os~="win"]{display:block}
+
 /* ── Nav ── */
 .nav{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border)}
 .nav-inner{display:flex;overflow-x:auto;gap:0;scrollbar-width:none}
 .nav-inner::-webkit-scrollbar{display:none}
-.nav-link{flex-shrink:0;padding:12px 18px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;text-decoration:none!important}
+.nav-link{flex-shrink:0;padding:12px 18px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;text-decoration:none!important;display:flex;align-items:center;gap:6px}
 .nav-link:hover{color:var(--text);text-decoration:none!important}
 .nav-link.active{color:var(--teal);border-bottom-color:var(--teal)}
+.nav-link .step-num{width:20px;height:20px;border-radius:50%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:background .2s,color .2s}
+.nav-link.active .step-num{background:var(--teal);color:#fff}
 
 /* ── Sections ── */
 .section{padding:48px 0 56px;border-bottom:1px solid var(--border)}
@@ -100,6 +141,48 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
 .copy-btn:hover{background:rgba(255,255,255,0.14);color:#fff}
 .copy-btn.copied{background:rgba(0,217,165,0.15);color:var(--green);border-color:rgba(0,217,165,0.3)}
 
+/* ── Inline copy chip ── */
+.check-chip{display:inline-flex;align-items:center;gap:5px;background:var(--code-bg);color:#e2e8f0;font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 8px 4px 10px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.08);transition:border-color .2s,background .2s;white-space:nowrap;vertical-align:middle;line-height:1.4;user-select:none}
+.check-chip:hover{border-color:rgba(255,255,255,0.2);background:#1e293b}
+.check-chip svg{width:13px;height:13px;stroke:rgba(255,255,255,0.4);fill:none;stroke-width:2;flex-shrink:0;transition:stroke .2s}
+.check-chip:hover svg{stroke:rgba(255,255,255,0.7)}
+.check-chip.copied{border-color:rgba(0,217,165,0.4);background:rgba(0,217,165,0.1)}
+.check-chip.copied svg{stroke:var(--green)}
+.check-chip .chip-label{transition:color .15s}
+.check-chip.copied .chip-label{color:var(--green)}
+
+/* ── Guide chips ── */
+.guide-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.guide-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;color:var(--teal);background:rgba(15,118,110,0.06);border:1px solid rgba(15,118,110,0.12);text-decoration:none!important;transition:background .15s,border-color .15s;white-space:nowrap}
+.guide-chip:hover{background:rgba(15,118,110,0.1);border-color:rgba(15,118,110,0.25);text-decoration:none!important}
+.guide-chip svg{width:11px;height:11px;stroke:var(--teal);fill:none;stroke-width:2;flex-shrink:0}
+
+/* ── Numbered steps ── */
+.steps{counter-reset:step;list-style:none;margin:0 0 16px 0;padding:0}
+.steps li{counter-increment:step;position:relative;padding:12px 0 12px 48px;border-bottom:1px solid var(--border)}
+.steps li:last-child{border-bottom:none}
+.steps li::before{content:counter(step);position:absolute;left:0;top:12px;width:32px;height:32px;border-radius:50%;background:var(--bg-alt);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--teal)}
+
+/* ── Collapsible ── */
+.collapse{border:1px solid var(--border);border-radius:var(--radius);margin:16px 0 20px;overflow:hidden}
+.collapse-trigger{display:flex;align-items:center;gap:8px;padding:14px 16px;cursor:pointer;font-weight:600;font-size:14px;background:var(--card);transition:background .2s;user-select:none}
+.collapse-trigger:hover{background:var(--bg-alt)}
+.collapse-trigger svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .2s}
+.collapse.open .collapse-trigger svg{transform:rotate(90deg)}
+.collapse-body{display:none;padding:0 16px 16px;font-size:14px}
+.collapse.open .collapse-body{display:block}
+
+/* ── VS Code mockup ── */
+.vscode-mock{background:#1e1e1e;border-radius:var(--radius);overflow:hidden;margin:16px 0 20px;border:1px solid #333}
+.vscode-titlebar{background:#323233;padding:8px 14px;display:flex;align-items:center;gap:8px}
+.vscode-dot{width:12px;height:12px;border-radius:50%}
+.vscode-dot.r{background:#ff5f56}.vscode-dot.y{background:#ffbd2e}.vscode-dot.g{background:#27c93f}
+.vscode-titlebar span{font-size:12px;color:#999;margin-left:8px}
+.vscode-body{padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#d4d4d4;line-height:1.8}
+.vscode-body .key{color:#9cdcfe}
+.vscode-body .str{color:#ce9178}
+.vscode-body .punc{color:#d4d4d4}
+
 /* ── Callouts ── */
 .callout{border-radius:var(--radius);padding:16px 20px;margin:16px 0 20px;font-size:14px;line-height:1.65;display:flex;gap:12px;align-items:flex-start}
 .callout svg{flex-shrink:0;width:18px;height:18px;margin-top:2px}
@@ -107,6 +190,10 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
 .callout-info svg{stroke:#3b82f6;fill:none;stroke-width:2}
 .callout-success{background:#ecfdf5;border:1px solid #a7f3d0}
 .callout-success svg{stroke:#059669;fill:none;stroke-width:2}
+.callout-warn{background:#fffbeb;border:1px solid #fde68a}
+.callout-warn svg{stroke:#d97706;fill:none;stroke-width:2}
+.callout-danger{background:#fef2f2;border:1px solid #fecaca}
+.callout-danger svg{stroke:#dc2626;fill:none;stroke-width:2}
 .callout p{margin:0}
 .callout strong{font-weight:600}
 
@@ -139,6 +226,8 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
   .flow{flex-wrap:wrap;justify-content:center}
   .flow-arrow{display:none}
   .file-card{flex-wrap:wrap}
+  .os-picker-inner{gap:8px}
+  .os-btn{padding:6px 12px;font-size:12px}
 }
 </style>
 </head>
@@ -163,16 +252,37 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
   </div>
 </header>
 
+<!-- ════════════ OS PICKER ════════════ -->
+<div class="os-picker">
+  <div class="wrap">
+    <div class="os-picker-inner">
+      <span class="os-picker-label">Your operating system:</span>
+      <button class="os-btn active" data-pick="mac" onclick="setOS('mac')">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        macOS
+      </button>
+      <button class="os-btn" data-pick="linux" onclick="setOS('linux')">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.368 1.884 1.43.868.065 1.157-.47 1.455-.667.3-.2.529-.267.802-.4.273-.136.558-.401.493-.869-.02-.151-.042-.305-.073-.396-.062-.172-.166-.358-.316-.452a.726.726 0 00-.087-.04c-.075-.04-.147-.09-.238-.136-.132-.071-.263-.137-.372-.197-.135-.058-.272-.13-.342-.2-.074-.079-.084-.159-.084-.26 0-.057.023-.136.068-.2.19-.282.456-.578.736-.84.28-.268.58-.538.842-.818.202-.221.37-.479.413-.766.043-.265-.035-.589-.266-.825-.065-.061-.137-.12-.214-.167-.079-.047-.161-.086-.253-.107-.39-.11-.875-.039-1.328.062.025-.037.06-.062.084-.102.113-.171.15-.322.197-.459.023-.07.056-.16.068-.2.132-.402.024-.803-.095-1.103-.07-.18-.157-.336-.239-.46-.099-.148-.197-.266-.306-.394-.233-.276-.478-.475-.748-.681-.131-.112-.26-.222-.422-.301-.163-.075-.394-.127-.565-.101-.172.028-.257.107-.299.2-.02.043-.04.1-.027.165.008.036.023.058.053.09.039.036.09.066.152.094.064.03.154.063.235.098.28.135.55.428.736.732.154.245.27.54.36.81.022.067.033.135.05.198-.078-.006-.155-.028-.226-.028-.337.009-.7.136-.967.369-.178.171-.326.395-.46.63-.212.401-.355.69-.39 1.039-.034.325.048.647.16 1.058.196.692.634 1.461 1.247 1.96.124.101.265.181.4.24l-.009.017c-.104.192-.166.415-.156.631.008.175.058.332.132.459.107.181.266.317.415.404.16.096.303.15.437.173.143.027.282.039.428.026l.01-.001c.152-.009.297-.044.429-.103.069-.031.147-.053.2-.1.053-.048.09-.12.1-.2.003-.013.006-.03.006-.052v-.028l-.004-.035a.453.453 0 00-.111-.188c-.054-.057-.132-.092-.212-.11-.09-.018-.172-.017-.253-.012-.08.001-.178.01-.237-.005-.062-.018-.095-.048-.132-.11-.037-.064-.055-.16-.035-.266.018-.087.06-.17.113-.24.108-.161.284-.277.472-.327.19-.049.403-.034.57.07.087.049.158.121.208.215.047.09.058.19.054.303-.018.388-.226.733-.473 1.04-.217.273-.476.507-.739.72-.262.204-.532.394-.763.6-.231.208-.397.393-.357.685.063.459.402.68.803.8.2.063.422.09.656.066.234-.025.477-.096.7-.221.238-.133.467-.328.612-.577.066-.113.109-.227.14-.35.115.048.237.078.363.078.155 0 .302-.043.399-.2.05-.075.086-.163.107-.268.023-.104.032-.21.032-.32 0-.203-.039-.405-.096-.59-.073-.238-.176-.447-.273-.6l-.01-.017-.003-.003z"/></svg>
+        Linux
+      </button>
+      <button class="os-btn" data-pick="win" onclick="setOS('win')">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+        Windows
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ════════════ NAV ════════════ -->
 <nav class="nav">
   <div class="wrap">
     <div class="nav-inner">
-      <a class="nav-link active" href="#overview">Overview</a>
-      <a class="nav-link" href="#how-it-works">How It Works</a>
-      <a class="nav-link" href="#files">All Files</a>
+      <a class="nav-link active" href="#overview"><span class="step-num">1</span>Overview</a>
+      <a class="nav-link" href="#how-it-works"><span class="step-num">2</span>Architecture</a>
+      <a class="nav-link" href="#quick-start"><span class="step-num">3</span>Quick Start</a>
+      <a class="nav-link" href="#files">Files</a>
       <a class="nav-link" href="#enterprise">Enterprise</a>
-      <a class="nav-link" href="#config-priority">Config Priority</a>
-      <a class="nav-link" href="#quick-start">Quick Start</a>
+      <a class="nav-link" href="#config-priority">Config</a>
     </div>
   </div>
 </nav>
@@ -197,7 +307,7 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
   <table class="tbl">
     <thead><tr><th>Step</th><th>Before (v1)</th><th>After (v2)</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td>Check Python, VS Code, Git manually</td><td><code>curl -sL proxuma.io/install | bash</code></td></tr>
+      <tr><td>1</td><td>Check Python, VS Code, Git manually</td><td><span class="os" data-os="mac linux"><span class="check-chip" onclick="copyChip(this,'curl -sL proxuma.io/install | bash')"><span class="chip-label">curl -sL proxuma.io/install | bash</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span><span class="os" data-os="win"><span class="check-chip" onclick="copyChip(this,'irm proxuma.io/install.ps1 | iex')"><span class="chip-label">irm proxuma.io/install.ps1 | iex</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span></td></tr>
       <tr><td>2</td><td>Clone repo, run installer</td><td>Sign in (browser opens automatically)</td></tr>
       <tr><td>3</td><td>Open Power BI, find workspace URL</td><td>Pick workspace from list</td></tr>
       <tr><td>4</td><td>Copy GUID from URL bar</td><td>Pick dataset from list</td></tr>
@@ -221,15 +331,15 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
       <div class="flow-icon navy">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       </div>
-      <div class="flow-name">install.sh</div>
-      <div class="flow-desc">Clones repo, runs setup.sh</div>
+      <div class="flow-name"><span class="os" data-os="mac linux">install.sh</span><span class="os" data-os="win">install.ps1</span></div>
+      <div class="flow-desc">Clones repo, runs setup</div>
     </div>
     <div class="flow-arrow">&rarr;</div>
     <div class="flow-step">
       <div class="flow-icon teal">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
-      <div class="flow-name">setup.sh</div>
+      <div class="flow-name"><span class="os" data-os="mac linux">setup.sh</span><span class="os" data-os="win">setup.ps1</span></div>
       <div class="flow-desc">Python deps, spaCy, VS Code config</div>
     </div>
     <div class="flow-arrow">&rarr;</div>
@@ -258,11 +368,117 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
     </div>
   </div>
 
-  <p>The <strong>auth module</strong> (<code>auth.py</code>) is shared between the wizard and the MCP server. This means the wizard's sign-in is also the server's sign-in &mdash; no double login. The auth record persists in <code>~/.powerbi-mcp/auth_record.json</code> and tokens refresh silently for 90 days.</p>
+  <p>The <strong>auth module</strong> (<code>auth.py</code>) is shared between the wizard and the MCP server. The wizard's sign-in is also the server's sign-in &mdash; no double login. The auth record persists in <span class="os" data-os="mac linux"><code>~/.powerbi-mcp/auth_record.json</code></span><span class="os" data-os="win"><code>%USERPROFILE%\.powerbi-mcp\auth_record.json</code></span> and tokens refresh silently for 90 days.</p>
 
   <p>The <strong>wizard</strong> (<code>wizard.py</code>) calls the Power BI REST API to list workspaces and datasets. The user picks from numbered lists. The wizard writes the selected IDs into <code>config.json</code>. Enterprise deployments can bypass the wizard entirely with <code>--workspace-id</code> and <code>--dataset-id</code> flags.</p>
 
-  <p>The <strong>server</strong> (<code>server.py</code>) now supports environment variable overrides. IT can push <code>POWERBI_MCP_WORKSPACE_ID</code> and <code>POWERBI_MCP_DATASET_ID</code> via Intune, JAMF, or GPO &mdash; users don't touch config at all.</p>
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      How does the config.json look after the wizard runs?
+    </div>
+    <div class="collapse-body">
+      <div class="vscode-mock">
+        <div class="vscode-titlebar">
+          <span class="vscode-dot r"></span><span class="vscode-dot y"></span><span class="vscode-dot g"></span>
+          <span><span class="os" data-os="mac linux">~/.powerbi-mcp/config.json</span><span class="os" data-os="win">%USERPROFILE%\.powerbi-mcp\config.json</span></span>
+        </div>
+        <div class="vscode-body">{
+  <span class="key">"default_workspace_id"</span>: <span class="str">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span>,
+  <span class="key">"default_dataset_id"</span>: <span class="str">"f9e8d7c6-b5a4-3210-fedc-ba0987654321"</span>,
+  <span class="key">"workspaces"</span>: {
+    <span class="key">"My Production Workspace"</span>: <span class="str">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span>
+  },
+  <span class="key">"datasets"</span>: {
+    <span class="key">"Sales Model"</span>: <span class="str">"f9e8d7c6-b5a4-3210-fedc-ba0987654321"</span>
+  }
+}</div>
+      </div>
+      <p>The wizard writes both the selected IDs and a friendly name mapping so you can see which workspace/dataset was chosen without decoding GUIDs.</p>
+    </div>
+  </div>
+
+  <p>The <strong>server</strong> (<code>server.py</code>) now supports environment variable overrides. IT can push <span class="check-chip" onclick="copyChip(this,'POWERBI_MCP_WORKSPACE_ID')"><span class="chip-label">POWERBI_MCP_WORKSPACE_ID</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span> and <span class="check-chip" onclick="copyChip(this,'POWERBI_MCP_DATASET_ID')"><span class="chip-label">POWERBI_MCP_DATASET_ID</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span> via Intune, JAMF, or GPO &mdash; users don't touch config at all.</p>
+</section>
+
+<!-- ════════════ QUICK START ════════════ -->
+<section class="section" id="quick-start">
+  <div class="section-label">Get started</div>
+  <h2>Quick Start</h2>
+
+  <ol class="steps">
+    <li>
+      <strong>Install with one command</strong>
+      <div class="os code-block" data-os="mac linux">
+        <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+        <div class="code-body" data-raw="curl -sL proxuma.io/install | bash"><span class="g">curl</span> -sL proxuma.io/install | <span class="g">bash</span></div>
+      </div>
+      <div class="os code-block" data-os="win">
+        <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+        <div class="code-body" data-raw="irm proxuma.io/install.ps1 | iex"><span class="g">irm</span> proxuma.io/install.ps1 | <span class="g">iex</span></div>
+      </div>
+    </li>
+    <li>
+      <strong>Sign in and pick your workspace</strong><br>
+      A browser window opens for Microsoft sign-in. After login, the wizard lists your workspaces and datasets. Pick a number. Config is written automatically.
+    </li>
+    <li>
+      <strong>Open VS Code and generate a report</strong>
+      <div class="code-block">
+        <div class="code-header"><span>Copilot Chat (Agent mode)</span><button class="copy-btn" onclick="copyChip(this,'#powerbireport what is my monthly revenue trend?')">Copy prompt</button></div>
+        <div class="code-body" data-raw="#powerbireport what is my monthly revenue trend?"><span class="g">#powerbireport</span> what is my monthly revenue trend?</div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="os" data-os="mac">
+    <div class="callout callout-warn">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div><strong>macOS security warning?</strong> If macOS says "can't be opened because it is from an unidentified developer", right-click &rarr; <strong>Open</strong> &rarr; <strong>Open</strong>. Only needed once.</div>
+    </div>
+  </div>
+
+  <div class="os" data-os="win">
+    <div class="callout callout-warn">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div><strong>Windows SmartScreen warning?</strong> If Windows shows "Windows protected your PC", click <strong>More info</strong> &rarr; <strong>Run anyway</strong>. The installer is a standard PowerShell script.</div>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      Prefer to install manually? Click here for step-by-step commands.
+    </div>
+    <div class="collapse-body">
+      <div class="os" data-os="mac linux">
+        <div class="code-block">
+          <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <div class="code-body" data-raw="git clone https://github.com/Proxuma/powerbi-copilot.git
+cd powerbi-copilot
+./setup.sh"><span class="g">git clone</span> https://github.com/Proxuma/powerbi-copilot.git
+<span class="g">cd</span> powerbi-copilot
+<span class="g">./setup.sh</span></div>
+        </div>
+        <p>If you get "Permission denied": <span class="check-chip" onclick="copyChip(this,'chmod +x setup.sh && ./setup.sh')" style="margin:0 2px"><span class="chip-label">chmod +x setup.sh && ./setup.sh</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></p>
+      </div>
+      <div class="os" data-os="win">
+        <div class="code-block">
+          <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <div class="code-body" data-raw="git clone https://github.com/Proxuma/powerbi-copilot.git
+cd powerbi-copilot
+.\setup.ps1"><span class="g">git clone</span> https://github.com/Proxuma/powerbi-copilot.git
+<span class="g">cd</span> powerbi-copilot
+<span class="g">.\setup.ps1</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-success">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <div><strong>Your data never leaves your environment.</strong> Power BI data stays in your Microsoft tenant. The MCP server runs on your machine. AI processing happens locally. PII is masked by Presidio before reaching the AI model.</div>
+  </div>
 </section>
 
 <!-- ════════════ ALL FILES ════════════ -->
@@ -427,6 +643,39 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
       <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
     </a>
   </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      What does the full project structure look like?
+    </div>
+    <div class="collapse-body">
+      <div class="code-block">
+        <div class="code-header"><span>project structure</span></div>
+        <div class="code-body"><span class="b">powerbi-copilot/</span>
+├── <span class="b">server/</span>
+│   ├── server.py            <span class="c"># MCP server</span>
+│   ├── auth.py              <span class="c"># Shared authentication module</span>
+│   ├── wizard.py            <span class="c"># Setup wizard (auto-discovery)</span>
+│   ├── requirements.txt     <span class="c"># Python dependencies</span>
+│   └── config.example.json  <span class="c"># Example configuration</span>
+├── <span class="b">prompts/</span>
+│   ├── powerbireport.prompt.md    <span class="c"># Report generator prompt</span>
+│   └── powerbidashboard.prompt.md <span class="c"># Dashboard builder prompt</span>
+├── <span class="b">templates/</span>
+│   ├── mcp.json             <span class="c"># VS Code MCP config template</span>
+│   └── settings.json        <span class="c"># VS Code settings template</span>
+├── <span class="b">docs/</span>
+│   ├── first-run.md         <span class="c"># First-time setup &amp; auth</span>
+│   └── troubleshooting.md   <span class="c"># Common issues &amp; fixes</span>
+├── setup.sh                 <span class="c"># macOS/Linux installer</span>
+├── setup.ps1                <span class="c"># Windows PowerShell installer</span>
+├── install.sh               <span class="c"># One-liner web installer (macOS/Linux)</span>
+├── install.ps1              <span class="c"># Windows full installer</span>
+└── README.md</div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ════════════ ENTERPRISE ════════════ -->
@@ -434,19 +683,18 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
   <div class="section-label">For IT admins</div>
   <h2>Enterprise Deployment</h2>
 
-  <p>Deploy to hundreds of machines without any user interaction. Every flag works on both macOS/Linux (<code>setup.sh</code>) and Windows (<code>setup.ps1</code>).</p>
+  <p>Deploy to hundreds of machines without any user interaction. Every flag works on both <span class="os" data-os="mac linux"><code>setup.sh</code></span><span class="os" data-os="win"><code>setup.ps1</code></span>.</p>
 
   <h3>Silent install with pre-configured IDs</h3>
-  <div class="code-block">
-    <div class="code-header"><span>macOS / Linux</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+  <div class="os code-block" data-os="mac linux">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
     <div class="code-body" data-raw="curl -sL proxuma.io/install | bash -s -- --workspace-id &quot;a1b2c3d4-...&quot; --dataset-id &quot;e5f6g7h8-...&quot; --silent"><span class="g">curl</span> -sL proxuma.io/install | <span class="g">bash</span> -s -- \
   --workspace-id <span class="y">"a1b2c3d4-..."</span> \
   --dataset-id <span class="y">"e5f6g7h8-..."</span> \
   --silent</div>
   </div>
-
-  <div class="code-block">
-    <div class="code-header"><span>Windows (Intune / SCCM)</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+  <div class="os code-block" data-os="win">
+    <div class="code-header"><span>PowerShell (Intune / SCCM)</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
     <div class="code-body" data-raw=".\setup.ps1 -WorkspaceId &quot;a1b2c3d4-...&quot; -DatasetId &quot;e5f6g7h8-...&quot; -Silent"><span class="g">.\setup.ps1</span> -WorkspaceId <span class="y">"a1b2c3d4-..."</span> `
               -DatasetId <span class="y">"e5f6g7h8-..."</span> `
               -Silent</div>
@@ -454,33 +702,65 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
 
   <h3>Config from IT-hosted endpoint</h3>
   <p>Host a JSON config at a URL your users can reach. The wizard downloads it and skips the interactive picker.</p>
-  <div class="code-block">
+  <div class="os code-block" data-os="mac linux">
     <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
     <div class="code-body" data-raw="./setup.sh --config-url https://it.yourcompany.com/powerbi-mcp-config"><span class="g">./setup.sh</span> --config-url <span class="y">https://it.yourcompany.com/powerbi-mcp-config</span></div>
+  </div>
+  <div class="os code-block" data-os="win">
+    <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw=".\setup.ps1 -ConfigUrl &quot;https://it.yourcompany.com/powerbi-mcp-config&quot;"><span class="g">.\setup.ps1</span> -ConfigUrl <span class="y">"https://it.yourcompany.com/powerbi-mcp-config"</span></div>
   </div>
 
   <h3>Device code flow (headless / SSH)</h3>
   <p>For environments without a browser (terminal servers, SSH sessions, Docker):</p>
-  <div class="code-block">
+  <div class="os code-block" data-os="mac linux">
     <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
     <div class="code-body" data-raw="./setup.sh --device-code --workspace-id &quot;a1b2c3d4-...&quot; --dataset-id &quot;e5f6g7h8-...&quot;"><span class="g">./setup.sh</span> --device-code \
   --workspace-id <span class="y">"a1b2c3d4-..."</span> \
   --dataset-id <span class="y">"e5f6g7h8-..."</span></div>
   </div>
+  <div class="os code-block" data-os="win">
+    <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw=".\setup.ps1 -DeviceCode -WorkspaceId &quot;a1b2c3d4-...&quot; -DatasetId &quot;e5f6g7h8-...&quot;"><span class="g">.\setup.ps1</span> -DeviceCode `
+              -WorkspaceId <span class="y">"a1b2c3d4-..."</span> `
+              -DatasetId <span class="y">"e5f6g7h8-..."</span></div>
+  </div>
   <p>The user gets a URL and code to enter on any device with a browser. Authentication completes on the headless machine.</p>
+
+  <h3>Environment variables (MDM / GPO)</h3>
+  <p>Push config via Intune, JAMF, or GPO. These override any config.json on the machine.</p>
+  <table class="tbl">
+    <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">POWERBI_MCP_CONFIG</td><td>Full JSON config blob. Overrides everything.</td></tr>
+      <tr><td class="mono">POWERBI_MCP_WORKSPACE_ID</td><td>Default workspace GUID. Overrides config.json.</td></tr>
+      <tr><td class="mono">POWERBI_MCP_DATASET_ID</td><td>Default dataset GUID. Overrides config.json.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-danger">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    <div><strong>Don't put secrets in env vars.</strong> These IDs are not secrets (they're workspace/dataset GUIDs), but never put passwords or tokens in environment variables. Auth tokens are handled by the Azure Identity library and stored securely in <span class="os" data-os="mac linux"><code>~/.powerbi-mcp/</code></span><span class="os" data-os="win"><code>%USERPROFILE%\.powerbi-mcp\</code></span>.</div>
+  </div>
 
   <h3>All CLI flags</h3>
   <table class="tbl">
-    <thead><tr><th>Flag (bash)</th><th>Flag (PowerShell)</th><th>Description</th></tr></thead>
+    <thead><tr><th><span class="os" data-os="mac linux">Flag (bash)</span><span class="os" data-os="win">Flag (PowerShell)</span></th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td class="mono">--workspace-id GUID</td><td class="mono">-WorkspaceId "GUID"</td><td>Pre-configure workspace, skip picker</td></tr>
-      <tr><td class="mono">--dataset-id GUID</td><td class="mono">-DatasetId "GUID"</td><td>Pre-configure dataset, skip picker</td></tr>
-      <tr><td class="mono">--config-url URL</td><td class="mono">-ConfigUrl "URL"</td><td>Download config from IT-hosted endpoint</td></tr>
-      <tr><td class="mono">--silent</td><td class="mono">-Silent</td><td>No prompts. Fail if IDs not provided</td></tr>
-      <tr><td class="mono">--device-code</td><td class="mono">-DeviceCode</td><td>Use device code flow (no browser needed)</td></tr>
-      <tr><td class="mono">--skip-wizard</td><td class="mono">-SkipWizard</td><td>Manual mode: copy example config, don't run wizard</td></tr>
+      <tr><td class="mono"><span class="os" data-os="mac linux">--workspace-id GUID</span><span class="os" data-os="win">-WorkspaceId "GUID"</span></td><td>Pre-configure workspace, skip picker</td></tr>
+      <tr><td class="mono"><span class="os" data-os="mac linux">--dataset-id GUID</span><span class="os" data-os="win">-DatasetId "GUID"</span></td><td>Pre-configure dataset, skip picker</td></tr>
+      <tr><td class="mono"><span class="os" data-os="mac linux">--config-url URL</span><span class="os" data-os="win">-ConfigUrl "URL"</span></td><td>Download config from IT-hosted endpoint</td></tr>
+      <tr><td class="mono"><span class="os" data-os="mac linux">--silent</span><span class="os" data-os="win">-Silent</span></td><td>No prompts. Fail if IDs not provided</td></tr>
+      <tr><td class="mono"><span class="os" data-os="mac linux">--device-code</span><span class="os" data-os="win">-DeviceCode</span></td><td>Use device code flow (no browser needed)</td></tr>
+      <tr><td class="mono"><span class="os" data-os="mac linux">--skip-wizard</span><span class="os" data-os="win">-SkipWizard</span></td><td>Manual mode: copy example config, don't run wizard</td></tr>
     </tbody>
   </table>
+
+  <div class="guide-chips" style="margin-top:16px">
+    <a class="guide-chip" href="https://github.com/Proxuma/powerbi-copilot/blob/main/docs/first-run.md" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>First-run docs</a>
+    <a class="guide-chip" href="https://github.com/Proxuma/powerbi-copilot/blob/main/docs/troubleshooting.md" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Troubleshooting</a>
+    <a class="guide-chip" href="https://github.com/Proxuma/powerbi-copilot" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>GitHub repo</a>
+  </div>
 </section>
 
 <!-- ════════════ CONFIG PRIORITY ════════════ -->
@@ -494,52 +774,50 @@ code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);paddi
     <li><strong><code>POWERBI_MCP_CONFIG</code></strong> &mdash; Full JSON blob via environment variable. Overrides everything. Set via GPO, Intune, or JAMF.</li>
     <li><strong><code>POWERBI_MCP_WORKSPACE_ID</code> / <code>POWERBI_MCP_DATASET_ID</code></strong> &mdash; Individual env vars. Override config file defaults.</li>
     <li><strong><code>server/config.json</code></strong> &mdash; Local config in the repo directory. Checked first among file-based configs.</li>
-    <li><strong><code>~/.powerbi-mcp/config.json</code></strong> &mdash; Global config in user home. Written by the wizard. Fallback if no local config.</li>
+    <li><strong><span class="os" data-os="mac linux"><code>~/.powerbi-mcp/config.json</code></span><span class="os" data-os="win"><code>%USERPROFILE%\.powerbi-mcp\config.json</code></span></strong> &mdash; Global config in user home. Written by the wizard. Fallback if no local config.</li>
     <li><strong>Tool arguments</strong> &mdash; When the AI passes <code>workspace_id</code> or <code>dataset_id</code> directly to a tool call, those always win.</li>
   </ol>
 
   <div class="callout callout-info">
     <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-    <div><strong>Enterprise pattern:</strong> Set <code>POWERBI_MCP_WORKSPACE_ID</code> and <code>POWERBI_MCP_DATASET_ID</code> via Intune/GPO. Users install with <code>--silent</code>. The server picks up the IDs from the environment. No config file editing, no wizard interaction. Zero touch.</div>
-  </div>
-</section>
-
-<!-- ════════════ QUICK START ════════════ -->
-<section class="section" id="quick-start">
-  <div class="section-label">Get started</div>
-  <h2>Quick Start</h2>
-
-  <h3>macOS / Linux</h3>
-  <div class="code-block">
-    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-    <div class="code-body" data-raw="curl -sL proxuma.io/install | bash"><span class="g">curl</span> -sL proxuma.io/install | <span class="g">bash</span></div>
+    <div><strong>Enterprise pattern:</strong> Set <span class="check-chip" onclick="copyChip(this,'POWERBI_MCP_WORKSPACE_ID')"><span class="chip-label">POWERBI_MCP_WORKSPACE_ID</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span> and <span class="check-chip" onclick="copyChip(this,'POWERBI_MCP_DATASET_ID')"><span class="chip-label">POWERBI_MCP_DATASET_ID</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span> via Intune/GPO. Users install with <code>--silent</code>. The server picks up the IDs from the environment. Zero touch.</div>
   </div>
 
-  <h3>Windows</h3>
-  <div class="code-block">
-    <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-    <div class="code-body" data-raw="irm proxuma.io/install.ps1 | iex"><span class="g">irm</span> proxuma.io/install.ps1 | <span class="g">iex</span></div>
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      What permissions does the server request?
+    </div>
+    <div class="collapse-body">
+      <table class="tbl">
+        <thead><tr><th>Scope</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">analysis.windows.net/powerbi/api/.default</td><td>Read Power BI data, execute DAX queries, list workspaces/datasets</td></tr>
+          <tr><td class="mono">api.fabric.microsoft.com/.default</td><td>Read semantic model definitions (schema, measures, columns)</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:0">Both scopes are <strong>read-only</strong>. The server cannot modify your Power BI content. No Azure app registration needed &mdash; uses the same public client ID as Power BI Desktop.</p>
+    </div>
   </div>
 
-  <h3>Manual (git clone)</h3>
-  <div class="code-block">
-    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-    <div class="code-body" data-raw="git clone https://github.com/Proxuma/powerbi-copilot.git
-cd powerbi-copilot
-./setup.sh"><span class="g">git clone</span> https://github.com/Proxuma/powerbi-copilot.git
-<span class="g">cd</span> powerbi-copilot
-<span class="g">./setup.sh</span></div>
-  </div>
-
-  <p>After setup, open VS Code and type in Copilot Chat (Agent mode):</p>
-  <div class="code-block">
-    <div class="code-header"><span>Copilot Chat</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-    <div class="code-body" data-raw="#powerbireport what is my monthly revenue trend?"><span class="g">#powerbireport</span> what is my monthly revenue trend?</div>
-  </div>
-
-  <div class="callout callout-success">
-    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    <div><strong>Your data never leaves your environment.</strong> Power BI data stays in your Microsoft tenant. The MCP server runs on your machine. AI processing happens locally. PII is masked by Presidio before reaching the AI model.</div>
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      How does PII protection work?
+    </div>
+    <div class="collapse-body">
+      <p>All data returned by MCP tools passes through <a href="https://microsoft.github.io/presidio/" target="_blank">Microsoft Presidio</a> before reaching the AI. Personal information is automatically replaced with placeholders:</p>
+      <table class="tbl">
+        <thead><tr><th>Detected PII</th><th>Replaced with</th></tr></thead>
+        <tbody>
+          <tr><td>Person names</td><td><code>&lt;PERSON&gt;</code></td></tr>
+          <tr><td>Email addresses</td><td><code>&lt;EMAIL&gt;</code></td></tr>
+          <tr><td>Phone numbers</td><td><code>&lt;PHONE&gt;</code></td></tr>
+          <tr><td>Credit card numbers</td><td><code>&lt;CREDIT_CARD&gt;</code></td></tr>
+        </tbody>
+      </table>
+      <p style="margin:0">The spaCy NLP model (<code>en_core_web_sm</code>) is downloaded during setup. Detection runs locally &mdash; no data sent anywhere.</p>
+    </div>
   </div>
 </section>
 
@@ -555,7 +833,28 @@ cd powerbi-copilot
 </footer>
 
 <script>
-/* ── Copy button ── */
+/* ── OS picker ── */
+function setOS(os) {
+  document.body.setAttribute('data-os', os);
+  document.querySelectorAll('.os-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-pick') === os);
+  });
+  try { localStorage.setItem('pbi-os', os); } catch(e) {}
+}
+(function() {
+  var stored = null;
+  try { stored = localStorage.getItem('pbi-os'); } catch(e) {}
+  if (stored && ['mac','linux','win'].indexOf(stored) !== -1) {
+    setOS(stored);
+    return;
+  }
+  var ua = navigator.userAgent || navigator.platform || '';
+  if (/Win/.test(ua)) setOS('win');
+  else if (/Linux/.test(ua) && !/Android/.test(ua)) setOS('linux');
+  else setOS('mac');
+})();
+
+/* ── Copy button (code blocks) ── */
 function copyBlock(btn) {
   var body = btn.closest('.code-block').querySelector('.code-body');
   var text = body.getAttribute('data-raw') || body.textContent;
@@ -563,6 +862,24 @@ function copyBlock(btn) {
     btn.textContent = 'Copied!';
     btn.classList.add('copied');
     setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* ── Copy chip (inline commands) ── */
+function copyChip(el, cmd) {
+  navigator.clipboard.writeText(cmd).then(function() {
+    var label = el.querySelector('.chip-label');
+    if (label) {
+      var original = label.textContent;
+      label.textContent = 'Copied!';
+      el.classList.add('copied');
+      setTimeout(function() { label.textContent = original; el.classList.remove('copied'); }, 1500);
+    } else {
+      var original = el.textContent;
+      el.textContent = 'Copied!';
+      el.classList.add('copied');
+      setTimeout(function() { el.textContent = original; el.classList.remove('copied'); }, 1500);
+    }
   });
 }
 
