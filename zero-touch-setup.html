@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero-Touch Setup — Proxuma Power BI Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#1B365D;--blue:#164487;--green:#00D9A5;--teal:#0f766e;--teal-dark:#115e58;--bg:#f8fafc;--bg-alt:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--code-bg:#0f172a;--border:#e2e8f0;--radius:10px;--shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;color:var(--text);line-height:1.7;background:var(--bg);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Montserrat',sans-serif;line-height:1.3}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+code,pre{font-family:'JetBrains Mono',monospace}
+code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);padding:2px 7px;border-radius:4px;font-size:0.88em}
+
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+/* ── Header ── */
+.header{background:linear-gradient(165deg,#0d1f3c 0%,var(--navy) 50%,var(--blue) 100%);color:#fff;padding:56px 0 64px;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:48px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%)}
+.header-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.03) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+.header-inner{position:relative;z-index:2}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.logo svg{width:32px;height:auto}
+.logo span{font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;opacity:.8}
+.header h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;margin-bottom:12px;letter-spacing:-0.5px}
+.header h1 em{font-style:normal;color:var(--green)}
+.header p.sub{font-size:16px;opacity:.7;max-width:620px;line-height:1.7}
+.header .badge{display:inline-block;background:rgba(0,217,165,0.12);color:var(--green);font-size:12px;font-weight:600;padding:4px 12px;border-radius:16px;margin-bottom:20px;letter-spacing:.4px}
+.header-stats{display:flex;gap:32px;margin-top:28px}
+.header-stat{text-align:left}
+.header-stat .num{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;color:var(--green);line-height:1.1}
+.header-stat .label{font-size:12px;opacity:.5;margin-top:2px}
+
+/* ── Nav ── */
+.nav{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;overflow-x:auto;gap:0;scrollbar-width:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav-link{flex-shrink:0;padding:12px 18px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;text-decoration:none!important}
+.nav-link:hover{color:var(--text);text-decoration:none!important}
+.nav-link.active{color:var(--teal);border-bottom-color:var(--teal)}
+
+/* ── Sections ── */
+.section{padding:48px 0 56px;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--teal);margin-bottom:6px}
+.section h2{font-size:1.5rem;font-weight:800;color:var(--navy);margin-bottom:16px}
+.section h3{font-size:1.1rem;font-weight:700;color:var(--navy);margin:28px 0 10px}
+.section p{margin-bottom:14px}
+
+/* ── Flow diagram ── */
+.flow{display:flex;align-items:center;gap:0;margin:24px 0 32px;overflow-x:auto;padding:8px 0}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:140px;text-align:center}
+.flow-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.flow-icon.navy{background:var(--navy);color:#fff}
+.flow-icon.teal{background:var(--teal);color:#fff}
+.flow-icon.green{background:var(--green);color:#fff}
+.flow-name{font-size:13px;font-weight:700;color:var(--navy)}
+.flow-desc{font-size:11px;color:var(--muted);max-width:130px}
+.flow-arrow{font-size:20px;color:var(--border);flex-shrink:0;margin:0 4px;margin-bottom:28px}
+
+/* ── File cards ── */
+.file-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0}
+.file-card{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);transition:border-color .2s,box-shadow .2s}
+.file-card:hover{border-color:rgba(15,118,110,0.3);box-shadow:0 4px 12px rgba(15,118,110,0.06)}
+.file-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+.file-icon.py{background:rgba(59,130,246,0.08);color:#3b82f6}
+.file-icon.sh{background:rgba(15,118,110,0.08);color:var(--teal)}
+.file-icon.ps{background:rgba(99,102,241,0.08);color:#6366f1}
+.file-icon.html{background:rgba(249,115,22,0.08);color:#f97316}
+.file-icon.md{background:rgba(100,116,139,0.08);color:var(--muted)}
+.file-icon.json{background:rgba(234,179,8,0.08);color:#ca8a04}
+.file-info{flex:1;min-width:0}
+.file-name{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--navy)}
+.file-desc{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:2px}
+.file-meta{display:flex;gap:12px;margin-top:4px}
+.file-tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:4px}
+.file-tag.new{background:rgba(0,217,165,0.1);color:#059669}
+.file-tag.modified{background:rgba(59,130,246,0.1);color:#2563eb}
+.file-tag.lines{background:var(--bg-alt);color:var(--muted)}
+.file-dl{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border);cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0;text-decoration:none!important}
+.file-dl:hover{background:rgba(15,118,110,0.06);border-color:var(--teal)}
+.file-dl svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;transition:stroke .2s}
+.file-dl:hover svg{stroke:var(--teal)}
+
+/* ── Code blocks ── */
+.code-block{position:relative;background:var(--code-bg);border-radius:var(--radius);margin:16px 0 20px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono',monospace}
+.code-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;color:#e2e8f0;overflow-x:auto;white-space:pre}
+.code-body .c{color:#64748b}
+.code-body .g{color:var(--green)}
+.code-body .b{color:#93c5fd}
+.code-body .y{color:#fde68a}
+.copy-btn{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:4px 12px;font-size:11px;font-weight:500;cursor:pointer;transition:background .2s,color .2s;font-family:'Inter',sans-serif}
+.copy-btn:hover{background:rgba(255,255,255,0.14);color:#fff}
+.copy-btn.copied{background:rgba(0,217,165,0.15);color:var(--green);border-color:rgba(0,217,165,0.3)}
+
+/* ── Callouts ── */
+.callout{border-radius:var(--radius);padding:16px 20px;margin:16px 0 20px;font-size:14px;line-height:1.65;display:flex;gap:12px;align-items:flex-start}
+.callout svg{flex-shrink:0;width:18px;height:18px;margin-top:2px}
+.callout-info{background:#eff6ff;border:1px solid #bfdbfe}
+.callout-info svg{stroke:#3b82f6;fill:none;stroke-width:2}
+.callout-success{background:#ecfdf5;border:1px solid #a7f3d0}
+.callout-success svg{stroke:#059669;fill:none;stroke-width:2}
+.callout p{margin:0}
+.callout strong{font-weight:600}
+
+/* ── Tables ── */
+.tbl{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.tbl thead{background:var(--navy);color:#fff}
+.tbl th{font-family:'Montserrat',sans-serif;font-weight:600;text-align:left;padding:11px 16px;font-size:12px;letter-spacing:.3px}
+.tbl td{padding:11px 16px;border-top:1px solid var(--border)}
+.tbl tr:hover td{background:rgba(15,118,110,0.02)}
+.tbl .mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal-dark)}
+
+/* ── Config priority ── */
+.priority{counter-reset:pri;list-style:none;margin:16px 0 20px;padding:0}
+.priority li{counter-increment:pri;position:relative;padding:10px 16px 10px 52px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;font-size:14px;transition:border-color .15s}
+.priority li:hover{border-color:rgba(15,118,110,0.2)}
+.priority li::before{content:counter(pri);position:absolute;left:14px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--bg-alt);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;color:var(--teal)}
+.priority li strong{color:var(--navy)}
+
+/* ── Footer ── */
+.footer{background:linear-gradient(165deg,#0d1f3c,var(--navy));color:#fff;padding:40px 0;text-align:center}
+.footer p{font-size:13px;opacity:.45}
+.footer a{color:var(--green);opacity:1}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .nav-link{padding:10px 12px;font-size:11px}
+  .wrap{padding:0 16px}
+  .header-stats{gap:20px}
+  .header-stat .num{font-size:22px}
+  .flow{flex-wrap:wrap;justify-content:center}
+  .flow-arrow{display:none}
+  .file-card{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════ HEADER ════════════ -->
+<header class="header">
+  <div class="header-grid"></div>
+  <div class="wrap header-inner">
+    <div class="logo">
+      <svg width="32" height="37" viewBox="0 0 282 330" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#c0)"><path d="M255.482 18.869L249.167 0L233.244 12.345C205.765 33.731 185.875 62.462 175.748 95.489C171.64 108.873 169.279 122.522 168.642 136.206C177.388 137.361 185.781 139.624 193.666 142.846C194.563 133.643 196.392 124.451 199.166 115.432C205.387 95.131 215.999 76.77 230.328 61.4C233.61 81.943 232.17 102.995 225.937 123.284C222.715 133.793 218.3 143.793 212.8 153.112C219.67 157.812 225.914 163.32 231.391 169.498C242.557 154.406 251.115 137.488 256.698 119.266C266.826 86.239 266.413 51.526 255.494 18.869H255.482Z" fill="#fff"/><path d="M83.972 123.284C87.207 133.793 91.61 143.793 97.11 153.112C90.24 157.801 83.996 163.309 78.519 169.487C67.353 154.394 58.807 137.477 53.223 119.266C51.406 113.353 49.93 107.406 48.785 101.424C60.329 102.568 70.599 101.378 78.897 99.461C79.865 107.464 81.564 115.42 83.972 123.273V123.284Z" fill="#fff"/><path d="M134.162 95.512C128.249 76.216 118.994 58.386 106.872 42.635H0C0 42.635 23.372 105.616 100.864 91.355C104.877 98.999 108.206 107.037 110.767 115.432C113.541 124.474 115.359 133.643 116.256 142.846C124.141 139.625 132.545 137.361 141.304 136.206C140.666 122.534 138.282 108.873 134.186 95.5L134.162 95.512Z" fill="#fff"/><path d="M154.937 142.557C103.26 142.557 61.215 183.691 61.215 234.247C61.215 284.803 103.26 325.983 154.937 325.983C206.615 325.983 248.707 284.826 248.707 234.247C248.707 183.668 206.638 142.557 154.937 142.557ZM154.949 299.053C118.44 299.053 88.73 269.987 88.73 234.247C88.73 198.507 118.44 169.475 154.949 169.475C191.458 169.475 221.18 198.53 221.18 234.247C221.18 269.964 191.47 299.053 154.949 299.053Z" fill="#fff"/><circle cx="154.96" cy="186.335" r="7.148" fill="#fff"/><circle cx="154.96" cy="282.205" r="7.148" fill="#fff"/><circle cx="203.959" cy="234.27" r="7.148" fill="#fff"/><circle cx="105.963" cy="234.27" r="7.148" fill="#fff"/><path d="M185.037 195.7L154.961 225.124L139.392 209.893L130.043 219.05L154.961 243.416L194.397 204.846L185.037 195.7Z" fill="#fff"/></g><defs><clipPath id="c0"><rect width="282" height="330" fill="#fff"/></clipPath></defs></svg>
+      <span>Proxuma</span>
+    </div>
+    <div class="badge">Enterprise Release</div>
+    <h1>Zero-Touch Setup for <em>Power BI Copilot</em></h1>
+    <p class="sub">One command. Sign in. Pick your workspace. Done. No config files, no GUID hunting, no terminal expertise. Enterprise-ready with silent install, MDM integration, and environment variable overrides.</p>
+    <div class="header-stats">
+      <div class="header-stat"><div class="num">10</div><div class="label">files shipped</div></div>
+      <div class="header-stat"><div class="num">3</div><div class="label">setup steps</div></div>
+      <div class="header-stat"><div class="num">&lt;2 min</div><div class="label">time to first report</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════ NAV ════════════ -->
+<nav class="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a class="nav-link active" href="#overview">Overview</a>
+      <a class="nav-link" href="#how-it-works">How It Works</a>
+      <a class="nav-link" href="#files">All Files</a>
+      <a class="nav-link" href="#enterprise">Enterprise</a>
+      <a class="nav-link" href="#config-priority">Config Priority</a>
+      <a class="nav-link" href="#quick-start">Quick Start</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ════════════ OVERVIEW ════════════ -->
+<section class="section" id="overview">
+  <div class="section-label">What changed</div>
+  <h2>From 10 Steps to 3</h2>
+
+  <p>The old setup required cloning a repo, installing dependencies, finding GUIDs in Power BI URLs, editing a JSON config file, logging in, and verifying the connection. Ten steps. Fifteen minutes. Terminal expertise assumed.</p>
+
+  <p>The new setup runs a single command that installs everything, opens a browser for sign-in, auto-discovers workspaces and datasets, writes the config, and verifies the connection. Three steps the user sees. Two minutes total.</p>
+
+  <div class="callout callout-success">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <div><strong>Enterprise-ready.</strong> IT admins can deploy to hundreds of machines with <code>--silent</code> mode, pre-configured IDs, config URLs, and environment variables. No user interaction required.</div>
+  </div>
+
+  <h3>Before vs. After</h3>
+  <table class="tbl">
+    <thead><tr><th>Step</th><th>Before (v1)</th><th>After (v2)</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Check Python, VS Code, Git manually</td><td><code>curl -sL proxuma.io/install | bash</code></td></tr>
+      <tr><td>2</td><td>Clone repo, run installer</td><td>Sign in (browser opens automatically)</td></tr>
+      <tr><td>3</td><td>Open Power BI, find workspace URL</td><td>Pick workspace from list</td></tr>
+      <tr><td>4</td><td>Copy GUID from URL bar</td><td>Pick dataset from list</td></tr>
+      <tr><td>5</td><td>Open config.json in editor</td><td rowspan="6" style="vertical-align:middle;text-align:center;color:var(--green);font-weight:700;font-size:15px">Done.<br><span style="font-weight:400;font-size:13px;color:var(--muted)">Config written automatically.</span></td></tr>
+      <tr><td>6</td><td>Paste workspace ID</td></tr>
+      <tr><td>7</td><td>Paste dataset ID</td></tr>
+      <tr><td>8</td><td>Save file</td></tr>
+      <tr><td>9</td><td>First MCP call triggers login</td></tr>
+      <tr><td>10</td><td>Verify connection works</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ════════════ HOW IT WORKS ════════════ -->
+<section class="section" id="how-it-works">
+  <div class="section-label">Architecture</div>
+  <h2>How It Works</h2>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-icon navy">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="flow-name">install.sh</div>
+      <div class="flow-desc">Clones repo, runs setup.sh</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-icon teal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="flow-name">setup.sh</div>
+      <div class="flow-desc">Python deps, spaCy, VS Code config</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-icon teal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+      </div>
+      <div class="flow-name">wizard.py</div>
+      <div class="flow-desc">Sign in, pick workspace &amp; dataset</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-icon teal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="flow-name">config.json</div>
+      <div class="flow-desc">Written automatically</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="flow-icon green">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="flow-name">Ready</div>
+      <div class="flow-desc">Open VS Code, type #powerbireport</div>
+    </div>
+  </div>
+
+  <p>The <strong>auth module</strong> (<code>auth.py</code>) is shared between the wizard and the MCP server. This means the wizard's sign-in is also the server's sign-in &mdash; no double login. The auth record persists in <code>~/.powerbi-mcp/auth_record.json</code> and tokens refresh silently for 90 days.</p>
+
+  <p>The <strong>wizard</strong> (<code>wizard.py</code>) calls the Power BI REST API to list workspaces and datasets. The user picks from numbered lists. The wizard writes the selected IDs into <code>config.json</code>. Enterprise deployments can bypass the wizard entirely with <code>--workspace-id</code> and <code>--dataset-id</code> flags.</p>
+
+  <p>The <strong>server</strong> (<code>server.py</code>) now supports environment variable overrides. IT can push <code>POWERBI_MCP_WORKSPACE_ID</code> and <code>POWERBI_MCP_DATASET_ID</code> via Intune, JAMF, or GPO &mdash; users don't touch config at all.</p>
+</section>
+
+<!-- ════════════ ALL FILES ════════════ -->
+<section class="section" id="files">
+  <div class="section-label">Download</div>
+  <h2>All Files</h2>
+
+  <p>Four new files and six modified files. Click any file to view its source on GitHub.</p>
+
+  <h3>New files</h3>
+  <div class="file-grid">
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/server/auth.py" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon py">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">server/auth.py</div>
+        <div class="file-desc">Shared authentication module. Credential management, token caching, device code flow. Used by both wizard.py and server.py.</div>
+        <div class="file-meta">
+          <span class="file-tag new">New</span>
+          <span class="file-tag lines">117 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/server/wizard.py" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon py">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">server/wizard.py</div>
+        <div class="file-desc">Auto-discovery wizard. Authenticates, lists workspaces/datasets, writes config.json. Supports <code>--silent</code>, <code>--device-code</code>, <code>--config-url</code>.</div>
+        <div class="file-meta">
+          <span class="file-tag new">New</span>
+          <span class="file-tag lines">230 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/setup.ps1" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon ps">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">setup.ps1</div>
+        <div class="file-desc">Windows PowerShell installer. Same 8-step flow as setup.sh: deps, spaCy, config, VS Code, wizard. Enterprise flags built in.</div>
+        <div class="file-meta">
+          <span class="file-tag new">New</span>
+          <span class="file-tag lines">176 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/install.sh" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon sh">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">install.sh</div>
+        <div class="file-desc">One-liner web installer for macOS/Linux. <code>curl -sL proxuma.io/install | bash</code>. Clones repo and runs setup.sh. Passes through all enterprise flags.</div>
+        <div class="file-meta">
+          <span class="file-tag new">New</span>
+          <span class="file-tag lines">35 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+  </div>
+
+  <h3>Modified files</h3>
+  <div class="file-grid">
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/server/server.py" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon py">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">server/server.py</div>
+        <div class="file-desc">MCP server. Auth code extracted to auth.py. New <code>load_config()</code> with env var priority: <code>POWERBI_MCP_CONFIG</code> &gt; individual env vars &gt; config.json.</div>
+        <div class="file-meta">
+          <span class="file-tag modified">Modified</span>
+          <span class="file-tag lines">490 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/setup.sh" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon sh">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">setup.sh</div>
+        <div class="file-desc">macOS/Linux installer. Now 8 steps (was 6). CLI flag parser, wizard integration, verify step. Supports <code>--skip-wizard</code> for manual mode.</div>
+        <div class="file-meta">
+          <span class="file-tag modified">Modified</span>
+          <span class="file-tag lines">186 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/install.ps1" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon ps">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">install.ps1</div>
+        <div class="file-desc">Windows full installer. Added wizard step (7/8) and enterprise flags: <code>-WorkspaceId</code>, <code>-DatasetId</code>, <code>-ConfigUrl</code>, <code>-Silent</code>, <code>-DeviceCode</code>.</div>
+        <div class="file-meta">
+          <span class="file-tag modified">Modified</span>
+          <span class="file-tag lines">330 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/product-page.html" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">product-page.html</div>
+        <div class="file-desc">Onboarding page restructured from 10 steps to 3 (Install, Connect, Generate). New enterprise deployment section. One-liner install commands.</div>
+        <div class="file-meta">
+          <span class="file-tag modified">Modified</span>
+          <span class="file-tag lines">1,077 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/README.md" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon md">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">README.md</div>
+        <div class="file-desc">Quick Start uses one-liner installers. New enterprise deployment section with env vars, MDM, and silent install docs.</div>
+        <div class="file-meta">
+          <span class="file-tag modified">Modified</span>
+          <span class="file-tag lines">135 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a class="file-card" href="https://github.com/Proxuma/powerbi-copilot/blob/main/docs/first-run.md" target="_blank" style="text-decoration:none;color:inherit">
+      <div class="file-icon md">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+      </div>
+      <div class="file-info">
+        <div class="file-name">docs/first-run.md</div>
+        <div class="file-desc">Describes wizard flow instead of manual config. Enterprise/silent setup docs. <code>--skip-wizard</code> fallback for manual mode.</div>
+        <div class="file-meta">
+          <span class="file-tag modified">Modified</span>
+          <span class="file-tag lines">85 lines</span>
+        </div>
+      </div>
+      <div class="file-dl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════ ENTERPRISE ════════════ -->
+<section class="section" id="enterprise">
+  <div class="section-label">For IT admins</div>
+  <h2>Enterprise Deployment</h2>
+
+  <p>Deploy to hundreds of machines without any user interaction. Every flag works on both macOS/Linux (<code>setup.sh</code>) and Windows (<code>setup.ps1</code>).</p>
+
+  <h3>Silent install with pre-configured IDs</h3>
+  <div class="code-block">
+    <div class="code-header"><span>macOS / Linux</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="curl -sL proxuma.io/install | bash -s -- --workspace-id &quot;a1b2c3d4-...&quot; --dataset-id &quot;e5f6g7h8-...&quot; --silent"><span class="g">curl</span> -sL proxuma.io/install | <span class="g">bash</span> -s -- \
+  --workspace-id <span class="y">"a1b2c3d4-..."</span> \
+  --dataset-id <span class="y">"e5f6g7h8-..."</span> \
+  --silent</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span>Windows (Intune / SCCM)</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw=".\setup.ps1 -WorkspaceId &quot;a1b2c3d4-...&quot; -DatasetId &quot;e5f6g7h8-...&quot; -Silent"><span class="g">.\setup.ps1</span> -WorkspaceId <span class="y">"a1b2c3d4-..."</span> `
+              -DatasetId <span class="y">"e5f6g7h8-..."</span> `
+              -Silent</div>
+  </div>
+
+  <h3>Config from IT-hosted endpoint</h3>
+  <p>Host a JSON config at a URL your users can reach. The wizard downloads it and skips the interactive picker.</p>
+  <div class="code-block">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="./setup.sh --config-url https://it.yourcompany.com/powerbi-mcp-config"><span class="g">./setup.sh</span> --config-url <span class="y">https://it.yourcompany.com/powerbi-mcp-config</span></div>
+  </div>
+
+  <h3>Device code flow (headless / SSH)</h3>
+  <p>For environments without a browser (terminal servers, SSH sessions, Docker):</p>
+  <div class="code-block">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="./setup.sh --device-code --workspace-id &quot;a1b2c3d4-...&quot; --dataset-id &quot;e5f6g7h8-...&quot;"><span class="g">./setup.sh</span> --device-code \
+  --workspace-id <span class="y">"a1b2c3d4-..."</span> \
+  --dataset-id <span class="y">"e5f6g7h8-..."</span></div>
+  </div>
+  <p>The user gets a URL and code to enter on any device with a browser. Authentication completes on the headless machine.</p>
+
+  <h3>All CLI flags</h3>
+  <table class="tbl">
+    <thead><tr><th>Flag (bash)</th><th>Flag (PowerShell)</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">--workspace-id GUID</td><td class="mono">-WorkspaceId "GUID"</td><td>Pre-configure workspace, skip picker</td></tr>
+      <tr><td class="mono">--dataset-id GUID</td><td class="mono">-DatasetId "GUID"</td><td>Pre-configure dataset, skip picker</td></tr>
+      <tr><td class="mono">--config-url URL</td><td class="mono">-ConfigUrl "URL"</td><td>Download config from IT-hosted endpoint</td></tr>
+      <tr><td class="mono">--silent</td><td class="mono">-Silent</td><td>No prompts. Fail if IDs not provided</td></tr>
+      <tr><td class="mono">--device-code</td><td class="mono">-DeviceCode</td><td>Use device code flow (no browser needed)</td></tr>
+      <tr><td class="mono">--skip-wizard</td><td class="mono">-SkipWizard</td><td>Manual mode: copy example config, don't run wizard</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ════════════ CONFIG PRIORITY ════════════ -->
+<section class="section" id="config-priority">
+  <div class="section-label">Resolution order</div>
+  <h2>Config Priority Chain</h2>
+
+  <p>The MCP server resolves workspace and dataset IDs from multiple sources. Higher priority wins. This lets IT set defaults that users can override locally.</p>
+
+  <ol class="priority">
+    <li><strong><code>POWERBI_MCP_CONFIG</code></strong> &mdash; Full JSON blob via environment variable. Overrides everything. Set via GPO, Intune, or JAMF.</li>
+    <li><strong><code>POWERBI_MCP_WORKSPACE_ID</code> / <code>POWERBI_MCP_DATASET_ID</code></strong> &mdash; Individual env vars. Override config file defaults.</li>
+    <li><strong><code>server/config.json</code></strong> &mdash; Local config in the repo directory. Checked first among file-based configs.</li>
+    <li><strong><code>~/.powerbi-mcp/config.json</code></strong> &mdash; Global config in user home. Written by the wizard. Fallback if no local config.</li>
+    <li><strong>Tool arguments</strong> &mdash; When the AI passes <code>workspace_id</code> or <code>dataset_id</code> directly to a tool call, those always win.</li>
+  </ol>
+
+  <div class="callout callout-info">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <div><strong>Enterprise pattern:</strong> Set <code>POWERBI_MCP_WORKSPACE_ID</code> and <code>POWERBI_MCP_DATASET_ID</code> via Intune/GPO. Users install with <code>--silent</code>. The server picks up the IDs from the environment. No config file editing, no wizard interaction. Zero touch.</div>
+  </div>
+</section>
+
+<!-- ════════════ QUICK START ════════════ -->
+<section class="section" id="quick-start">
+  <div class="section-label">Get started</div>
+  <h2>Quick Start</h2>
+
+  <h3>macOS / Linux</h3>
+  <div class="code-block">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="curl -sL proxuma.io/install | bash"><span class="g">curl</span> -sL proxuma.io/install | <span class="g">bash</span></div>
+  </div>
+
+  <h3>Windows</h3>
+  <div class="code-block">
+    <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="irm proxuma.io/install.ps1 | iex"><span class="g">irm</span> proxuma.io/install.ps1 | <span class="g">iex</span></div>
+  </div>
+
+  <h3>Manual (git clone)</h3>
+  <div class="code-block">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="git clone https://github.com/Proxuma/powerbi-copilot.git
+cd powerbi-copilot
+./setup.sh"><span class="g">git clone</span> https://github.com/Proxuma/powerbi-copilot.git
+<span class="g">cd</span> powerbi-copilot
+<span class="g">./setup.sh</span></div>
+  </div>
+
+  <p>After setup, open VS Code and type in Copilot Chat (Agent mode):</p>
+  <div class="code-block">
+    <div class="code-header"><span>Copilot Chat</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="#powerbireport what is my monthly revenue trend?"><span class="g">#powerbireport</span> what is my monthly revenue trend?</div>
+  </div>
+
+  <div class="callout callout-success">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <div><strong>Your data never leaves your environment.</strong> Power BI data stays in your Microsoft tenant. The MCP server runs on your machine. AI processing happens locally. PII is masked by Presidio before reaching the AI model.</div>
+  </div>
+</section>
+
+</main>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer class="footer">
+  <div class="wrap">
+    <p>Proxuma Power BI Copilot &mdash; Zero-Touch Setup</p>
+    <p style="margin-top:4px;font-size:12px;opacity:.35">Your data. Your tenant. Your AI.</p>
+    <p style="margin-top:8px">Questions? <a href="mailto:hello@proxuma.io">hello@proxuma.io</a></p>
+  </div>
+</footer>
+
+<script>
+/* ── Copy button ── */
+function copyBlock(btn) {
+  var body = btn.closest('.code-block').querySelector('.code-body');
+  var text = body.getAttribute('data-raw') || body.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* ── Nav scroll tracking ── */
+(function() {
+  var sections = document.querySelectorAll('.section');
+  var links = document.querySelectorAll('.nav-link');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        links.forEach(function(l) {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+  sections.forEach(function(s) { observer.observe(s); });
+
+  links.forEach(function(l) {
+    l.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(l.getAttribute('href'));
+      if (target) {
+        var y = target.getBoundingClientRect().top + window.pageYOffset - 60;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

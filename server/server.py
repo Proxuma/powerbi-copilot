@@ -9,47 +9,60 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 import requests
-from azure.identity import (
-    InteractiveBrowserCredential,
-    TokenCachePersistenceOptions,
-    AuthenticationRecord
-)
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from presidio_anonymizer.entities import OperatorConfig
 
-# Config
-CACHE_DIR = Path.home() / ".powerbi-mcp"
-CACHE_DIR.mkdir(exist_ok=True)
-AUTH_RECORD_PATH = CACHE_DIR / "auth_record.json"
-TOKEN_CACHE_PATH = CACHE_DIR / "token_cache.bin"
+# Shared auth module
+from auth import (
+    CACHE_DIR, get_powerbi_headers, get_fabric_headers
+)
 
-# User config — loaded from config.json next to this file, or ~/.powerbi-mcp/config.json
+# User config — env vars > local config.json > ~/.powerbi-mcp/config.json
 CONFIG_PATH = Path(__file__).parent / "config.json"
 GLOBAL_CONFIG_PATH = CACHE_DIR / "config.json"
 
 def load_config():
-    """Load user config from config.json (local first, then global fallback)."""
+    """Load user config with priority: env vars > config file > empty dict.
+
+    Environment variables (for enterprise MDM/GPO deployment):
+      POWERBI_MCP_CONFIG          — full JSON blob, overrides everything
+      POWERBI_MCP_WORKSPACE_ID    — overrides default_workspace_id
+      POWERBI_MCP_DATASET_ID      — overrides default_dataset_id
+    """
+    # Check for full JSON blob from env
+    env_config = os.environ.get("POWERBI_MCP_CONFIG")
+    if env_config:
+        try:
+            return json.loads(env_config)
+        except json.JSONDecodeError:
+            pass
+
+    # Load from config file (local first, then global)
+    config = {}
     for path in [CONFIG_PATH, GLOBAL_CONFIG_PATH]:
         if path.exists():
             try:
                 with open(path, "r") as f:
-                    return json.load(f)
+                    config = json.load(f)
+                    break
             except Exception:
                 pass
-    return {}
+
+    # Env var overrides for individual IDs
+    env_workspace = os.environ.get("POWERBI_MCP_WORKSPACE_ID")
+    if env_workspace:
+        config["default_workspace_id"] = env_workspace
+
+    env_dataset = os.environ.get("POWERBI_MCP_DATASET_ID")
+    if env_dataset:
+        config["default_dataset_id"] = env_dataset
+
+    return config
 
 USER_CONFIG = load_config()
 
-# Scopes for both APIs
-POWERBI_SCOPE = "https://analysis.windows.net/powerbi/api/.default"
-FABRIC_SCOPE = "https://api.fabric.microsoft.com/.default"
-
 server = Server("powerbi-connector")
-
-# Singleton credential — initialized once
-_credential = None
-_token_cache = {}  # In-memory cache for tokens
 
 # Presidio anonymization engines (singleton)
 _analyzer = None
@@ -125,85 +138,6 @@ def anonymize_json(data):
         return [anonymize_json(item) for item in data]
     else:
         return data
-
-def get_credential():
-    """Get or create credential with persistent cache."""
-    global _credential
-
-    if _credential is not None:
-        return _credential
-
-    cache_options = TokenCachePersistenceOptions(
-        name="powerbi-mcp",
-        allow_unencrypted_storage=True
-    )
-
-    # Check for existing auth record
-    auth_record = None
-    if AUTH_RECORD_PATH.exists():
-        try:
-            with open(AUTH_RECORD_PATH, "r") as f:
-                auth_data = json.load(f)
-                auth_record = AuthenticationRecord.deserialize(json.dumps(auth_data))
-        except Exception:
-            pass
-
-    if auth_record:
-        # Reuse existing authentication — no browser popup
-        _credential = InteractiveBrowserCredential(
-            cache_persistence_options=cache_options,
-            authentication_record=auth_record
-        )
-    else:
-        # First time — browser popup required
-        _credential = InteractiveBrowserCredential(
-            cache_persistence_options=cache_options
-        )
-
-    return _credential
-
-def save_auth_record(credential, scope):
-    """Save auth record for reuse."""
-    try:
-        record = credential.authenticate(scopes=[scope])
-        auth_data = json.loads(record.serialize())
-        with open(AUTH_RECORD_PATH, "w") as f:
-            json.dump(auth_data, f)
-    except Exception:
-        pass
-
-def get_token(scope):
-    """Get token with caching."""
-    global _token_cache
-
-    cache_key = scope
-    if cache_key in _token_cache:
-        cached = _token_cache[cache_key]
-        if cached["expires_on"] > time.time() + 300:
-            return cached["token"]
-
-    credential = get_credential()
-    token = credential.get_token(scope)
-
-    _token_cache[cache_key] = {
-        "token": token.token,
-        "expires_on": token.expires_on
-    }
-
-    save_auth_record(credential, scope)
-    return token.token
-
-def get_powerbi_headers():
-    return {
-        "Authorization": f"Bearer {get_token(POWERBI_SCOPE)}",
-        "Content-Type": "application/json"
-    }
-
-def get_fabric_headers():
-    return {
-        "Authorization": f"Bearer {get_token(FABRIC_SCOPE)}",
-        "Content-Type": "application/json"
-    }
 
 def resolve_ids(arguments: dict, need_workspace: bool = True, need_dataset: bool = True) -> dict:
     """Resolve workspace/dataset IDs from arguments, falling back to config defaults."""

@@ -12,10 +12,11 @@ This package connects your AI assistant to Power BI via MCP (Model Context Proto
 | **Report Prompt** | Generates standalone HTML reports with KPIs, data tables, analysis, and actionable findings |
 | **Dashboard Prompt** | Generates interactive dashboard mockups with step-by-step Power BI build instructions |
 | **PII Anonymization** | All data passes through Microsoft Presidio before reaching the AI — names, emails, and other PII are automatically masked |
+| **Setup Wizard** | Auto-discovers workspaces and datasets — no manual GUID hunting |
 
 ## Requirements
 
-- **Python 3.10+** (macOS or Linux)
+- **Python 3.10+**
 - **Power BI Pro or Premium Per User license** (for API access)
 - **VS Code** with GitHub Copilot (Agent mode) or another MCP-compatible AI tool
 
@@ -23,37 +24,63 @@ No Azure app registration needed. The server uses Azure's public client ID for a
 
 ## Quick Start
 
+### One-liner install (macOS / Linux)
+
+```bash
+curl -sL proxuma.io/install | bash
+```
+
+### One-liner install (Windows PowerShell)
+
+```powershell
+irm proxuma.io/install.ps1 | iex
+```
+
+### Manual install
+
 ```bash
 # 1. Clone the repo
 git clone https://github.com/Proxuma/powerbi-copilot.git
 cd powerbi-copilot
 
-# 2. Run the installer
-./setup.sh
+# 2. Run the installer — it installs deps and launches the setup wizard
+./setup.sh          # macOS/Linux
+.\setup.ps1         # Windows PowerShell
 
-# 3. Configure your workspace
-nano ~/.powerbi-mcp/config.json
-# Add your workspace ID and dataset ID
+# 3. The wizard opens your browser for Microsoft sign-in,
+#    then lets you pick your workspace and dataset.
+#    Config is written automatically.
 
-# 4. Open in VS Code
-code .
-
-# 5. Open Copilot Chat (Agent mode) and type:
+# 4. Open in VS Code, start Copilot Chat (Agent mode), type:
 #powerbireport what is my monthly revenue trend?
 ```
 
-On first use, a browser window opens for Azure AD login. After that, tokens are cached — no re-login needed.
+That's it. No config files to edit, no GUIDs to hunt for.
 
-## Finding Your Workspace & Dataset IDs
+## Enterprise Deployment
 
-1. Open [Power BI Service](https://app.powerbi.com)
-2. Navigate to your workspace
-3. Click the dataset (semantic model) you want to query
-4. The URL contains both IDs:
-   ```
-   https://app.powerbi.com/groups/{WORKSPACE_ID}/datasets/{DATASET_ID}
-   ```
-5. Copy both GUIDs into `~/.powerbi-mcp/config.json`
+For IT admins deploying to multiple machines via MDM (Intune, JAMF, GPO):
+
+```bash
+# Pre-configured (skip interactive wizard)
+./setup.sh --workspace-id "GUID" --dataset-id "GUID" --silent
+
+# Config from IT-hosted endpoint
+./setup.sh --config-url https://it.yourcompany.com/powerbi-mcp-config
+
+# Headless / SSH environments
+./setup.sh --device-code --workspace-id "GUID" --dataset-id "GUID"
+```
+
+Windows (Intune):
+```powershell
+.\setup.ps1 -WorkspaceId "GUID" -DatasetId "GUID" -Silent
+```
+
+Environment variables (override config.json — set via GPO/Intune):
+- `POWERBI_MCP_WORKSPACE_ID` — default workspace
+- `POWERBI_MCP_DATASET_ID` — default dataset
+- `POWERBI_MCP_CONFIG` — full JSON config blob
 
 ## Available MCP Tools
 
@@ -93,6 +120,8 @@ Generates an interactive dashboard mockup with build instructions. The output in
 powerbi-copilot/
 ├── server/
 │   ├── server.py            # MCP server
+│   ├── auth.py              # Shared authentication module
+│   ├── wizard.py            # Setup wizard (auto-discovery)
 │   ├── requirements.txt     # Python dependencies
 │   └── config.example.json  # Example configuration
 ├── prompts/
@@ -104,7 +133,10 @@ powerbi-copilot/
 ├── docs/
 │   ├── first-run.md         # First-time setup & auth
 │   └── troubleshooting.md   # Common issues & fixes
-├── setup.sh                 # One-command installer
+├── setup.sh                 # macOS/Linux installer
+├── setup.ps1                # Windows PowerShell installer
+├── install.sh               # One-liner web installer (macOS/Linux)
+├── install.ps1              # Windows full installer
 └── README.md
 ```
 
@@ -112,7 +144,7 @@ powerbi-copilot/
 
 The server uses Azure AD's public client flow — the same one Power BI Desktop uses. No app registration required.
 
-1. First run: a browser window opens for Microsoft login
+1. The setup wizard (or first MCP tool call) opens a browser for Microsoft login
 2. You sign in with your Power BI account
 3. Tokens are cached in `~/.powerbi-mcp/`
 4. Subsequent runs: no login needed (tokens refresh automatically)

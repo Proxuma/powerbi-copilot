@@ -219,9 +219,9 @@ body[data-os="win"] p.os[data-os~="win"]{display:block}
       <svg width="32" height="37" viewBox="0 0 282 330" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#c0)"><path d="M255.482 18.869L249.167 0L233.244 12.345C205.765 33.731 185.875 62.462 175.748 95.489C171.64 108.873 169.279 122.522 168.642 136.206C177.388 137.361 185.781 139.624 193.666 142.846C194.563 133.643 196.392 124.451 199.166 115.432C205.387 95.131 215.999 76.77 230.328 61.4C233.61 81.943 232.17 102.995 225.937 123.284C222.715 133.793 218.3 143.793 212.8 153.112C219.67 157.812 225.914 163.32 231.391 169.498C242.557 154.406 251.115 137.488 256.698 119.266C266.826 86.239 266.413 51.526 255.494 18.869H255.482Z" fill="#fff"/><path d="M83.972 123.284C87.207 133.793 91.61 143.793 97.11 153.112C90.24 157.801 83.996 163.309 78.519 169.487C67.353 154.394 58.807 137.477 53.223 119.266C51.406 113.353 49.93 107.406 48.785 101.424C60.329 102.568 70.599 101.378 78.897 99.461C79.865 107.464 81.564 115.42 83.972 123.273V123.284Z" fill="#fff"/><path d="M134.162 95.512C128.249 76.216 118.994 58.386 106.872 42.635H0C0 42.635 23.372 105.616 100.864 91.355C104.877 98.999 108.206 107.037 110.767 115.432C113.541 124.474 115.359 133.643 116.256 142.846C124.141 139.625 132.545 137.361 141.304 136.206C140.666 122.534 138.282 108.873 134.186 95.5L134.162 95.512Z" fill="#fff"/><path d="M154.937 142.557C103.26 142.557 61.215 183.691 61.215 234.247C61.215 284.803 103.26 325.983 154.937 325.983C206.615 325.983 248.707 284.826 248.707 234.247C248.707 183.668 206.638 142.557 154.937 142.557ZM154.949 299.053C118.44 299.053 88.73 269.987 88.73 234.247C88.73 198.507 118.44 169.475 154.949 169.475C191.458 169.475 221.18 198.53 221.18 234.247C221.18 269.964 191.47 299.053 154.949 299.053Z" fill="#fff"/><circle cx="154.96" cy="186.335" r="7.148" fill="#fff"/><circle cx="154.96" cy="282.205" r="7.148" fill="#fff"/><circle cx="203.959" cy="234.27" r="7.148" fill="#fff"/><circle cx="105.963" cy="234.27" r="7.148" fill="#fff"/><path d="M185.037 195.7L154.961 225.124L139.392 209.893L130.043 219.05L154.961 243.416L194.397 204.846L185.037 195.7Z" fill="#fff"/></g><defs><clipPath id="c0"><rect width="282" height="330" fill="#fff"/></clipPath></defs></svg>
       <span>Proxuma</span>
     </div>
-    <div class="badge">Onboarding Guide</div>
-    <h1>Power BI <em>MCP</em> Setup</h1>
-    <p>This guide walks you through installing the Power BI MCP server, connecting it to VS Code, and generating your first AI-powered report. Start to finish in about 15 minutes.</p>
+    <div class="badge">Setup Guide</div>
+    <h1>Your Data. Your Tenant. <em>Your AI.</em></h1>
+    <p>Connect your AI copilot directly to your Power BI data — without sending anything outside your Microsoft tenant. Full privacy, full compliance, full control. Setup takes about 2 minutes.</p>
   </div>
 </header>
 
@@ -250,26 +250,29 @@ body[data-os="win"] p.os[data-os~="win"]{display:block}
 <nav class="progress-bar">
   <div class="wrap">
     <div class="progress-inner">
-      <a class="progress-step active" href="#prerequisites"><span class="step-num">0</span>Prerequisites</a>
-      <a class="progress-step" href="#clone"><span class="step-num">1</span>Clone</a>
-      <a class="progress-step" href="#install"><span class="step-num">2</span>Install</a>
-      <a class="progress-step" href="#configure"><span class="step-num">3</span>Configure</a>
-      <a class="progress-step" href="#vscode"><span class="step-num">4</span>VS Code</a>
-      <a class="progress-step" href="#login"><span class="step-num">5</span>Login</a>
-      <a class="progress-step" href="#verify"><span class="step-num">6</span>Verify</a>
-      <a class="progress-step" href="#first-report"><span class="step-num">7</span>First Report</a>
-      <a class="progress-step" href="#tools-ref"><span class="step-num">8</span>Tools</a>
-      <a class="progress-step" href="#troubleshooting"><span class="step-num">9</span>Troubleshooting</a>
+      <a class="progress-step active" href="#install"><span class="step-num">1</span>Install</a>
+      <a class="progress-step" href="#connect"><span class="step-num">2</span>Connect</a>
+      <a class="progress-step" href="#generate"><span class="step-num">3</span>Generate</a>
+      <a class="progress-step" href="#tools-ref">Tools</a>
+      <a class="progress-step" href="#troubleshooting">Troubleshooting</a>
+      <a class="progress-step" href="#enterprise">Enterprise</a>
     </div>
   </div>
 </nav>
 
 <main class="wrap">
 
-<!-- ════════════ 0. PREREQUISITES ════════════ -->
-<section class="section" id="prerequisites">
-  <div class="section-num">Step 0</div>
-  <h2>Prerequisites</h2>
+<!-- ════════════ 1. INSTALL ════════════ -->
+<section class="section" id="install">
+  <div class="section-num">Step 1</div>
+  <h2>Install</h2>
+
+  <div class="callout callout-success" style="margin-bottom:20px">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <div><strong>How this works.</strong> You host your data in Power BI on your own Microsoft tenant. The MCP server runs locally on your machine and queries Power BI through Microsoft's API using your existing account. The AI copilot (GitHub Copilot, Claude, Cursor) processes data locally. Nothing leaves your environment.</div>
+  </div>
+
+  <h3>Prerequisites</h3>
   <p>Before you start, make sure you have these:</p>
 
   <table class="tbl">
@@ -328,164 +331,136 @@ body[data-os="win"] p.os[data-os~="win"]{display:block}
     <div><strong>No Azure app registration needed.</strong> The MCP server uses Azure's built-in public client ID &mdash; the same one Power BI Desktop uses. Your Azure AD admin doesn't need to configure anything.</div>
   </div>
 
-</section>
+  <h3>Option A: One-liner install (recommended)</h3>
 
-<!-- ════════════ 1. CLONE ════════════ -->
-<section class="section" id="clone">
-  <div class="section-num">Step 1</div>
-  <h2>Clone the Repository</h2>
-
-  <div class="code-block">
-    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-    <div class="code-body" data-raw="git clone https://github.com/Proxuma/powerbi-copilot.git
-cd powerbi-copilot"><span class="g">git clone</span> https://github.com/Proxuma/powerbi-copilot.git
-<span class="g">cd</span> powerbi-copilot</div>
-  </div>
-
-  <p>This is a private repo. You need to have been invited as a collaborator. If <code>git clone</code> returns a 404 or permission error, ask for access at <a href="mailto:hello@proxuma.io">hello@proxuma.io</a>.</p>
-</section>
-
-<!-- ════════════ 2. INSTALL ════════════ -->
-<section class="section" id="install">
-  <div class="section-num">Step 2</div>
-  <h2>Run the Installer</h2>
-
-  <!-- macOS / Linux -->
-  <div class="os" data-os="mac linux">
-    <div class="code-block">
-      <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-      <div class="code-body" data-raw="./setup.sh"><span class="g">./setup.sh</span></div>
-    </div>
-
-    <p>The script does six things:</p>
-    <ol class="steps">
-      <li>Finds Python 3.10+ on your system (checks <code>python3.12</code>, <code>python3.11</code>, <code>python3.10</code>, <code>python3</code>)</li>
-      <li>Installs Python packages: <code>mcp</code>, <code>azure-identity</code>, <code>requests</code>, <code>presidio-analyzer</code>, <code>presidio-anonymizer</code>, <code>spacy</code></li>
-      <li>Downloads the spaCy English language model (<code>en_core_web_sm</code>) for PII detection</li>
-      <li>Creates <code>~/.powerbi-mcp/</code> directory and copies the default <code>config.json</code></li>
-      <li>Generates <code>.vscode/mcp.json</code> with the correct Python path for your system</li>
-      <li>Copies prompt files to <code>.github/prompts/</code> so Copilot can find them</li>
-    </ol>
-
-    <h3>Expected output</h3>
-    <div class="code-block">
-      <div class="code-header"><span>expected output</span></div>
-      <div class="code-body"><span class="c">  Proxuma Power BI Copilot — Setup
-  ================================</span>
-
-<span class="b">1/6  Checking Python...</span>
-<span class="g">[OK]</span> Found Python 3.12.2 at <span class="os" data-os="mac">/opt/homebrew/bin/python3.12</span><span class="os" data-os="linux">/usr/bin/python3.12</span>
-
-<span class="b">2/6  Installing Python dependencies...</span>
-<span class="g">[OK]</span> Python packages installed
-
-<span class="b">3/6  Downloading spaCy language model...</span>
-<span class="g">[OK]</span> spaCy model en_core_web_sm downloaded
-
-<span class="b">4/6  Setting up cache directory...</span>
-<span class="g">[OK]</span> Created ~/.powerbi-mcp/config.json
-
-<span class="b">5/6  Configuring VS Code MCP...</span>
-<span class="g">[OK]</span> Created .vscode/mcp.json
-
-<span class="b">6/6  Setting up prompt files...</span>
-<span class="g">[OK]</span> Prompt files copied to .github/prompts/
-
-<span class="c">  ================================
-  Setup complete!</span></div>
-    </div>
-
-    <div class="callout callout-warn">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <div><strong>Permission error?</strong> If <code>./setup.sh</code> says "Permission denied", run <span class="check-chip" onclick="copyChip(this,'chmod +x setup.sh')" style="margin:0 2px"><span class="chip-label">chmod +x setup.sh</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span> first. If pip complains about permissions, the setup script will still work &mdash; it installs packages in user mode.</div>
-    </div>
-  </div>
-
-  <!-- Windows -->
-  <div class="os" data-os="win">
-    <p>The <code>setup.sh</code> script is designed for macOS and Linux. On Windows, run these commands in PowerShell:</p>
-
-    <h3>2a. Install Python dependencies</h3>
-    <div class="code-block">
-      <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-      <div class="code-body" data-raw="pip install -r server\requirements.txt
-python -m spacy download en_core_web_sm"><span class="g">pip install</span> -r server\requirements.txt
-<span class="g">python -m spacy download</span> en_core_web_sm</div>
-    </div>
-
-    <h3>2b. Create config directory</h3>
-    <div class="code-block">
-      <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-      <div class="code-body" data-raw="New-Item -ItemType Directory -Force -Path &quot;$env:USERPROFILE\.powerbi-mcp&quot;
-Copy-Item server\config.example.json &quot;$env:USERPROFILE\.powerbi-mcp\config.json&quot;"><span class="g">New-Item</span> -ItemType Directory -Force -Path <span class="str">"$env:USERPROFILE\.powerbi-mcp"</span>
-<span class="g">Copy-Item</span> server\config.example.json <span class="str">"$env:USERPROFILE\.powerbi-mcp\config.json"</span></div>
-    </div>
-
-    <h3>2c. Set up VS Code MCP config</h3>
-    <div class="code-block">
-      <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-      <div class="code-body" data-raw="New-Item -ItemType Directory -Force -Path .vscode
-$python = (Get-Command python).Source
-$server = (Resolve-Path server\server.py).Path
-@{servers=@{powerbi=@{command=$python;args=@($server)}}} | ConvertTo-Json -Depth 4 | Set-Content .vscode\mcp.json"><span class="g">New-Item</span> -ItemType Directory -Force -Path .vscode
-<span class="y">$python</span> = (Get-Command python).Source
-<span class="y">$server</span> = (Resolve-Path server\server.py).Path
-@{servers=@{powerbi=@{command=<span class="y">$python</span>;args=@(<span class="y">$server</span>)}}} | ConvertTo-Json -Depth 4 | Set-Content .vscode\mcp.json</div>
-    </div>
-
-    <h3>2d. Copy prompt files</h3>
-    <div class="code-block">
-      <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-      <div class="code-body" data-raw="New-Item -ItemType Directory -Force -Path .github\prompts
-Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> -ItemType Directory -Force -Path .github\prompts
-<span class="g">Copy-Item</span> prompts\*.prompt.md .github\prompts\</div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════ 3. CONFIGURE ════════════ -->
-<section class="section" id="configure">
-  <div class="section-num">Step 3</div>
-  <h2>Configure Your Power BI Environment</h2>
-
-  <p>The MCP server needs to know which Power BI workspace and dataset to query by default. You set this in <span class="os" data-os="mac linux"><code>~/.powerbi-mcp/config.json</code></span><span class="os" data-os="win"><code>%USERPROFILE%\.powerbi-mcp\config.json</code></span>.</p>
-
-  <h3>3a. Find your Workspace ID and Dataset ID</h3>
-
-  <ol class="steps">
-    <li>Open <a href="https://app.powerbi.com" target="_blank">Power BI Service</a> in your browser</li>
-    <li>Navigate to the workspace containing your dataset</li>
-    <li>Click on the dataset (semantic model) you want to query</li>
-    <li>Look at the browser URL. It contains both IDs:
-      <div class="code-block" style="margin-top:10px">
-        <div class="code-header"><span>browser URL</span></div>
-        <div class="code-body">https://app.powerbi.com/groups/<span class="y">WORKSPACE_ID</span>/datasets/<span class="y">DATASET_ID</span>/...</div>
-      </div>
-    </li>
-    <li>Copy both GUIDs (the long strings of letters, numbers, and dashes)</li>
-  </ol>
-
-  <div class="callout callout-info">
-    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-    <div><strong>Alternative method:</strong> You can also find IDs via the MCP server itself. Skip this step, complete the login (Step 5), then use <code>list_workspaces</code> and <code>list_datasets</code> to find your IDs.</div>
-  </div>
-
-  <h3>3b. Edit config.json</h3>
+  <p>Open a terminal and run:</p>
 
   <div class="os code-block" data-os="mac">
     <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-    <div class="code-body" data-raw="open ~/.powerbi-mcp/config.json"><span class="g">open</span> ~/.powerbi-mcp/config.json</div>
+    <div class="code-body" data-raw="curl -sL proxuma.io/install | bash"><span class="g">curl</span> -sL proxuma.io/install | <span class="g">bash</span></div>
   </div>
   <div class="os code-block" data-os="linux">
     <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-    <div class="code-body" data-raw="nano ~/.powerbi-mcp/config.json"><span class="g">nano</span> ~/.powerbi-mcp/config.json</div>
+    <div class="code-body" data-raw="curl -sL proxuma.io/install | bash"><span class="g">curl</span> -sL proxuma.io/install | <span class="g">bash</span></div>
   </div>
   <div class="os code-block" data-os="win">
     <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-    <div class="code-body" data-raw="notepad &quot;$env:USERPROFILE\.powerbi-mcp\config.json&quot;"><span class="g">notepad</span> <span class="str">"$env:USERPROFILE\.powerbi-mcp\config.json"</span></div>
+    <div class="code-body" data-raw="irm proxuma.io/install.ps1 | iex"><span class="g">irm</span> proxuma.io/install.ps1 | <span class="g">iex</span></div>
   </div>
 
-  <p>Fill in your IDs:</p>
+  <p>The installer automatically:</p>
+  <ol class="steps">
+    <li><strong>Checks Python, VS Code, and Git</strong> &mdash; if anything is missing, it opens the download page and waits for you to install it</li>
+    <li><strong>Clones the repository and installs Python packages</strong> &mdash; the MCP framework, Azure authentication, PII detection (Presidio + spaCy)</li>
+    <li><strong>Runs the auto-discovery wizard</strong> &mdash; opens your browser for Microsoft sign-in, finds your workspaces and datasets, and writes the config automatically</li>
+    <li><strong>Configures VS Code</strong> &mdash; registers the MCP server, enables Agent mode, copies prompt files, installs GitHub Copilot</li>
+    <li><strong>Opens VS Code</strong> &mdash; with the project folder ready to go</li>
+  </ol>
+
+  <div class="callout callout-success">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <div><strong>Everything stays local.</strong> The installer only downloads open-source Python packages from PyPI. No data is sent anywhere. The MCP server runs on your machine and connects to Power BI through Microsoft's official API using your own credentials.</div>
+  </div>
+
+  <h3>Option B: Git clone + manual setup</h3>
+
+  <div class="os code-block" data-os="mac linux">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="git clone https://github.com/Proxuma/powerbi-copilot.git
+cd powerbi-copilot
+./setup.sh"><span class="g">git clone</span> https://github.com/Proxuma/powerbi-copilot.git
+<span class="g">cd</span> powerbi-copilot
+<span class="g">./setup.sh</span></div>
+  </div>
+  <div class="os code-block" data-os="win">
+    <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="git clone https://github.com/Proxuma/powerbi-copilot.git
+cd powerbi-copilot
+.\setup.ps1"><span class="g">git clone</span> https://github.com/Proxuma/powerbi-copilot.git
+<span class="g">cd</span> powerbi-copilot
+<span class="g">.\setup.ps1</span></div>
+  </div>
+
+  <div class="callout callout-info">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <div>This is a private repository. You need to have been invited as a collaborator. If you get a 404 or permission error, ask for access at <a href="mailto:hello@proxuma.io">hello@proxuma.io</a>.</div>
+  </div>
+
+  <div class="os" data-os="mac">
+    <div class="callout callout-warn">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div><strong>macOS security warning?</strong> If macOS says the file "can't be opened because it is from an unidentified developer", right-click the file &rarr; <strong>Open</strong> &rarr; <strong>Open</strong>. You only need to do this once.</div>
+    </div>
+  </div>
+
+  <div class="os" data-os="win">
+    <div class="callout callout-warn">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div><strong>Windows SmartScreen warning?</strong> If Windows shows "Windows protected your PC", click <strong>More info</strong> &rarr; <strong>Run anyway</strong>. The installer is a standard PowerShell script.</div>
+    </div>
+  </div>
+
+  <!-- Manual install collapse for advanced users -->
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      Prefer to install manually? Click here for step-by-step commands.
+    </div>
+    <div class="collapse-body">
+      <div class="os" data-os="mac linux">
+        <p>Run in terminal from the project folder:</p>
+        <div class="code-block">
+          <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <div class="code-body" data-raw="./setup.sh"><span class="g">./setup.sh</span></div>
+        </div>
+        <p>If you get "Permission denied": <span class="check-chip" onclick="copyChip(this,'chmod +x setup.sh && ./setup.sh')" style="margin:0 2px"><span class="chip-label">chmod +x setup.sh && ./setup.sh</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></p>
+      </div>
+      <div class="os" data-os="win">
+        <p>Run in PowerShell from the project folder:</p>
+        <div class="code-block">
+          <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <div class="code-body" data-raw="pip install -r server\requirements.txt
+python -m spacy download en_core_web_sm
+New-Item -ItemType Directory -Force -Path &quot;$env:USERPROFILE\.powerbi-mcp&quot;
+Copy-Item server\config.example.json &quot;$env:USERPROFILE\.powerbi-mcp\config.json&quot;
+New-Item -ItemType Directory -Force -Path .vscode
+$py = (Get-Command python).Source; $sv = (Resolve-Path server\server.py).Path
+@{servers=@{powerbi=@{command=$py;args=@($sv)}}} | ConvertTo-Json -Depth 4 | Set-Content .vscode\mcp.json
+New-Item -ItemType Directory -Force -Path .github\prompts
+Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">pip install</span> -r server\requirements.txt
+<span class="g">python -m spacy download</span> en_core_web_sm
+<span class="g">New-Item</span> -ItemType Directory -Force -Path <span class="str">"$env:USERPROFILE\.powerbi-mcp"</span>
+<span class="g">Copy-Item</span> server\config.example.json <span class="str">"$env:USERPROFILE\.powerbi-mcp\config.json"</span>
+<span class="g">New-Item</span> -ItemType Directory -Force -Path .vscode
+<span class="y">$py</span> = (Get-Command python).Source; <span class="y">$sv</span> = (Resolve-Path server\server.py).Path
+@{servers=@{powerbi=@{command=<span class="y">$py</span>;args=@(<span class="y">$sv</span>)}}} | ConvertTo-Json -Depth 4 | Set-Content .vscode\mcp.json
+<span class="g">New-Item</span> -ItemType Directory -Force -Path .github\prompts
+<span class="g">Copy-Item</span> prompts\*.prompt.md .github\prompts\</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 2. CONNECT ════════════ -->
+<section class="section" id="connect">
+  <div class="section-num">Step 2</div>
+  <h2>Connect</h2>
+
+  <p>The installer's setup wizard handles authentication and configuration automatically. Here's what happens:</p>
+
+  <h3>2a. Microsoft sign-in</h3>
+  <ol class="steps">
+    <li><strong>A browser window opens automatically</strong> with the Microsoft login page</li>
+    <li>Sign in with the Microsoft account that has your Power BI license</li>
+    <li>You may see a permissions consent screen &mdash; click <strong>"Accept"</strong>. The server requests read-only access to Power BI data and Fabric schema definitions.</li>
+    <li>The browser shows <strong>"Authentication complete"</strong> &mdash; you can close it</li>
+  </ol>
+
+  <h3>2b. Pick your workspace and dataset</h3>
+  <p>After sign-in, the wizard lists your available workspaces and datasets. Pick the ones you want to use as defaults &mdash; no need to hunt for GUIDs in browser URLs.</p>
+
+  <p>The config is written automatically to <span class="os" data-os="mac linux"><code>~/.powerbi-mcp/config.json</code></span><span class="os" data-os="win"><code>%USERPROFILE%\.powerbi-mcp\config.json</code></span>:</p>
 
   <div class="vscode-mock">
     <div class="vscode-titlebar">
@@ -504,104 +479,26 @@ Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> 
 }</div>
   </div>
 
-  <p>The <code>workspaces</code> and <code>datasets</code> maps are for your own reference. What matters are <code>default_workspace_id</code> and <code>default_dataset_id</code> &mdash; those are used when you call a tool without specifying IDs.</p>
-
-  <h3>Learn more</h3>
-  <div class="resources">
-    <a class="res" href="https://learn.microsoft.com/en-us/rest/api/power-bi/" target="_blank">
-      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
-      <div class="res-body">
-        <div class="res-source">Microsoft Learn</div>
-        <div class="res-title">Power BI REST API Reference</div>
-        <div class="res-desc">The underlying API the MCP server calls. Covers workspaces, datasets, queries, and permissions.</div>
-      </div>
-      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
-    </a>
-  </div>
-</section>
-
-<!-- ════════════ 4. VS CODE ════════════ -->
-<section class="section" id="vscode">
-  <div class="section-num">Step 4</div>
-  <h2>VS Code Setup</h2>
-
-  <p>The installer already created <code>.vscode/mcp.json</code> and copied the prompt files. You just need to verify a few settings.</p>
-
-  <h3>4a. Enable Copilot Agent Mode</h3>
-  <p>MCP tools are only available in Agent mode, not the default Ask mode. In VS Code:</p>
-  <ol class="steps">
-    <li>Open the Command Palette: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span></li>
-    <li>Search for <strong>"Preferences: Open Settings (JSON)"</strong></li>
-    <li>Add these settings (if not already present):
-      <div class="vscode-mock" style="margin-top:10px">
-        <div class="vscode-titlebar"><span class="vscode-dot r"></span><span class="vscode-dot y"></span><span class="vscode-dot g"></span><span>settings.json</span></div>
-        <div class="vscode-body">{
-  <span class="key">"chat.agent.enabled"</span>: <span class="str">true</span>,
-  <span class="key">"chat.promptFiles"</span>: <span class="str">true</span>,
-  <span class="key">"chat.mcp.enabled"</span>: <span class="str">true</span>
-}</div>
-      </div>
-    </li>
-    <li>Reload VS Code: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span> &rarr; <strong>"Developer: Reload Window"</strong></li>
-  </ol>
-
-  <h3>4b. Verify MCP Server Registration</h3>
-  <ol class="steps">
-    <li>Open the Command Palette: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span></li>
-    <li>Search for <strong>"MCP: List Servers"</strong></li>
-    <li>You should see <strong>powerbi</strong> listed. If not, check that <code>.vscode/mcp.json</code> exists and has the correct Python path.</li>
-  </ol>
-
-  <h3>4c. Verify Prompt Files</h3>
-  <p>Open Copilot Chat (<span class="os" data-os="mac"><code>Cmd+Shift+I</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+I</code></span>), switch to <strong>Agent mode</strong> (click the mode dropdown), and type <code>#</code>. You should see:</p>
-  <ul>
-    <li><code>#powerbireport</code> &mdash; generates a report</li>
-    <li><code>#powerbidashboard</code> &mdash; generates a dashboard builder</li>
-  </ul>
-  <p>If they don't appear, check that <code>.github/prompts/</code> contains the <code>.prompt.md</code> files.</p>
-
-  <h3>VS Code docs</h3>
-  <div class="resources two-col">
-    <a class="res" href="https://docs.github.com/en/copilot/using-github-copilot/using-extensions-to-integrate-external-tools-with-copilot-chat" target="_blank">
-      <div class="res-icon gh"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>
-      <div class="res-body">
-        <div class="res-source">GitHub Docs</div>
-        <div class="res-title">MCP in GitHub Copilot</div>
-        <div class="res-desc">How Agent mode discovers and calls MCP tools. Explains the mcp.json format.</div>
-      </div>
-      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
-    </a>
-    <a class="res" href="https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot" target="_blank">
-      <div class="res-icon gh"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>
-      <div class="res-body">
-        <div class="res-source">GitHub Docs</div>
-        <div class="res-title">Custom Prompt Files for Copilot</div>
-        <div class="res-desc">How <code>.github/prompts/*.prompt.md</code> files work. This is the mechanism behind <code>#powerbireport</code>.</div>
-      </div>
-      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
-    </a>
-  </div>
-</section>
-
-<!-- ════════════ 5. LOGIN ════════════ -->
-<section class="section" id="login">
-  <div class="section-num">Step 5</div>
-  <h2>First Login (Azure AD)</h2>
-
-  <p>The first time you use any MCP tool, the server needs to authenticate with Microsoft. Here's what happens:</p>
-
-  <ol class="steps">
-    <li><strong>A browser window opens automatically</strong> with the Microsoft login page</li>
-    <li>Sign in with the Microsoft account that has your Power BI license</li>
-    <li>You may see a permissions consent screen &mdash; click <strong>"Accept"</strong>. The server requests read-only access to Power BI data and Fabric schema definitions.</li>
-    <li>The browser shows <strong>"Authentication complete"</strong> &mdash; you can close it</li>
-    <li>The token is cached in <span class="os" data-os="mac linux"><code>~/.powerbi-mcp/auth_record.json</code></span><span class="os" data-os="win"><code>%USERPROFILE%\.powerbi-mcp\auth_record.json</code></span></li>
-  </ol>
-
   <div class="callout callout-success">
     <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
     <div><strong>After first login, you won't need to log in again.</strong> Tokens refresh automatically. You'll only need to re-authenticate if you delete the auth cache, change your password, or are inactive for 90+ days.</div>
   </div>
+
+  <h3>Enterprise flags</h3>
+  <p>For automated or scripted installs, you can skip the interactive wizard entirely:</p>
+
+  <table class="tbl">
+    <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">--workspace-id &lt;GUID&gt;</td><td>Pre-set the default workspace ID</td></tr>
+      <tr><td class="mono">--dataset-id &lt;GUID&gt;</td><td>Pre-set the default dataset ID</td></tr>
+      <tr><td class="mono">--config-url &lt;URL&gt;</td><td>Download config.json from a URL instead of running the wizard</td></tr>
+      <tr><td class="mono">--silent</td><td>No interactive prompts &mdash; requires <code>--workspace-id</code> and <code>--dataset-id</code></td></tr>
+      <tr><td class="mono">--device-code</td><td>Use device code flow instead of browser (for SSH/headless environments)</td></tr>
+    </tbody>
+  </table>
+
+  <p>See <a href="#enterprise">Enterprise Deployment</a> for full examples.</p>
 
   <h3>Permissions requested</h3>
   <table class="tbl">
@@ -613,21 +510,8 @@ Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> 
   </table>
   <p>Both scopes are <strong>read-only</strong>. The server cannot modify your Power BI content.</p>
 
-  <h3>Azure auth deep dive</h3>
-  <div class="resources">
-    <a class="res" href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow" target="_blank">
-      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
-      <div class="res-body">
-        <div class="res-source">Microsoft Learn</div>
-        <div class="res-title">OAuth 2.0 Authorization Code Flow</div>
-        <div class="res-desc">How the browser-based login works under the hood. Useful if your IT admin asks what the server does.</div>
-      </div>
-      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
-    </a>
-  </div>
-
-  <h3>PII Protection</h3>
-  <p>All data returned by MCP tools passes through <a href="https://microsoft.github.io/presidio/" target="_blank">Microsoft Presidio</a> before reaching the AI. Personal information is automatically replaced:</p>
+  <h3>PII Protection &mdash; Built-in Privacy Layer</h3>
+  <p>Even though everything runs locally, there's an extra safety net: all data returned by MCP tools passes through <a href="https://microsoft.github.io/presidio/" target="_blank">Microsoft Presidio</a> before reaching the AI. Personal information is automatically replaced:</p>
 
   <table class="tbl">
     <thead><tr><th>Detected PII</th><th>Replaced with</th></tr></thead>
@@ -641,25 +525,27 @@ Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> 
     </tbody>
   </table>
 
-  <div class="resources">
-    <a class="res" href="https://microsoft.github.io/presidio/" target="_blank">
-      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
-      <div class="res-body">
-        <div class="res-source">Microsoft Open Source</div>
-        <div class="res-title">Microsoft Presidio — PII Anonymization</div>
-        <div class="res-desc">The library that powers the data masking. Detects 30+ PII entity types using NLP and regex.</div>
-      </div>
-      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
-    </a>
+  <h3>2c. Verify in VS Code</h3>
+  <ol class="steps">
+    <li>Open the project folder in VS Code (the installer may have done this already)</li>
+    <li>Open the Command Palette: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span></li>
+    <li>Search for <strong>"MCP: List Servers"</strong></li>
+    <li>You should see <strong>powerbi</strong> listed. If not, see <a href="#troubleshooting">Troubleshooting</a>.</li>
+  </ol>
+
+  <p>Then check that prompt files are loaded:</p>
+  <ol class="steps">
+    <li>Open Copilot Chat: <span class="os" data-os="mac"><code>Cmd+Shift+I</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+I</code></span></li>
+    <li>Switch to <strong>Agent mode</strong> (click the mode dropdown at the top of the chat &mdash; it must say "Agent", not "Ask" or "Edit")</li>
+    <li>Type <code>#</code> and check that you see <code>#powerbireport</code> and <code>#powerbidashboard</code></li>
+  </ol>
+
+  <div class="callout callout-info">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <div><strong>Agent mode is required.</strong> MCP tools and prompt files only work in Agent mode. If you don't see the Power BI tools, switch from "Ask" to "Agent" in the Copilot Chat mode selector.</div>
   </div>
-</section>
 
-<!-- ════════════ 6. VERIFY ════════════ -->
-<section class="section" id="verify">
-  <div class="section-num">Step 6</div>
-  <h2>Verify the Connection</h2>
-
-  <p>Open Copilot Chat in Agent mode and test the connection with a simple request:</p>
+  <p>Test the connection with a simple request:</p>
 
   <div class="code-block">
     <div class="code-header"><span>Copilot Chat (Agent mode)</span><button class="copy-btn" onclick="copyChip(this,'List my Power BI workspaces')">Copy prompt</button></div>
@@ -679,24 +565,74 @@ Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> 
   ID: 11223344-5566-7788-99aa-bbccddeeff00</div>
   </div>
 
-  <p>If this works, your authentication, MCP server, and Power BI connection are all set. Try one more test:</p>
-
-  <div class="code-block">
-    <div class="code-header"><span>Copilot Chat</span><button class="copy-btn" onclick="copyChip(this,'List all measures in my dataset')">Copy prompt</button></div>
-    <div class="code-body"><span class="g">You:</span> List all measures in my dataset</div>
-  </div>
-
-  <p>This calls <code>list_measures</code> and returns every DAX measure in your data model. If you see your measures listed, you're good to go.</p>
-
   <div class="callout callout-danger">
     <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     <div><strong>If no tools appear in Copilot:</strong> Make sure you're in Agent mode (not Ask mode). Check that <code>.vscode/mcp.json</code> exists. Reload VS Code. See <a href="#troubleshooting">Troubleshooting</a> for more.</div>
   </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      Need to configure VS Code settings manually?
+    </div>
+    <div class="collapse-body">
+      <p>The installer creates <code>.vscode/settings.json</code> with these settings. If you need to add them manually:</p>
+      <div class="vscode-mock" style="margin-top:10px">
+        <div class="vscode-titlebar"><span class="vscode-dot r"></span><span class="vscode-dot y"></span><span class="vscode-dot g"></span><span>settings.json</span></div>
+        <div class="vscode-body">{
+  <span class="key">"chat.agent.enabled"</span>: <span class="str">true</span>,
+  <span class="key">"chat.promptFiles"</span>: <span class="str">true</span>,
+  <span class="key">"chat.mcp.enabled"</span>: <span class="str">true</span>
+}</div>
+      </div>
+      <p>After adding these, reload VS Code: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span> &rarr; <strong>"Developer: Reload Window"</strong></p>
+    </div>
+  </div>
+
+  <h3>Learn more</h3>
+  <div class="resources two-col">
+    <a class="res" href="https://learn.microsoft.com/en-us/rest/api/power-bi/" target="_blank">
+      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">Microsoft Learn</div>
+        <div class="res-title">Power BI REST API Reference</div>
+        <div class="res-desc">The underlying API the MCP server calls. Covers workspaces, datasets, queries, and permissions.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+    <a class="res" href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow" target="_blank">
+      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">Microsoft Learn</div>
+        <div class="res-title">OAuth 2.0 Authorization Code Flow</div>
+        <div class="res-desc">How the browser-based login works under the hood. Useful if your IT admin asks what the server does.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+    <a class="res" href="https://microsoft.github.io/presidio/" target="_blank">
+      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">Microsoft Open Source</div>
+        <div class="res-title">Microsoft Presidio &mdash; PII Anonymization</div>
+        <div class="res-desc">The library that powers the data masking. Detects 30+ PII entity types using NLP and regex.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+    <a class="res" href="https://docs.github.com/en/copilot/using-github-copilot/using-extensions-to-integrate-external-tools-with-copilot-chat" target="_blank">
+      <div class="res-icon gh"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">GitHub Docs</div>
+        <div class="res-title">MCP in GitHub Copilot</div>
+        <div class="res-desc">How Agent mode discovers and calls MCP tools. Explains the mcp.json format.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+  </div>
 </section>
 
-<!-- ════════════ 7. FIRST REPORT ════════════ -->
-<section class="section" id="first-report">
-  <div class="section-num">Step 7</div>
+<!-- ════════════ 3. GENERATE ════════════ -->
+<section class="section" id="generate">
+  <div class="section-num">Step 3</div>
   <h2>Generate Your First Report</h2>
 
   <p>Now the real thing. In Copilot Chat (Agent mode), type:</p>
@@ -735,9 +671,9 @@ Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> 
   <p>This generates an interactive mockup with page tabs, sample data, and step-by-step Power BI Desktop build instructions. Written for people who want a head start, not a textbook.</p>
 </section>
 
-<!-- ════════════ 8. TOOLS REFERENCE ════════════ -->
+<!-- ════════════ TOOLS REFERENCE ════════════ -->
 <section class="section" id="tools-ref">
-  <div class="section-num">Step 8</div>
+  <div class="section-num">Reference</div>
   <h2>MCP Tools Reference</h2>
 
   <p>The MCP server exposes 7 tools. You typically don't call them directly &mdash; the prompt files handle that. But it helps to know what's available.</p>
@@ -814,9 +750,9 @@ Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> 
   </div>
 </section>
 
-<!-- ════════════ 9. TROUBLESHOOTING ════════════ -->
+<!-- ════════════ TROUBLESHOOTING ════════════ -->
 <section class="section" id="troubleshooting">
-  <div class="section-num">Step 9</div>
+  <div class="section-num">Reference</div>
   <h2>Troubleshooting</h2>
 
   <div class="collapse">
@@ -838,7 +774,7 @@ Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> 
     <div class="collapse-body">
       <p>The server uses <code>InteractiveBrowserCredential</code> which opens your default browser. If it doesn't open:</p>
       <ul>
-        <li>You may be in a headless environment (SSH, Docker) &mdash; interactive login requires a GUI</li>
+        <li>You may be in a headless environment (SSH, Docker) &mdash; use <code>--device-code</code> flag instead</li>
         <li>Try clearing the cached auth: <span class="os" data-os="mac linux"><span class="check-chip" onclick="copyChip(this,'rm ~/.powerbi-mcp/auth_record.json')" style="margin:0 2px"><span class="chip-label">rm ~/.powerbi-mcp/auth_record.json</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span><span class="os" data-os="win"><span class="check-chip" onclick="copyChip(this,'del &quot;%USERPROFILE%\\.powerbi-mcp\\auth_record.json&quot;')" style="margin:0 2px"><span class="chip-label">del "%USERPROFILE%\.powerbi-mcp\auth_record.json"</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span></li>
         <li>Restart VS Code and try again</li>
       </ul>
@@ -974,12 +910,81 @@ Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> 
   </div>
 </section>
 
+<!-- ════════════ ENTERPRISE DEPLOYMENT ════════════ -->
+<section class="section" id="enterprise">
+  <div class="section-num">Reference</div>
+  <h2>Enterprise Deployment</h2>
+
+  <p>For IT teams rolling this out across multiple machines. All examples skip the interactive wizard and pre-configure everything.</p>
+
+  <h3>Silent install via MDM</h3>
+
+  <div class="os code-block" data-os="mac linux">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="curl -sL proxuma.io/install | bash -s -- --workspace-id &quot;a1b2c3d4-e5f6-7890-abcd-ef1234567890&quot; --dataset-id &quot;f9e8d7c6-b5a4-3210-fedc-ba0987654321&quot; --silent"><span class="g">curl</span> -sL proxuma.io/install | <span class="g">bash</span> -s -- \
+  --workspace-id <span class="str">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span> \
+  --dataset-id <span class="str">"f9e8d7c6-b5a4-3210-fedc-ba0987654321"</span> \
+  --silent</div>
+  </div>
+  <div class="os code-block" data-os="win">
+    <div class="code-header"><span>PowerShell (Intune)</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw=".\setup.ps1 -WorkspaceId &quot;a1b2c3d4-e5f6-7890-abcd-ef1234567890&quot; -DatasetId &quot;f9e8d7c6-b5a4-3210-fedc-ba0987654321&quot; -Silent"><span class="g">.\setup.ps1</span> `
+  -WorkspaceId <span class="str">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span> `
+  -DatasetId <span class="str">"f9e8d7c6-b5a4-3210-fedc-ba0987654321"</span> `
+  -Silent</div>
+  </div>
+
+  <h3>Config from URL</h3>
+  <p>Host a shared <code>config.json</code> on your internal network and have the installer pull it automatically:</p>
+
+  <div class="os code-block" data-os="mac linux">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="./setup.sh --config-url https://it.acme.com/powerbi-mcp-config"><span class="g">./setup.sh</span> --config-url <span class="str">https://it.acme.com/powerbi-mcp-config</span></div>
+  </div>
+  <div class="os code-block" data-os="win">
+    <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw=".\setup.ps1 -ConfigUrl &quot;https://it.acme.com/powerbi-mcp-config&quot;"><span class="g">.\setup.ps1</span> -ConfigUrl <span class="str">"https://it.acme.com/powerbi-mcp-config"</span></div>
+  </div>
+
+  <h3>Environment variables</h3>
+  <p>As an alternative to <code>config.json</code>, the server reads these environment variables at startup:</p>
+
+  <table class="tbl">
+    <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">POWERBI_MCP_WORKSPACE_ID</td><td>Default workspace GUID &mdash; overrides <code>config.json</code></td></tr>
+      <tr><td class="mono">POWERBI_MCP_DATASET_ID</td><td>Default dataset GUID &mdash; overrides <code>config.json</code></td></tr>
+      <tr><td class="mono">POWERBI_MCP_CONFIG</td><td>Path to an alternative <code>config.json</code> file</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Device code flow (SSH / headless)</h3>
+  <p>For environments without a browser (SSH sessions, Docker containers, CI runners), use the device code flow:</p>
+
+  <div class="os code-block" data-os="mac linux">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="./setup.sh --device-code"><span class="g">./setup.sh</span> --device-code</div>
+  </div>
+  <div class="os code-block" data-os="win">
+    <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw=".\setup.ps1 -DeviceCode"><span class="g">.\setup.ps1</span> -DeviceCode</div>
+  </div>
+
+  <p>The installer prints a URL and a one-time code. Open the URL on any device (phone, another computer), enter the code, and sign in with your Microsoft account. Authentication completes on the headless machine.</p>
+
+  <div class="callout callout-info">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <div><strong>Combine flags freely.</strong> For example: <code>--device-code --workspace-id XXX --dataset-id YYY</code> skips both the browser login and the interactive workspace picker.</div>
+  </div>
+</section>
+
 </main>
 
 <!-- ════════════ FOOTER ════════════ -->
 <footer class="footer">
   <div class="wrap">
-    <p>Proxuma Power BI Copilot &mdash; Onboarding Guide</p>
+    <p>Proxuma Power BI Copilot</p>
+    <p style="margin-top:4px;font-size:12px;opacity:.35">Your data. Your tenant. Your AI.</p>
     <p style="margin-top:8px">Questions? <a href="mailto:hello@proxuma.io">hello@proxuma.io</a></p>
   </div>
 </footer>
