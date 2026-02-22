@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power BI MCP Onboarding Guide — Proxuma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#1B365D;--blue:#164487;--green:#00D9A5;--teal:#0f766e;--teal-dark:#115e58;--bg:#f8fafc;--bg-alt:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--code-bg:#0f172a;--border:#e2e8f0;--radius:10px;--shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;color:var(--text);line-height:1.7;background:var(--bg);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Montserrat',sans-serif;line-height:1.3}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+code,pre{font-family:'JetBrains Mono',monospace}
+
+/* ── Layout ── */
+.wrap{max-width:820px;margin:0 auto;padding:0 24px}
+
+/* ── Header ── */
+.header{background:linear-gradient(165deg,#0d1f3c 0%,var(--navy) 50%,var(--blue) 100%);color:#fff;padding:48px 0 56px;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:48px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%)}
+.header-grid{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.03) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+.header-inner{position:relative;z-index:2}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.logo svg{width:32px;height:auto}
+.logo span{font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;opacity:.8}
+.header h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;margin-bottom:12px;letter-spacing:-0.5px}
+.header h1 em{font-style:normal;color:var(--green)}
+.header p{font-size:16px;opacity:.7;max-width:600px;line-height:1.7}
+.header .badge{display:inline-block;background:rgba(0,217,165,0.12);color:var(--green);font-size:12px;font-weight:600;padding:4px 12px;border-radius:16px;margin-bottom:20px;letter-spacing:.4px}
+
+/* ── Progress bar ── */
+.progress-bar{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);padding:0}
+.progress-inner{display:flex;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.progress-inner::-webkit-scrollbar{display:none}
+.progress-step{flex-shrink:0;padding:12px 18px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.progress-step:hover{color:var(--text)}
+.progress-step.active{color:var(--teal);border-bottom-color:var(--teal)}
+.progress-step.done{color:var(--green)}
+.progress-step .step-num{width:20px;height:20px;border-radius:50%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:background .2s,color .2s}
+.progress-step.active .step-num{background:var(--teal);color:#fff}
+.progress-step.done .step-num{background:var(--green);color:#fff}
+
+/* ── Sections ── */
+.section{padding:48px 0 56px;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-num{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--teal);margin-bottom:6px}
+.section h2{font-size:1.5rem;font-weight:800;color:var(--navy);margin-bottom:16px}
+.section h3{font-size:1.1rem;font-weight:700;color:var(--navy);margin:28px 0 10px}
+.section p{margin-bottom:14px}
+.section ul,.section ol{margin:0 0 16px 20px}
+.section li{margin-bottom:6px}
+
+/* ── Code blocks ── */
+.code-block{position:relative;background:var(--code-bg);border-radius:var(--radius);margin:16px 0 20px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono',monospace}
+.code-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;color:#e2e8f0;overflow-x:auto;white-space:pre}
+.code-body .c{color:#64748b}
+.code-body .g{color:var(--green)}
+.code-body .b{color:#93c5fd}
+.code-body .y{color:#fde68a}
+.copy-btn{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:4px 12px;font-size:11px;font-weight:500;cursor:pointer;transition:background .2s,color .2s;font-family:'Inter',sans-serif}
+.copy-btn:hover{background:rgba(255,255,255,0.14);color:#fff}
+.copy-btn.copied{background:rgba(0,217,165,0.15);color:var(--green);border-color:rgba(0,217,165,0.3)}
+
+/* Inline code */
+code:not(pre code){background:rgba(15,118,110,0.07);color:var(--teal-dark);padding:2px 7px;border-radius:4px;font-size:0.88em}
+
+/* ── Callouts ── */
+.callout{border-radius:var(--radius);padding:16px 20px;margin:16px 0 20px;font-size:14px;line-height:1.65;display:flex;gap:12px;align-items:flex-start}
+.callout svg{flex-shrink:0;width:18px;height:18px;margin-top:2px}
+.callout-info{background:#eff6ff;border:1px solid #bfdbfe}
+.callout-info svg{stroke:#3b82f6;fill:none;stroke-width:2}
+.callout-warn{background:#fffbeb;border:1px solid #fde68a}
+.callout-warn svg{stroke:#d97706;fill:none;stroke-width:2}
+.callout-success{background:#ecfdf5;border:1px solid #a7f3d0}
+.callout-success svg{stroke:#059669;fill:none;stroke-width:2}
+.callout-danger{background:#fef2f2;border:1px solid #fecaca}
+.callout-danger svg{stroke:#dc2626;fill:none;stroke-width:2}
+.callout p{margin:0}
+.callout strong{font-weight:600}
+
+/* ── Tables ── */
+.tbl{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.tbl thead{background:var(--navy);color:#fff}
+.tbl th{font-family:'Montserrat',sans-serif;font-weight:600;text-align:left;padding:11px 16px;font-size:12px;letter-spacing:.3px}
+.tbl td{padding:11px 16px;border-top:1px solid var(--border)}
+.tbl tr:hover td{background:rgba(15,118,110,0.02)}
+.tbl .mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal-dark)}
+
+/* ── Inline copy chip (for prerequisite check commands) ── */
+.check-chip{display:inline-flex;align-items:center;gap:5px;background:var(--code-bg);color:#e2e8f0;font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 8px 4px 10px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.08);transition:border-color .2s,background .2s;white-space:nowrap;vertical-align:middle;line-height:1.4;user-select:none}
+.check-chip:hover{border-color:rgba(255,255,255,0.2);background:#1e293b}
+.check-chip svg{width:13px;height:13px;stroke:rgba(255,255,255,0.4);fill:none;stroke-width:2;flex-shrink:0;transition:stroke .2s}
+.check-chip:hover svg{stroke:rgba(255,255,255,0.7)}
+.check-chip.copied{border-color:rgba(0,217,165,0.4);background:rgba(0,217,165,0.1)}
+.check-chip.copied svg{stroke:var(--green)}
+.check-chip .chip-label{transition:color .15s}
+.check-chip.copied .chip-label{color:var(--green)}
+.tbl td.check-col{white-space:nowrap;text-align:center;vertical-align:middle}
+.check-na{font-size:12px;color:var(--muted);font-style:italic}
+
+/* ── Guide chips (inline setup links in table) ── */
+.guide-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.guide-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;color:var(--teal);background:rgba(15,118,110,0.06);border:1px solid rgba(15,118,110,0.12);text-decoration:none!important;transition:background .15s,border-color .15s;white-space:nowrap}
+.guide-chip:hover{background:rgba(15,118,110,0.1);border-color:rgba(15,118,110,0.25);text-decoration:none!important}
+.guide-chip svg{width:11px;height:11px;stroke:var(--teal);fill:none;stroke-width:2;flex-shrink:0}
+
+/* ── Numbered steps ── */
+.steps{counter-reset:step;list-style:none;margin:0 0 16px 0;padding:0}
+.steps li{counter-increment:step;position:relative;padding:12px 0 12px 48px;border-bottom:1px solid var(--border)}
+.steps li:last-child{border-bottom:none}
+.steps li::before{content:counter(step);position:absolute;left:0;top:12px;width:32px;height:32px;border-radius:50%;background:var(--bg-alt);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--teal)}
+
+/* ── Collapsible ── */
+.collapse{border:1px solid var(--border);border-radius:var(--radius);margin:16px 0 20px;overflow:hidden}
+.collapse-trigger{display:flex;align-items:center;gap:8px;padding:14px 16px;cursor:pointer;font-weight:600;font-size:14px;background:var(--card);transition:background .2s;user-select:none}
+.collapse-trigger:hover{background:var(--bg-alt)}
+.collapse-trigger svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .2s}
+.collapse.open .collapse-trigger svg{transform:rotate(90deg)}
+.collapse-body{display:none;padding:0 16px 16px;font-size:14px}
+.collapse.open .collapse-body{display:block}
+
+/* ── VS Code screenshot mockup ── */
+.vscode-mock{background:#1e1e1e;border-radius:var(--radius);overflow:hidden;margin:16px 0 20px;border:1px solid #333}
+.vscode-titlebar{background:#323233;padding:8px 14px;display:flex;align-items:center;gap:8px}
+.vscode-dot{width:12px;height:12px;border-radius:50%}
+.vscode-dot.r{background:#ff5f56}.vscode-dot.y{background:#ffbd2e}.vscode-dot.g{background:#27c93f}
+.vscode-titlebar span{font-size:12px;color:#999;margin-left:8px}
+.vscode-body{padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#d4d4d4;line-height:1.8}
+.vscode-body .key{color:#9cdcfe}
+.vscode-body .str{color:#ce9178}
+.vscode-body .punc{color:#d4d4d4}
+
+/* ── Resource cards ── */
+.resources{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0 24px}
+.resources.two-col{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.res{display:flex;gap:14px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);transition:border-color .2s,box-shadow .2s;text-decoration:none!important;color:var(--text)}
+.res:hover{border-color:#93c5fd;box-shadow:0 4px 12px rgba(59,130,246,0.08);text-decoration:none!important}
+.res-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.res-icon svg{width:20px;height:20px;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.res-icon.ms{background:#e8f0fe}.res-icon.ms svg{stroke:#185abc}
+.res-icon.gh{background:#f0f0f0}.res-icon.gh svg{stroke:#24292f}
+.res-icon.py{background:#fff3cd}.res-icon.py svg{stroke:#b8860b}
+.res-icon.spec{background:#ecfdf5}.res-icon.spec svg{stroke:var(--teal)}
+.res-icon.anth{background:#fce7f3}.res-icon.anth svg{stroke:#be185d}
+.res-icon.cur{background:#f3e8ff}.res-icon.cur svg{stroke:#7c3aed}
+.res-body{min-width:0}
+.res-source{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:2px}
+.res-title{font-size:14px;font-weight:600;color:var(--navy);line-height:1.35;margin-bottom:3px}
+.res-desc{font-size:12.5px;color:var(--muted);line-height:1.5}
+.res-arrow{display:flex;align-items:center;flex-shrink:0;margin-left:auto;opacity:.3;transition:opacity .2s}
+.res:hover .res-arrow{opacity:.7}
+.res-arrow svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2}
+
+/* ── OS picker ── */
+.os-picker{background:var(--card);border-bottom:1px solid var(--border);padding:14px 0}
+.os-picker-inner{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap}
+.os-picker-label{font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+.os-btn{display:flex;align-items:center;gap:7px;padding:8px 18px;border-radius:8px;border:2px solid var(--border);background:var(--card);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text);transition:border-color .2s,background .2s,color .2s}
+.os-btn:hover{border-color:var(--teal);background:rgba(15,118,110,0.03)}
+.os-btn.active{border-color:var(--teal);background:rgba(15,118,110,0.06);color:var(--teal)}
+.os-btn svg{width:18px;height:18px;flex-shrink:0}
+
+/* ── OS-conditional content ── */
+.os{display:none}
+body[data-os="mac"] .os[data-os~="mac"],
+body[data-os="linux"] .os[data-os~="linux"],
+body[data-os="win"] .os[data-os~="win"]{display:block}
+span.os{display:none}
+body[data-os="mac"] span.os[data-os~="mac"],
+body[data-os="linux"] span.os[data-os~="linux"],
+body[data-os="win"] span.os[data-os~="win"]{display:inline}
+td.os{display:none}
+body[data-os="mac"] td.os[data-os~="mac"],
+body[data-os="linux"] td.os[data-os~="linux"],
+body[data-os="win"] td.os[data-os~="win"]{display:table-cell}
+tr.os{display:none}
+body[data-os="mac"] tr.os[data-os~="mac"],
+body[data-os="linux"] tr.os[data-os~="linux"],
+body[data-os="win"] tr.os[data-os~="win"]{display:table-row}
+li.os{display:none}
+body[data-os="mac"] li.os[data-os~="mac"],
+body[data-os="linux"] li.os[data-os~="linux"],
+body[data-os="win"] li.os[data-os~="win"]{display:list-item}
+div.os.code-block{display:none}
+body[data-os="mac"] div.os.code-block[data-os~="mac"],
+body[data-os="linux"] div.os.code-block[data-os~="linux"],
+body[data-os="win"] div.os.code-block[data-os~="win"]{display:block}
+p.os{display:none}
+body[data-os="mac"] p.os[data-os~="mac"],
+body[data-os="linux"] p.os[data-os~="linux"],
+body[data-os="win"] p.os[data-os~="win"]{display:block}
+
+/* ── Footer ── */
+.footer{background:linear-gradient(165deg,#0d1f3c,var(--navy));color:#fff;padding:40px 0;text-align:center}
+.footer p{font-size:13px;opacity:.45}
+.footer a{color:var(--green);opacity:1}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .progress-step{padding:10px 12px;font-size:11px}
+  .wrap{padding:0 16px}
+  .os-btn{padding:6px 12px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════ HEADER ════════════ -->
+<header class="header">
+  <div class="header-grid"></div>
+  <div class="wrap header-inner">
+    <div class="logo">
+      <svg width="32" height="37" viewBox="0 0 282 330" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#c0)"><path d="M255.482 18.869L249.167 0L233.244 12.345C205.765 33.731 185.875 62.462 175.748 95.489C171.64 108.873 169.279 122.522 168.642 136.206C177.388 137.361 185.781 139.624 193.666 142.846C194.563 133.643 196.392 124.451 199.166 115.432C205.387 95.131 215.999 76.77 230.328 61.4C233.61 81.943 232.17 102.995 225.937 123.284C222.715 133.793 218.3 143.793 212.8 153.112C219.67 157.812 225.914 163.32 231.391 169.498C242.557 154.406 251.115 137.488 256.698 119.266C266.826 86.239 266.413 51.526 255.494 18.869H255.482Z" fill="#fff"/><path d="M83.972 123.284C87.207 133.793 91.61 143.793 97.11 153.112C90.24 157.801 83.996 163.309 78.519 169.487C67.353 154.394 58.807 137.477 53.223 119.266C51.406 113.353 49.93 107.406 48.785 101.424C60.329 102.568 70.599 101.378 78.897 99.461C79.865 107.464 81.564 115.42 83.972 123.273V123.284Z" fill="#fff"/><path d="M134.162 95.512C128.249 76.216 118.994 58.386 106.872 42.635H0C0 42.635 23.372 105.616 100.864 91.355C104.877 98.999 108.206 107.037 110.767 115.432C113.541 124.474 115.359 133.643 116.256 142.846C124.141 139.625 132.545 137.361 141.304 136.206C140.666 122.534 138.282 108.873 134.186 95.5L134.162 95.512Z" fill="#fff"/><path d="M154.937 142.557C103.26 142.557 61.215 183.691 61.215 234.247C61.215 284.803 103.26 325.983 154.937 325.983C206.615 325.983 248.707 284.826 248.707 234.247C248.707 183.668 206.638 142.557 154.937 142.557ZM154.949 299.053C118.44 299.053 88.73 269.987 88.73 234.247C88.73 198.507 118.44 169.475 154.949 169.475C191.458 169.475 221.18 198.53 221.18 234.247C221.18 269.964 191.47 299.053 154.949 299.053Z" fill="#fff"/><circle cx="154.96" cy="186.335" r="7.148" fill="#fff"/><circle cx="154.96" cy="282.205" r="7.148" fill="#fff"/><circle cx="203.959" cy="234.27" r="7.148" fill="#fff"/><circle cx="105.963" cy="234.27" r="7.148" fill="#fff"/><path d="M185.037 195.7L154.961 225.124L139.392 209.893L130.043 219.05L154.961 243.416L194.397 204.846L185.037 195.7Z" fill="#fff"/></g><defs><clipPath id="c0"><rect width="282" height="330" fill="#fff"/></clipPath></defs></svg>
+      <span>Proxuma</span>
+    </div>
+    <div class="badge">Onboarding Guide</div>
+    <h1>Power BI <em>MCP</em> Setup</h1>
+    <p>This guide walks you through installing the Power BI MCP server, connecting it to VS Code, and generating your first AI-powered report. Start to finish in about 15 minutes.</p>
+  </div>
+</header>
+
+<!-- ════════════ OS PICKER ════════════ -->
+<div class="os-picker">
+  <div class="wrap">
+    <div class="os-picker-inner">
+      <span class="os-picker-label">Your operating system:</span>
+      <button class="os-btn active" data-pick="mac" onclick="setOS('mac')">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        macOS
+      </button>
+      <button class="os-btn" data-pick="linux" onclick="setOS('linux')">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.368 1.884 1.43.868.065 1.157-.47 1.455-.667.3-.2.529-.267.802-.4.273-.136.558-.401.493-.869-.02-.151-.042-.305-.073-.396-.062-.172-.166-.358-.316-.452a.726.726 0 00-.087-.04c-.075-.04-.147-.09-.238-.136-.132-.071-.263-.137-.372-.197-.135-.058-.272-.13-.342-.2-.074-.079-.084-.159-.084-.26 0-.057.023-.136.068-.2.19-.282.456-.578.736-.84.28-.268.58-.538.842-.818.202-.221.37-.479.413-.766.043-.265-.035-.589-.266-.825-.065-.061-.137-.12-.214-.167-.079-.047-.161-.086-.253-.107-.39-.11-.875-.039-1.328.062.025-.037.06-.062.084-.102.113-.171.15-.322.197-.459.023-.07.056-.16.068-.2.132-.402.024-.803-.095-1.103-.07-.18-.157-.336-.239-.46-.099-.148-.197-.266-.306-.394-.233-.276-.478-.475-.748-.681-.131-.112-.26-.222-.422-.301-.163-.075-.394-.127-.565-.101-.172.028-.257.107-.299.2-.02.043-.04.1-.027.165.008.036.023.058.053.09.039.036.09.066.152.094.064.03.154.063.235.098.28.135.55.428.736.732.154.245.27.54.36.81.022.067.033.135.05.198-.078-.006-.155-.028-.226-.028-.337.009-.7.136-.967.369-.178.171-.326.395-.46.63-.212.401-.355.69-.39 1.039-.034.325.048.647.16 1.058.196.692.634 1.461 1.247 1.96.124.101.265.181.4.24l-.009.017c-.104.192-.166.415-.156.631.008.175.058.332.132.459.107.181.266.317.415.404.16.096.303.15.437.173.143.027.282.039.428.026l.01-.001c.152-.009.297-.044.429-.103.069-.031.147-.053.2-.1.053-.048.09-.12.1-.2.003-.013.006-.03.006-.052v-.028l-.004-.035a.453.453 0 00-.111-.188c-.054-.057-.132-.092-.212-.11-.09-.018-.172-.017-.253-.012-.08.001-.178.01-.237-.005-.062-.018-.095-.048-.132-.11-.037-.064-.055-.16-.035-.266.018-.087.06-.17.113-.24.108-.161.284-.277.472-.327.19-.049.403-.034.57.07.087.049.158.121.208.215.047.09.058.19.054.303-.018.388-.226.733-.473 1.04-.217.273-.476.507-.739.72-.262.204-.532.394-.763.6-.231.208-.397.393-.357.685.063.459.402.68.803.8.2.063.422.09.656.066.234-.025.477-.096.7-.221.238-.133.467-.328.612-.577.066-.113.109-.227.14-.35.115.048.237.078.363.078.155 0 .302-.043.399-.2.05-.075.086-.163.107-.268.023-.104.032-.21.032-.32 0-.203-.039-.405-.096-.59-.073-.238-.176-.447-.273-.6l-.01-.017-.003-.003z"/></svg>
+        Linux
+      </button>
+      <button class="os-btn" data-pick="win" onclick="setOS('win')">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+        Windows
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PROGRESS ════════════ -->
+<nav class="progress-bar">
+  <div class="wrap">
+    <div class="progress-inner">
+      <a class="progress-step active" href="#prerequisites"><span class="step-num">0</span>Prerequisites</a>
+      <a class="progress-step" href="#clone"><span class="step-num">1</span>Clone</a>
+      <a class="progress-step" href="#install"><span class="step-num">2</span>Install</a>
+      <a class="progress-step" href="#configure"><span class="step-num">3</span>Configure</a>
+      <a class="progress-step" href="#vscode"><span class="step-num">4</span>VS Code</a>
+      <a class="progress-step" href="#login"><span class="step-num">5</span>Login</a>
+      <a class="progress-step" href="#verify"><span class="step-num">6</span>Verify</a>
+      <a class="progress-step" href="#first-report"><span class="step-num">7</span>First Report</a>
+      <a class="progress-step" href="#tools-ref"><span class="step-num">8</span>Tools</a>
+      <a class="progress-step" href="#troubleshooting"><span class="step-num">9</span>Troubleshooting</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ════════════ 0. PREREQUISITES ════════════ -->
+<section class="section" id="prerequisites">
+  <div class="section-num">Step 0</div>
+  <h2>Prerequisites</h2>
+  <p>Before you start, make sure you have these:</p>
+
+  <table class="tbl">
+    <thead><tr><th>Requirement</th><th>Details</th><th style="text-align:center">Check</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Python 3.10+</strong></td>
+        <td><span class="os" data-os="mac">Install via <code>brew install python@3.12</code> or from python.org</span><span class="os" data-os="linux">Install via <code>sudo apt install python3.12</code> (Ubuntu/Debian) or <code>sudo dnf install python3.12</code> (Fedora)</span><span class="os" data-os="win">Download from python.org. Check "Add Python to PATH" during install.</span>
+          <div class="guide-chips">
+            <span class="os" data-os="mac"><a class="guide-chip" href="https://www.python.org/downloads/macos/" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Download</a><a class="guide-chip" href="https://docs.python.org/3/using/mac.html" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>macOS guide</a></span>
+            <span class="os" data-os="linux"><a class="guide-chip" href="https://docs.python.org/3/using/unix.html" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Linux guide</a><a class="guide-chip" href="https://www.python.org/downloads/source/" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Source releases</a></span>
+            <span class="os" data-os="win"><a class="guide-chip" href="https://www.python.org/downloads/windows/" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Download</a><a class="guide-chip" href="https://docs.python.org/3/using/windows.html" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Windows guide</a></span>
+          </div>
+        </td>
+        <td class="check-col"><span class="os" data-os="mac linux"><span class="check-chip" onclick="copyChip(this,'python3 --version')"><span class="chip-label">python3 --version</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span><span class="os" data-os="win"><span class="check-chip" onclick="copyChip(this,'python --version')"><span class="chip-label">python --version</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span></td>
+      </tr>
+      <tr>
+        <td><strong>Power BI Pro or PPU</strong></td>
+        <td>A Power BI Pro or Premium Per User license. Free accounts don't have API access.
+          <div class="guide-chips">
+            <a class="guide-chip" href="https://learn.microsoft.com/en-us/power-bi/fundamentals/service-get-started" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Get started</a>
+            <a class="guide-chip" href="https://learn.microsoft.com/en-us/power-bi/enterprise/service-premium-per-user-faq" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Pro vs PPU</a>
+          </div>
+        </td>
+        <td class="check-col"><a class="check-chip" href="https://app.powerbi.com" target="_blank" style="text-decoration:none;cursor:pointer"><span class="chip-label">Open Power BI</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+      </tr>
+      <tr>
+        <td><strong>VS Code</strong></td>
+        <td>With GitHub Copilot extension (Agent mode). Alternatively: Claude Code, Claude Desktop, or Cursor.
+          <div class="guide-chips">
+            <a class="guide-chip" href="https://code.visualstudio.com/download" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Download VS Code</a>
+            <a class="guide-chip" href="https://docs.github.com/en/copilot/managing-copilot/configure-personal-settings/installing-the-github-copilot-extension-in-your-environment" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Install Copilot</a>
+          </div>
+        </td>
+        <td class="check-col"><a class="check-chip" href="https://code.visualstudio.com/download" target="_blank" style="text-decoration:none;cursor:pointer"><span class="chip-label">Open VS Code</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></td>
+      </tr>
+      <tr>
+        <td><strong>Git</strong></td>
+        <td><span class="os" data-os="mac">Pre-installed on macOS (Xcode Command Line Tools).</span><span class="os" data-os="linux">Install via <code>sudo apt install git</code> or <code>sudo dnf install git</code>.</span><span class="os" data-os="win">Download from git-scm.com.</span>
+          <div class="guide-chips">
+            <span class="os" data-os="win"><a class="guide-chip" href="https://git-scm.com/downloads/win" target="_blank"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Git for Windows</a></span>
+          </div>
+        </td>
+        <td class="check-col"><span class="check-chip" onclick="copyChip(this,'git --version')"><span class="chip-label">git --version</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></td>
+      </tr>
+      <tr>
+        <td><strong>A Power BI dataset</strong></td>
+        <td>At least one workspace with a published semantic model (dataset) you can query.</td>
+        <td class="check-col"><span class="check-na">after setup</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <div><strong>No Azure app registration needed.</strong> The MCP server uses Azure's built-in public client ID &mdash; the same one Power BI Desktop uses. Your Azure AD admin doesn't need to configure anything.</div>
+  </div>
+
+</section>
+
+<!-- ════════════ 1. CLONE ════════════ -->
+<section class="section" id="clone">
+  <div class="section-num">Step 1</div>
+  <h2>Clone the Repository</h2>
+
+  <div class="code-block">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="git clone https://github.com/Proxuma/powerbi-copilot.git
+cd powerbi-copilot"><span class="g">git clone</span> https://github.com/Proxuma/powerbi-copilot.git
+<span class="g">cd</span> powerbi-copilot</div>
+  </div>
+
+  <p>This is a private repo. You need to have been invited as a collaborator. If <code>git clone</code> returns a 404 or permission error, ask for access at <a href="mailto:hello@proxuma.io">hello@proxuma.io</a>.</p>
+</section>
+
+<!-- ════════════ 2. INSTALL ════════════ -->
+<section class="section" id="install">
+  <div class="section-num">Step 2</div>
+  <h2>Run the Installer</h2>
+
+  <!-- macOS / Linux -->
+  <div class="os" data-os="mac linux">
+    <div class="code-block">
+      <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+      <div class="code-body" data-raw="./setup.sh"><span class="g">./setup.sh</span></div>
+    </div>
+
+    <p>The script does six things:</p>
+    <ol class="steps">
+      <li>Finds Python 3.10+ on your system (checks <code>python3.12</code>, <code>python3.11</code>, <code>python3.10</code>, <code>python3</code>)</li>
+      <li>Installs Python packages: <code>mcp</code>, <code>azure-identity</code>, <code>requests</code>, <code>presidio-analyzer</code>, <code>presidio-anonymizer</code>, <code>spacy</code></li>
+      <li>Downloads the spaCy English language model (<code>en_core_web_sm</code>) for PII detection</li>
+      <li>Creates <code>~/.powerbi-mcp/</code> directory and copies the default <code>config.json</code></li>
+      <li>Generates <code>.vscode/mcp.json</code> with the correct Python path for your system</li>
+      <li>Copies prompt files to <code>.github/prompts/</code> so Copilot can find them</li>
+    </ol>
+
+    <h3>Expected output</h3>
+    <div class="code-block">
+      <div class="code-header"><span>expected output</span></div>
+      <div class="code-body"><span class="c">  Proxuma Power BI Copilot — Setup
+  ================================</span>
+
+<span class="b">1/6  Checking Python...</span>
+<span class="g">[OK]</span> Found Python 3.12.2 at <span class="os" data-os="mac">/opt/homebrew/bin/python3.12</span><span class="os" data-os="linux">/usr/bin/python3.12</span>
+
+<span class="b">2/6  Installing Python dependencies...</span>
+<span class="g">[OK]</span> Python packages installed
+
+<span class="b">3/6  Downloading spaCy language model...</span>
+<span class="g">[OK]</span> spaCy model en_core_web_sm downloaded
+
+<span class="b">4/6  Setting up cache directory...</span>
+<span class="g">[OK]</span> Created ~/.powerbi-mcp/config.json
+
+<span class="b">5/6  Configuring VS Code MCP...</span>
+<span class="g">[OK]</span> Created .vscode/mcp.json
+
+<span class="b">6/6  Setting up prompt files...</span>
+<span class="g">[OK]</span> Prompt files copied to .github/prompts/
+
+<span class="c">  ================================
+  Setup complete!</span></div>
+    </div>
+
+    <div class="callout callout-warn">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div><strong>Permission error?</strong> If <code>./setup.sh</code> says "Permission denied", run <span class="check-chip" onclick="copyChip(this,'chmod +x setup.sh')" style="margin:0 2px"><span class="chip-label">chmod +x setup.sh</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span> first. If pip complains about permissions, the setup script will still work &mdash; it installs packages in user mode.</div>
+    </div>
+  </div>
+
+  <!-- Windows -->
+  <div class="os" data-os="win">
+    <p>The <code>setup.sh</code> script is designed for macOS and Linux. On Windows, run these commands in PowerShell:</p>
+
+    <h3>2a. Install Python dependencies</h3>
+    <div class="code-block">
+      <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+      <div class="code-body" data-raw="pip install -r server\requirements.txt
+python -m spacy download en_core_web_sm"><span class="g">pip install</span> -r server\requirements.txt
+<span class="g">python -m spacy download</span> en_core_web_sm</div>
+    </div>
+
+    <h3>2b. Create config directory</h3>
+    <div class="code-block">
+      <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+      <div class="code-body" data-raw="New-Item -ItemType Directory -Force -Path &quot;$env:USERPROFILE\.powerbi-mcp&quot;
+Copy-Item server\config.example.json &quot;$env:USERPROFILE\.powerbi-mcp\config.json&quot;"><span class="g">New-Item</span> -ItemType Directory -Force -Path <span class="str">"$env:USERPROFILE\.powerbi-mcp"</span>
+<span class="g">Copy-Item</span> server\config.example.json <span class="str">"$env:USERPROFILE\.powerbi-mcp\config.json"</span></div>
+    </div>
+
+    <h3>2c. Set up VS Code MCP config</h3>
+    <div class="code-block">
+      <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+      <div class="code-body" data-raw="New-Item -ItemType Directory -Force -Path .vscode
+$python = (Get-Command python).Source
+$server = (Resolve-Path server\server.py).Path
+@{servers=@{powerbi=@{command=$python;args=@($server)}}} | ConvertTo-Json -Depth 4 | Set-Content .vscode\mcp.json"><span class="g">New-Item</span> -ItemType Directory -Force -Path .vscode
+<span class="y">$python</span> = (Get-Command python).Source
+<span class="y">$server</span> = (Resolve-Path server\server.py).Path
+@{servers=@{powerbi=@{command=<span class="y">$python</span>;args=@(<span class="y">$server</span>)}}} | ConvertTo-Json -Depth 4 | Set-Content .vscode\mcp.json</div>
+    </div>
+
+    <h3>2d. Copy prompt files</h3>
+    <div class="code-block">
+      <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+      <div class="code-body" data-raw="New-Item -ItemType Directory -Force -Path .github\prompts
+Copy-Item prompts\*.prompt.md .github\prompts\"><span class="g">New-Item</span> -ItemType Directory -Force -Path .github\prompts
+<span class="g">Copy-Item</span> prompts\*.prompt.md .github\prompts\</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ 3. CONFIGURE ════════════ -->
+<section class="section" id="configure">
+  <div class="section-num">Step 3</div>
+  <h2>Configure Your Power BI Environment</h2>
+
+  <p>The MCP server needs to know which Power BI workspace and dataset to query by default. You set this in <span class="os" data-os="mac linux"><code>~/.powerbi-mcp/config.json</code></span><span class="os" data-os="win"><code>%USERPROFILE%\.powerbi-mcp\config.json</code></span>.</p>
+
+  <h3>3a. Find your Workspace ID and Dataset ID</h3>
+
+  <ol class="steps">
+    <li>Open <a href="https://app.powerbi.com" target="_blank">Power BI Service</a> in your browser</li>
+    <li>Navigate to the workspace containing your dataset</li>
+    <li>Click on the dataset (semantic model) you want to query</li>
+    <li>Look at the browser URL. It contains both IDs:
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-header"><span>browser URL</span></div>
+        <div class="code-body">https://app.powerbi.com/groups/<span class="y">WORKSPACE_ID</span>/datasets/<span class="y">DATASET_ID</span>/...</div>
+      </div>
+    </li>
+    <li>Copy both GUIDs (the long strings of letters, numbers, and dashes)</li>
+  </ol>
+
+  <div class="callout callout-info">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <div><strong>Alternative method:</strong> You can also find IDs via the MCP server itself. Skip this step, complete the login (Step 5), then use <code>list_workspaces</code> and <code>list_datasets</code> to find your IDs.</div>
+  </div>
+
+  <h3>3b. Edit config.json</h3>
+
+  <div class="os code-block" data-os="mac">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="open ~/.powerbi-mcp/config.json"><span class="g">open</span> ~/.powerbi-mcp/config.json</div>
+  </div>
+  <div class="os code-block" data-os="linux">
+    <div class="code-header"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="nano ~/.powerbi-mcp/config.json"><span class="g">nano</span> ~/.powerbi-mcp/config.json</div>
+  </div>
+  <div class="os code-block" data-os="win">
+    <div class="code-header"><span>PowerShell</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+    <div class="code-body" data-raw="notepad &quot;$env:USERPROFILE\.powerbi-mcp\config.json&quot;"><span class="g">notepad</span> <span class="str">"$env:USERPROFILE\.powerbi-mcp\config.json"</span></div>
+  </div>
+
+  <p>Fill in your IDs:</p>
+
+  <div class="vscode-mock">
+    <div class="vscode-titlebar">
+      <span class="vscode-dot r"></span><span class="vscode-dot y"></span><span class="vscode-dot g"></span>
+      <span>config.json</span>
+    </div>
+    <div class="vscode-body">{
+  <span class="key">"default_workspace_id"</span>: <span class="str">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span>,
+  <span class="key">"default_dataset_id"</span>: <span class="str">"f9e8d7c6-b5a4-3210-fedc-ba0987654321"</span>,
+  <span class="key">"workspaces"</span>: {
+    <span class="key">"My Production Workspace"</span>: <span class="str">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span>
+  },
+  <span class="key">"datasets"</span>: {
+    <span class="key">"My Dataset"</span>: <span class="str">"f9e8d7c6-b5a4-3210-fedc-ba0987654321"</span>
+  }
+}</div>
+  </div>
+
+  <p>The <code>workspaces</code> and <code>datasets</code> maps are for your own reference. What matters are <code>default_workspace_id</code> and <code>default_dataset_id</code> &mdash; those are used when you call a tool without specifying IDs.</p>
+
+  <h3>Learn more</h3>
+  <div class="resources">
+    <a class="res" href="https://learn.microsoft.com/en-us/rest/api/power-bi/" target="_blank">
+      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">Microsoft Learn</div>
+        <div class="res-title">Power BI REST API Reference</div>
+        <div class="res-desc">The underlying API the MCP server calls. Covers workspaces, datasets, queries, and permissions.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════ 4. VS CODE ════════════ -->
+<section class="section" id="vscode">
+  <div class="section-num">Step 4</div>
+  <h2>VS Code Setup</h2>
+
+  <p>The installer already created <code>.vscode/mcp.json</code> and copied the prompt files. You just need to verify a few settings.</p>
+
+  <h3>4a. Enable Copilot Agent Mode</h3>
+  <p>MCP tools are only available in Agent mode, not the default Ask mode. In VS Code:</p>
+  <ol class="steps">
+    <li>Open the Command Palette: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span></li>
+    <li>Search for <strong>"Preferences: Open Settings (JSON)"</strong></li>
+    <li>Add these settings (if not already present):
+      <div class="vscode-mock" style="margin-top:10px">
+        <div class="vscode-titlebar"><span class="vscode-dot r"></span><span class="vscode-dot y"></span><span class="vscode-dot g"></span><span>settings.json</span></div>
+        <div class="vscode-body">{
+  <span class="key">"chat.agent.enabled"</span>: <span class="str">true</span>,
+  <span class="key">"chat.promptFiles"</span>: <span class="str">true</span>,
+  <span class="key">"chat.mcp.enabled"</span>: <span class="str">true</span>
+}</div>
+      </div>
+    </li>
+    <li>Reload VS Code: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span> &rarr; <strong>"Developer: Reload Window"</strong></li>
+  </ol>
+
+  <h3>4b. Verify MCP Server Registration</h3>
+  <ol class="steps">
+    <li>Open the Command Palette: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span></li>
+    <li>Search for <strong>"MCP: List Servers"</strong></li>
+    <li>You should see <strong>powerbi</strong> listed. If not, check that <code>.vscode/mcp.json</code> exists and has the correct Python path.</li>
+  </ol>
+
+  <h3>4c. Verify Prompt Files</h3>
+  <p>Open Copilot Chat (<span class="os" data-os="mac"><code>Cmd+Shift+I</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+I</code></span>), switch to <strong>Agent mode</strong> (click the mode dropdown), and type <code>#</code>. You should see:</p>
+  <ul>
+    <li><code>#powerbireport</code> &mdash; generates a report</li>
+    <li><code>#powerbidashboard</code> &mdash; generates a dashboard builder</li>
+  </ul>
+  <p>If they don't appear, check that <code>.github/prompts/</code> contains the <code>.prompt.md</code> files.</p>
+
+  <h3>VS Code docs</h3>
+  <div class="resources two-col">
+    <a class="res" href="https://docs.github.com/en/copilot/using-github-copilot/using-extensions-to-integrate-external-tools-with-copilot-chat" target="_blank">
+      <div class="res-icon gh"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">GitHub Docs</div>
+        <div class="res-title">MCP in GitHub Copilot</div>
+        <div class="res-desc">How Agent mode discovers and calls MCP tools. Explains the mcp.json format.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+    <a class="res" href="https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot" target="_blank">
+      <div class="res-icon gh"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">GitHub Docs</div>
+        <div class="res-title">Custom Prompt Files for Copilot</div>
+        <div class="res-desc">How <code>.github/prompts/*.prompt.md</code> files work. This is the mechanism behind <code>#powerbireport</code>.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════ 5. LOGIN ════════════ -->
+<section class="section" id="login">
+  <div class="section-num">Step 5</div>
+  <h2>First Login (Azure AD)</h2>
+
+  <p>The first time you use any MCP tool, the server needs to authenticate with Microsoft. Here's what happens:</p>
+
+  <ol class="steps">
+    <li><strong>A browser window opens automatically</strong> with the Microsoft login page</li>
+    <li>Sign in with the Microsoft account that has your Power BI license</li>
+    <li>You may see a permissions consent screen &mdash; click <strong>"Accept"</strong>. The server requests read-only access to Power BI data and Fabric schema definitions.</li>
+    <li>The browser shows <strong>"Authentication complete"</strong> &mdash; you can close it</li>
+    <li>The token is cached in <span class="os" data-os="mac linux"><code>~/.powerbi-mcp/auth_record.json</code></span><span class="os" data-os="win"><code>%USERPROFILE%\.powerbi-mcp\auth_record.json</code></span></li>
+  </ol>
+
+  <div class="callout callout-success">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <div><strong>After first login, you won't need to log in again.</strong> Tokens refresh automatically. You'll only need to re-authenticate if you delete the auth cache, change your password, or are inactive for 90+ days.</div>
+  </div>
+
+  <h3>Permissions requested</h3>
+  <table class="tbl">
+    <thead><tr><th>Scope</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">analysis.windows.net/powerbi/api/.default</td><td>Read Power BI data, execute DAX queries, list workspaces/datasets</td></tr>
+      <tr><td class="mono">api.fabric.microsoft.com/.default</td><td>Read semantic model definitions (schema, measures, columns)</td></tr>
+    </tbody>
+  </table>
+  <p>Both scopes are <strong>read-only</strong>. The server cannot modify your Power BI content.</p>
+
+  <h3>Azure auth deep dive</h3>
+  <div class="resources">
+    <a class="res" href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow" target="_blank">
+      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">Microsoft Learn</div>
+        <div class="res-title">OAuth 2.0 Authorization Code Flow</div>
+        <div class="res-desc">How the browser-based login works under the hood. Useful if your IT admin asks what the server does.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+  </div>
+
+  <h3>PII Protection</h3>
+  <p>All data returned by MCP tools passes through <a href="https://microsoft.github.io/presidio/" target="_blank">Microsoft Presidio</a> before reaching the AI. Personal information is automatically replaced:</p>
+
+  <table class="tbl">
+    <thead><tr><th>Detected PII</th><th>Replaced with</th></tr></thead>
+    <tbody>
+      <tr><td>Person names</td><td><code>&lt;PERSON&gt;</code></td></tr>
+      <tr><td>Email addresses</td><td><code>&lt;EMAIL&gt;</code></td></tr>
+      <tr><td>Phone numbers</td><td><code>&lt;PHONE&gt;</code></td></tr>
+      <tr><td>IP addresses</td><td><code>&lt;IP_ADDRESS&gt;</code></td></tr>
+      <tr><td>Locations</td><td><code>&lt;LOCATION&gt;</code></td></tr>
+      <tr><td>IBAN, credit cards, national IDs</td><td><code>&lt;IBAN&gt;</code>, <code>&lt;CREDITCARD&gt;</code>, <code>&lt;NATIONAL_ID&gt;</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="resources">
+    <a class="res" href="https://microsoft.github.io/presidio/" target="_blank">
+      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">Microsoft Open Source</div>
+        <div class="res-title">Microsoft Presidio — PII Anonymization</div>
+        <div class="res-desc">The library that powers the data masking. Detects 30+ PII entity types using NLP and regex.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════ 6. VERIFY ════════════ -->
+<section class="section" id="verify">
+  <div class="section-num">Step 6</div>
+  <h2>Verify the Connection</h2>
+
+  <p>Open Copilot Chat in Agent mode and test the connection with a simple request:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span>Copilot Chat (Agent mode)</span><button class="copy-btn" onclick="copyChip(this,'List my Power BI workspaces')">Copy prompt</button></div>
+    <div class="code-body"><span class="g">You:</span> List my Power BI workspaces</div>
+  </div>
+
+  <p>Copilot should call the <code>list_workspaces</code> tool and return something like:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span>expected response</span></div>
+    <div class="code-body"><span class="b">Available workspaces:</span>
+
+- My Production Workspace
+  ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+- Development
+  ID: 11223344-5566-7788-99aa-bbccddeeff00</div>
+  </div>
+
+  <p>If this works, your authentication, MCP server, and Power BI connection are all set. Try one more test:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span>Copilot Chat</span><button class="copy-btn" onclick="copyChip(this,'List all measures in my dataset')">Copy prompt</button></div>
+    <div class="code-body"><span class="g">You:</span> List all measures in my dataset</div>
+  </div>
+
+  <p>This calls <code>list_measures</code> and returns every DAX measure in your data model. If you see your measures listed, you're good to go.</p>
+
+  <div class="callout callout-danger">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    <div><strong>If no tools appear in Copilot:</strong> Make sure you're in Agent mode (not Ask mode). Check that <code>.vscode/mcp.json</code> exists. Reload VS Code. See <a href="#troubleshooting">Troubleshooting</a> for more.</div>
+  </div>
+</section>
+
+<!-- ════════════ 7. FIRST REPORT ════════════ -->
+<section class="section" id="first-report">
+  <div class="section-num">Step 7</div>
+  <h2>Generate Your First Report</h2>
+
+  <p>Now the real thing. In Copilot Chat (Agent mode), type:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span>Copilot Chat</span><button class="copy-btn" onclick="copyChip(this,'#powerbireport what is my monthly revenue trend?')">Copy prompt</button></div>
+    <div class="code-body"><span class="g">You:</span> #powerbireport what is my monthly revenue trend?</div>
+  </div>
+
+  <p>The <code>#powerbireport</code> prefix loads the report generator prompt. The AI will then:</p>
+
+  <ol class="steps">
+    <li><strong>Search your data model</strong> &mdash; calls <code>search_schema</code> with keywords like "revenue", "monthly"</li>
+    <li><strong>List available measures</strong> &mdash; calls <code>list_measures</code> to see what's already built</li>
+    <li><strong>Run DAX queries</strong> &mdash; executes 4-8 targeted queries to collect KPIs, breakdowns, and trends</li>
+    <li><strong>Generate the HTML</strong> &mdash; writes a complete, self-contained report with data tables, analysis, and actionable findings</li>
+  </ol>
+
+  <p>The output is a single HTML file you can open in a browser. It includes all CSS and JavaScript inline &mdash; no external dependencies.</p>
+
+  <h3>Tips for good prompts</h3>
+  <ul>
+    <li><strong>Be specific:</strong> "What is my SLA compliance rate by client?" works better than "show me SLA data"</li>
+    <li><strong>Ask business questions:</strong> "Which clients are most profitable?" not "select all from billing table"</li>
+    <li><strong>One topic per report:</strong> Don't combine "revenue and tickets and SLA" in one prompt</li>
+  </ul>
+
+  <h3>Dashboard builder</h3>
+  <p>The dashboard prompt works the same way:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span>Copilot Chat</span><button class="copy-btn" onclick="copyChip(this,'#powerbidashboard create a resource utilization dashboard')">Copy prompt</button></div>
+    <div class="code-body"><span class="g">You:</span> #powerbidashboard create a resource utilization dashboard</div>
+  </div>
+
+  <p>This generates an interactive mockup with page tabs, sample data, and step-by-step Power BI Desktop build instructions. Written for people who want a head start, not a textbook.</p>
+</section>
+
+<!-- ════════════ 8. TOOLS REFERENCE ════════════ -->
+<section class="section" id="tools-ref">
+  <div class="section-num">Step 8</div>
+  <h2>MCP Tools Reference</h2>
+
+  <p>The MCP server exposes 7 tools. You typically don't call them directly &mdash; the prompt files handle that. But it helps to know what's available.</p>
+
+  <table class="tbl">
+    <thead><tr><th>Tool</th><th>Description</th><th>When to use</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="mono">list_workspaces</td>
+        <td>List all workspaces you have access to</td>
+        <td>First time setup, finding your workspace ID</td>
+      </tr>
+      <tr>
+        <td class="mono">list_datasets</td>
+        <td>List datasets in a workspace</td>
+        <td>Finding your dataset ID, checking what's available</td>
+      </tr>
+      <tr>
+        <td class="mono">execute_dax</td>
+        <td>Run a DAX query and return results as JSON</td>
+        <td>Any data retrieval. The workhorse tool.</td>
+      </tr>
+      <tr>
+        <td class="mono">search_schema</td>
+        <td>Search for measures, columns, and tables by keyword</td>
+        <td>Finding relevant columns before writing DAX. <strong>Use this instead of <code>get_schema</code>.</strong></td>
+      </tr>
+      <tr>
+        <td class="mono">list_measures</td>
+        <td>List all measure names (without definitions)</td>
+        <td>Quick overview of what's in the data model</td>
+      </tr>
+      <tr>
+        <td class="mono">list_fabric_items</td>
+        <td>List items in a Fabric workspace</td>
+        <td>Seeing reports, lakehouses, and other Fabric items</td>
+      </tr>
+      <tr>
+        <td class="mono">get_schema</td>
+        <td>Full semantic model definition</td>
+        <td><strong>Avoid.</strong> Returns 10MB+ on large models. Use <code>search_schema</code> instead.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-danger">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    <div><strong>Never use <code>get_schema</code> on large models.</strong> It returns the full TMDL definition as decoded base64, often exceeding 10MB. This will overwhelm most AI context windows and may crash the session. Use <code>search_schema</code> with specific keywords instead.</div>
+  </div>
+
+  <h3>Default IDs</h3>
+  <p>If you've set <code>default_workspace_id</code> and <code>default_dataset_id</code> in <code>config.json</code>, you can omit these from any tool call. The server falls back to your defaults automatically.</p>
+
+  <h3>Reference material</h3>
+  <div class="resources two-col">
+    <a class="res" href="https://learn.microsoft.com/en-us/dax/dax-function-reference" target="_blank">
+      <div class="res-icon ms"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">Microsoft Learn</div>
+        <div class="res-title">DAX Function Reference</div>
+        <div class="res-desc">Complete list of all DAX functions. The AI uses these when writing queries against your data model.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+    <a class="res" href="https://modelcontextprotocol.io/introduction" target="_blank">
+      <div class="res-icon spec"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+      <div class="res-body">
+        <div class="res-source">modelcontextprotocol.io</div>
+        <div class="res-title">Model Context Protocol Specification</div>
+        <div class="res-desc">The protocol that connects AI assistants to external tools like this Power BI server.</div>
+      </div>
+      <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════ 9. TROUBLESHOOTING ════════════ -->
+<section class="section" id="troubleshooting">
+  <div class="section-num">Step 9</div>
+  <h2>Troubleshooting</h2>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      setup.sh says Python 3.10+ is required, but I have Python installed
+    </div>
+    <div class="collapse-body">
+      <p>The script checks for <code>python3.12</code>, <code>python3.11</code>, <code>python3.10</code>, and <code>python3</code> in that order. If none of these return version 3.10+, it fails.</p>
+      <p>Check: <span class="os" data-os="mac linux"><span class="check-chip" onclick="copyChip(this,'python3 --version')" style="margin:0 2px"><span class="chip-label">python3 --version</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span><span class="os" data-os="win"><span class="check-chip" onclick="copyChip(this,'python --version')" style="margin:0 2px"><span class="chip-label">python --version</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span>. If below 3.10, install a newer version: <span class="os" data-os="mac"><span class="check-chip" onclick="copyChip(this,'brew install python@3.12')" style="margin:0 2px"><span class="chip-label">brew install python@3.12</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span><span class="os" data-os="linux"><span class="check-chip" onclick="copyChip(this,'sudo apt install python3.12')" style="margin:0 2px"><span class="chip-label">sudo apt install python3.12</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span><span class="os" data-os="win">download from <a href="https://python.org/downloads/" target="_blank">python.org</a></span>.</p>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      Browser doesn't open for Azure login
+    </div>
+    <div class="collapse-body">
+      <p>The server uses <code>InteractiveBrowserCredential</code> which opens your default browser. If it doesn't open:</p>
+      <ul>
+        <li>You may be in a headless environment (SSH, Docker) &mdash; interactive login requires a GUI</li>
+        <li>Try clearing the cached auth: <span class="os" data-os="mac linux"><span class="check-chip" onclick="copyChip(this,'rm ~/.powerbi-mcp/auth_record.json')" style="margin:0 2px"><span class="chip-label">rm ~/.powerbi-mcp/auth_record.json</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span><span class="os" data-os="win"><span class="check-chip" onclick="copyChip(this,'del &quot;%USERPROFILE%\\.powerbi-mcp\\auth_record.json&quot;')" style="margin:0 2px"><span class="chip-label">del "%USERPROFILE%\.powerbi-mcp\auth_record.json"</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></span></li>
+        <li>Restart VS Code and try again</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      "AADSTS65001: The user or administrator has not consented"
+    </div>
+    <div class="collapse-body">
+      <p>Your Azure AD tenant requires admin consent for public client flows. Options:</p>
+      <ol>
+        <li>Ask your Azure AD admin to grant consent for the public client</li>
+        <li>Register a custom Azure AD app (Azure Portal &rarr; App registrations &rarr; New &rarr; Public client &rarr; add Power BI delegated permissions &rarr; grant admin consent)</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      VS Code Copilot doesn't show the Power BI tools
+    </div>
+    <div class="collapse-body">
+      <ul>
+        <li>Make sure <code>.vscode/mcp.json</code> exists and the Python path is absolute</li>
+        <li>Switch to <strong>Agent mode</strong> (not Ask mode) in the Copilot Chat mode dropdown</li>
+        <li>Reload VS Code: <span class="os" data-os="mac"><code>Cmd+Shift+P</code></span><span class="os" data-os="linux win"><code>Ctrl+Shift+P</code></span> &rarr; "Developer: Reload Window"</li>
+        <li>Check the Output panel (MCP channel) for error messages</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      Typing #powerbireport doesn't do anything
+    </div>
+    <div class="collapse-body">
+      <ul>
+        <li>Check that <code>.github/prompts/powerbireport.prompt.md</code> exists</li>
+        <li>Enable in VS Code settings: <code>"chat.promptFiles": true</code></li>
+        <li>You must be in <strong>Agent mode</strong>, not Ask mode</li>
+        <li>Reload VS Code after adding prompt files</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      AI generates a short summary instead of a full report
+    </div>
+    <div class="collapse-body">
+      <p>This happens with smaller models (GPT-4o mini, Haiku). Fixes:</p>
+      <ul>
+        <li>Switch to a more capable model (GPT-4o, Claude Sonnet/Opus) in your AI settings</li>
+        <li>Reply with: <span class="check-chip" onclick="copyChip(this,&quot;That\'s a summary. Generate the FULL HTML report with all sections, all table rows, and all CSS. Minimum 800 lines.&quot;)" style="margin:0 2px;white-space:normal;text-align:left"><span class="chip-label">That's a summary. Generate the FULL HTML report with all sections, all table rows, and all CSS. Minimum 800 lines.</span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="align-self:flex-start;margin-top:2px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></li>
+        <li>Break into steps: first "run the DAX queries", then "generate the HTML from those results"</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      DAX query returns "HTTP 400 Bad Request"
+    </div>
+    <div class="collapse-body">
+      <p>Common causes:</p>
+      <ul>
+        <li>Column or table name doesn't exist &mdash; use <code>search_schema</code> to verify</li>
+        <li>Missing quotes around names with spaces: <code>'Table Name'[Column Name]</code></li>
+        <li>Incorrect DAX syntax &mdash; test the query in Power BI Desktop first</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      HTTP 403 Forbidden
+    </div>
+    <div class="collapse-body">
+      <p>Your account doesn't have access to this workspace or dataset. Verify:</p>
+      <ul>
+        <li>You can see the dataset in <a href="https://app.powerbi.com" target="_blank">Power BI Service</a></li>
+        <li>You have at least Viewer role on the workspace</li>
+        <li>The dataset allows XMLA endpoint connections (check workspace settings)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="collapse">
+    <div class="collapse-trigger" onclick="this.parentElement.classList.toggle('open')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      Using with Claude Desktop or Cursor instead of VS Code
+    </div>
+    <div class="collapse-body">
+      <p><strong>Claude Desktop:</strong> Add to <span class="os" data-os="mac"><code>~/Library/Application Support/Claude/claude_desktop_config.json</code></span><span class="os" data-os="linux"><code>~/.config/Claude/claude_desktop_config.json</code></span><span class="os" data-os="win"><code>%APPDATA%\Claude\claude_desktop_config.json</code></span>:</p>
+      <div class="code-block" style="margin:10px 0"><div class="code-body">{
+  "mcpServers": {
+    "powerbi": {
+      "command": "<span class="y"><span class="os" data-os="mac linux">/path/to/python3</span><span class="os" data-os="win">C:\\path\\to\\python.exe</span></span>",
+      "args": ["<span class="y"><span class="os" data-os="mac linux">/path/to/powerbi-copilot/server/server.py</span><span class="os" data-os="win">C:\\path\\to\\powerbi-copilot\\server\\server.py</span></span>"]
+    }
+  }
+}</div></div>
+      <p><strong>Cursor:</strong> Settings &rarr; MCP &rarr; Add Server &rarr; name: <code>powerbi</code>, command: your <span class="os" data-os="mac linux">python3</span><span class="os" data-os="win">python.exe</span> path, args: server.py path.</p>
+      <div class="resources two-col" style="margin-top:12px">
+        <a class="res" href="https://modelcontextprotocol.io/quickstart/user" target="_blank">
+          <div class="res-icon anth"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <div class="res-body">
+            <div class="res-source">MCP Docs</div>
+            <div class="res-title">Claude Desktop MCP Setup</div>
+            <div class="res-desc">Official guide for configuring MCP servers in Claude Desktop.</div>
+          </div>
+          <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+        </a>
+        <a class="res" href="https://docs.cursor.com/context/model-context-protocol" target="_blank">
+          <div class="res-icon cur"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div class="res-body">
+            <div class="res-source">Cursor Docs</div>
+            <div class="res-title">MCP in Cursor</div>
+            <div class="res-desc">How to add MCP servers to Cursor for AI-powered code editing with external tools.</div>
+          </div>
+          <div class="res-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer class="footer">
+  <div class="wrap">
+    <p>Proxuma Power BI Copilot &mdash; Onboarding Guide</p>
+    <p style="margin-top:8px">Questions? <a href="mailto:hello@proxuma.io">hello@proxuma.io</a></p>
+  </div>
+</footer>
+
+<script>
+/* ── OS picker ── */
+function setOS(os) {
+  document.body.setAttribute('data-os', os);
+  document.querySelectorAll('.os-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-pick') === os);
+  });
+  try { localStorage.setItem('pbi-os', os); } catch(e) {}
+}
+(function() {
+  // Restore from localStorage, or auto-detect
+  var stored = null;
+  try { stored = localStorage.getItem('pbi-os'); } catch(e) {}
+  if (stored && ['mac','linux','win'].indexOf(stored) !== -1) {
+    setOS(stored);
+    return;
+  }
+  var ua = navigator.userAgent || navigator.platform || '';
+  if (/Win/.test(ua)) setOS('win');
+  else if (/Linux/.test(ua) && !/Android/.test(ua)) setOS('linux');
+  else setOS('mac');
+})();
+
+/* ── Copy button (code blocks) ── */
+function copyBlock(btn) {
+  var body = btn.closest('.code-block').querySelector('.code-body');
+  var text = body.getAttribute('data-raw') || body.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* ── Copy chip (inline check commands + prompt copy buttons) ── */
+function copyChip(el, cmd) {
+  navigator.clipboard.writeText(cmd).then(function() {
+    var label = el.querySelector('.chip-label');
+    if (label) {
+      var original = label.textContent;
+      label.textContent = 'Copied!';
+      el.classList.add('copied');
+      setTimeout(function() { label.textContent = original; el.classList.remove('copied'); }, 1500);
+    } else {
+      var original = el.textContent;
+      el.textContent = 'Copied!';
+      el.classList.add('copied');
+      setTimeout(function() { el.textContent = original; el.classList.remove('copied'); }, 1500);
+    }
+  });
+}
+
+/* ── Progress bar scroll tracking ── */
+(function() {
+  var sections = document.querySelectorAll('.section');
+  var steps = document.querySelectorAll('.progress-step');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        steps.forEach(function(s) {
+          s.classList.remove('active');
+          if (s.getAttribute('href') === '#' + id) {
+            s.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+  sections.forEach(function(s) { observer.observe(s); });
+
+  // Smooth scroll for progress links
+  steps.forEach(function(s) {
+    s.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(s.getAttribute('href'));
+      if (target) {
+        var y = target.getBoundingClientRect().top + window.pageYOffset - 60;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
