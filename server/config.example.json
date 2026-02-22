@@ -1,0 +1,10 @@
+{
+  "default_workspace_id": "",
+  "default_dataset_id": "",
+  "workspaces": {
+    "My Workspace": "paste-workspace-guid-here"
+  },
+  "datasets": {
+    "My Dataset": "paste-dataset-guid-here"
+  }
+}
