@@ -14,6 +14,8 @@ Search the schema for relevant measures/columns:
 search_schema(workspace_id, dataset_id, search_term="keyword from question")
 ```
 
+**If user has set defaults in `config.json`, workspace_id/dataset_id can be omitted.**
+
 Run 2-3 searches with different keywords. Then run DAX queries:
 
 ```
