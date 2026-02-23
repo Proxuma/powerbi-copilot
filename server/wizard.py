@@ -64,7 +64,9 @@ def pick(prompt, items, name_key="name", id_key="id"):
             idx = int(choice) - 1
             if 0 <= idx < len(items):
                 return items[idx]
-        except (ValueError, EOFError):
+        except EOFError:
+            fail("No interactive input available. Use --workspace-id and --dataset-id flags instead.")
+        except ValueError:
             pass
         print("  Invalid choice, try again.")
 
@@ -102,7 +104,9 @@ def write_config(workspace_id, workspace_name, dataset_id, dataset_name):
             pass
 
     config["default_workspace_id"] = workspace_id
+    config["default_workspace_name"] = workspace_name
     config["default_dataset_id"] = dataset_id
+    config["default_dataset_name"] = dataset_name
 
     # Friendly name maps
     workspaces = config.get("workspaces", {})

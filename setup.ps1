@@ -136,6 +136,21 @@ $mcpConfig = @{
 Set-Content -Path (Join-Path $VscodeDir "mcp.json") -Value $mcpConfig -Encoding UTF8
 Write-OK "Created .vscode\mcp.json"
 
+# VS Code settings (Agent mode, prompt files, MCP)
+$SettingsPath = Join-Path $VscodeDir "settings.json"
+if (-not (Test-Path $SettingsPath)) {
+    @"
+{
+  "chat.agent.enabled": true,
+  "chat.promptFiles": true,
+  "chat.mcp.enabled": true
+}
+"@ | Set-Content -Path $SettingsPath -Encoding UTF8
+    Write-OK "Created .vscode\settings.json (Agent mode enabled)"
+} else {
+    Write-OK ".vscode\settings.json already exists"
+}
+
 # --- Step 6: Copy prompt files ---
 
 Write-Step "6/8  Setting up prompt files..."

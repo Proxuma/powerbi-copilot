@@ -139,6 +139,20 @@ EOF
 
 info "Created .vscode/mcp.json"
 
+# VS Code settings (Agent mode, prompt files, MCP)
+if [ ! -f "$VSCODE_DIR/settings.json" ]; then
+    cat > "$VSCODE_DIR/settings.json" <<EOF
+{
+  "chat.agent.enabled": true,
+  "chat.promptFiles": true,
+  "chat.mcp.enabled": true
+}
+EOF
+    info "Created .vscode/settings.json (Agent mode enabled)"
+else
+    info ".vscode/settings.json already exists"
+fi
+
 # ─── Step 6: Copy prompt files to .github/prompts ─────────────────
 
 step "6/8  Setting up prompt files..."
@@ -183,7 +197,7 @@ if [ "$SKIP_WIZARD" = true ]; then
     fi
     info "Wizard skipped (--skip-wizard)"
 else
-    "$PYTHON" "$SERVER_DIR/wizard.py" "${WIZARD_ARGS[@]}"
+    "$PYTHON" "$SERVER_DIR/wizard.py" ${WIZARD_ARGS[@]+"${WIZARD_ARGS[@]}"}
 fi
 
 # ─── Step 8: Verify ──────────────────────────────────────────────
