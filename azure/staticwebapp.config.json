@@ -1,0 +1,29 @@
+{
+  "routes": [
+    {
+      "route": "/renderer",
+      "rewrite": "/templates/dashboard-renderer.html"
+    },
+    {
+      "route": "/configs/*",
+      "rewrite": "/templates/configs/*"
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html"
+  },
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/index.html",
+      "statusCode": 200
+    }
+  },
+  "globalHeaders": {
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-Content-Type-Options": "nosniff",
+    "Cache-Control": "public, max-age=3600"
+  },
+  "mimeTypes": {
+    ".json": "application/json"
+  }
+}
