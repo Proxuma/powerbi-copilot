@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect Power BI to Copilot Studio with MCP — Complete Setup Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #334155;
+    background: #f8fafc;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0f766e 0%, #115e58 50%, #134e4a 100%);
+    color: #fff;
+    padding: 80px 40px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(94, 234, 212, 0.08);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(94, 234, 212, 0.05);
+  }
+  .hero h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .hero p {
+    font-size: 1.15rem;
+    opacity: 0.9;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(94, 234, 212, 0.2);
+    color: #5eead4;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: 0.03em;
+  }
+  .hero .meta-row {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 20px;
+    font-size: 0.88rem;
+    opacity: 0.8;
+  }
+  .hero .meta-row span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Container */
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Privacy banner */
+  .privacy-banner {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: -30px auto 40px;
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .privacy-banner .shield {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+  .privacy-banner strong { color: #065f46; }
+  .privacy-banner p { font-size: 0.92rem; color: #064e3b; margin: 0; }
+
+  /* Steps */
+  .step {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .step-number {
+    position: absolute;
+    top: -14px;
+    left: 32px;
+    background: #0f766e;
+    color: #fff;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(15, 118, 110, 0.3);
+  }
+  .step-number.critical {
+    background: #dc2626;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+  }
+  .step-number.optional {
+    background: #6366f1;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  }
+  .step-number.plus {
+    background: #64748b;
+    box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
+  }
+  .step h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f766e;
+    margin-bottom: 8px;
+    padding-top: 8px;
+  }
+  .step h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 24px 0 8px;
+  }
+  .step h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #475569;
+    margin: 16px 0 6px;
+  }
+  .step p { margin-bottom: 12px; }
+
+  /* Time estimate */
+  .time-est {
+    display: inline-block;
+    background: #f0fdf4;
+    color: #166534;
+    padding: 3px 12px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* Code blocks */
+  .code-block {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 12px 0 16px;
+    position: relative;
+    white-space: pre;
+  }
+  .code-block .comment { color: #64748b; }
+  .code-block .highlight { color: #5eead4; }
+  .code-block .string { color: #fbbf24; }
+  .code-block .key { color: #7dd3fc; }
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #94a3b8;
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+  .copy-btn.copied { background: #059669; color: #fff; border-color: #059669; }
+
+  /* Inline code */
+  code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #0f766e;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.92rem;
+  }
+  th {
+    background: #f1f5f9;
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 700;
+    color: #2c3e50;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  td code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #0f766e;
+  }
+
+  /* Callouts */
+  .callout {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 0.92rem;
+  }
+  .callout.info {
+    background: #eff6ff;
+    border-color: #3b82f6;
+  }
+  .callout.success {
+    background: #ecfdf5;
+    border-color: #10b981;
+  }
+  .callout.danger {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+  }
+  .callout.critical {
+    background: #fef2f2;
+    border-left: 4px solid #dc2626;
+  }
+  .callout strong { color: #1e293b; }
+
+  /* Ordered sub-steps */
+  .sub-steps {
+    counter-reset: sub;
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+  .sub-steps li {
+    counter-increment: sub;
+    padding: 8px 0 8px 40px;
+    position: relative;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .sub-steps li:last-child { border-bottom: none; }
+  .sub-steps li::before {
+    content: counter(sub);
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 28px;
+    height: 28px;
+    background: #f0fdfa;
+    color: #0f766e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.82rem;
+    border: 1px solid #ccfbf1;
+  }
+
+  /* Diagram */
+  .diagram {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 2;
+  }
+  .diagram .box {
+    display: inline-block;
+    background: #fff;
+    border: 2px solid #0f766e;
+    border-radius: 8px;
+    padding: 8px 16px;
+    margin: 4px;
+    color: #0f766e;
+    font-weight: 700;
+  }
+  .diagram .arrow { color: #94a3b8; margin: 0 8px; font-size: 1.2rem; }
+
+  /* Screenshot placeholders */
+  .screenshot {
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 0;
+    margin: 16px 0;
+    overflow: hidden;
+    text-align: center;
+  }
+  .screenshot img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+  }
+  .screenshot .placeholder {
+    padding: 40px 24px;
+    color: #94a3b8;
+    font-size: 0.88rem;
+  }
+  .screenshot .placeholder strong { color: #64748b; display: block; margin-bottom: 4px; }
+  .screenshot figcaption {
+    font-size: 0.82rem;
+    color: #64748b;
+    padding: 10px 16px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    text-align: left;
+  }
+
+  /* FAQ accordion */
+  details {
+    margin: 8px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  details + details { margin-top: -1px; border-top-left-radius: 0; border-top-right-radius: 0; }
+  details:first-of-type { border-radius: 10px 10px 0 0; }
+  details:last-of-type { border-radius: 0 0 10px 10px; }
+  details:only-of-type { border-radius: 10px; }
+  summary {
+    padding: 14px 18px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #2c3e50;
+    background: #fafafa;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '+';
+    display: inline-block;
+    width: 20px;
+    font-weight: 800;
+    color: #0f766e;
+    transition: transform 0.2s;
+  }
+  details[open] summary::before { content: '\2212'; }
+  details > div {
+    padding: 14px 18px;
+    font-size: 0.92rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  /* Tab switcher for options */
+  .tab-group {
+    display: flex;
+    gap: 0;
+    margin: 16px 0 0;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .tab-group button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .tab-group button.active {
+    color: #0f766e;
+    border-bottom-color: #0f766e;
+  }
+  .tab-group button:hover { color: #0f766e; }
+  .tab-content { display: none; padding: 20px 0 0; }
+  .tab-content.active { display: block; }
+
+  /* CTA */
+  .cta {
+    background: linear-gradient(135deg, #0f766e 0%, #134e4a 100%);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    color: #fff;
+    margin: 40px 0;
+  }
+  .cta h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; }
+  .cta p { opacity: 0.9; margin-bottom: 20px; }
+  .cta a {
+    display: inline-block;
+    background: #fff;
+    color: #0f766e;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .cta a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  /* Checklist */
+  .checklist {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+  .checklist li {
+    padding: 6px 0 6px 28px;
+    position: relative;
+  }
+  .checklist li::before {
+    content: '\2610';
+    position: absolute;
+    left: 0;
+    color: #0f766e;
+    font-size: 1.1rem;
+  }
+
+  /* Env var reference table */
+  .env-table td:first-child {
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: #0f766e;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .hero { padding: 48px 20px 40px; }
+    .hero h1 { font-size: 1.8rem; }
+    .hero .meta-row { flex-direction: column; gap: 8px; }
+    .step { padding: 28px 20px; }
+    .privacy-banner { flex-direction: column; }
+    .diagram .box { display: block; margin: 8px auto; max-width: 200px; }
+    .diagram .arrow { display: block; margin: 4px auto; transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero">
+  <span class="badge">COPILOT STUDIO + POWER BI</span>
+  <h1>Connect Power BI to Copilot Studio<br>with MCP</h1>
+  <p>Let your team ask business questions in plain English and get answers straight from your Power BI data model. No code, no DAX knowledge, no Proxuma dependency after setup.</p>
+  <div class="meta-row">
+    <span>&#9201; 30&ndash;45 minutes</span>
+    <span>&#128196; 9 steps</span>
+    <span>&#128274; Your tenant only</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ====== PRIVACY ====== -->
+  <div class="privacy-banner">
+    <span class="shield">&#128737;</span>
+    <div>
+      <p><strong>Your data stays in your tenant.</strong> The MCP server runs inside your Azure subscription, authenticates with your credentials, and talks directly to your Power BI API. Nothing routes through Proxuma or any third party. All personally identifiable information is automatically scrubbed before it reaches the AI model.</p>
+    </div>
+  </div>
+
+  <!-- ====== STEP 0: ARCHITECTURE ====== -->
+  <div class="step">
+    <div class="step-number">0</div>
+    <h2>How It Works</h2>
+    <p>The setup connects three things that already exist in your Microsoft environment. No new infrastructure, no third-party data processing.</p>
+
+    <div class="diagram">
+      <span class="box">Copilot Studio<br><small>your agent</small></span>
+      <span class="arrow">&rarr;</span>
+      <span class="box">Azure Functions<br><small>MCP server</small></span>
+      <span class="arrow">&rarr;</span>
+      <span class="box">Power BI API<br><small>your data model</small></span>
+    </div>
+
+    <p>Your Copilot Studio agent sends a question to the MCP server. The server translates it into a Power BI API call, runs the query, strips any personal data, and returns the result. The agent then formats it into a readable answer.</p>
+
+    <div class="callout info">
+      <strong>What is MCP?</strong> Model Context Protocol is an open standard that lets AI tools call external APIs in a structured way. Microsoft built native MCP support into Copilot Studio in late 2025. Think of it as a universal adapter between your AI agent and your data.
+    </div>
+
+    <h3>Available Tools</h3>
+    <p>Once connected, the agent can use these seven tools:</p>
+
+    <table>
+      <thead>
+        <tr><th>Tool</th><th>What it does</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>list_workspaces</code></td><td>Shows all Power BI workspaces the server has access to</td></tr>
+        <tr><td><code>list_datasets</code></td><td>Lists datasets in a workspace</td></tr>
+        <tr><td><code>execute_dax</code></td><td>Runs a DAX query against a dataset and returns the results</td></tr>
+        <tr><td><code>search_schema</code></td><td>Searches the data model for specific measures, columns, or tables</td></tr>
+        <tr><td><code>list_measures</code></td><td>Lists all measure names in a dataset</td></tr>
+        <tr><td><code>list_fabric_items</code></td><td>Lists items in a Microsoft Fabric workspace</td></tr>
+        <tr><td><code>get_schema</code></td><td>Returns the full data model schema (use sparingly &mdash; can be large)</td></tr>
+      </tbody>
+    </table>
+
+    <p>In a typical question, the agent chains 3&ndash;4 tools together: it discovers the schema, finds the right measures, builds a DAX query, and runs it. All automatically.</p>
+  </div>
+
+  <!-- ====== STEP 1: PREREQUISITES ====== -->
+  <div class="step">
+    <div class="step-number">1</div>
+    <h2>Prerequisites <span class="time-est">5 min check</span></h2>
+    <p>Before you start, make sure you have access to all five of these. If anything is missing, your IT admin can help &mdash; none of these are unusual requests for an Azure environment.</p>
+
+    <table>
+      <thead>
+        <tr><th>Requirement</th><th>Details</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Azure subscription</strong></td>
+          <td>Any subscription where you can create resources. The Function App runs on a Consumption plan, so costs stay near zero until you actually use it.</td>
+        </tr>
+        <tr>
+          <td><strong>Azure CLI</strong></td>
+          <td>
+            <strong>Windows:</strong> <code>winget install Microsoft.AzureCLI</code><br>
+            <strong>macOS:</strong> <code>brew install azure-cli</code><br>
+            <strong>Linux:</strong> <code>curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash</code><br>
+            Verify: <code>az --version</code>. Then: <code>az login</code>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Git</strong></td>
+          <td>
+            <strong>Windows:</strong> <code>winget install Git.Git</code><br>
+            <strong>macOS:</strong> <code>xcode-select --install</code> (includes Git)<br>
+            <strong>Linux:</strong> <code>sudo apt install git</code> (Ubuntu/Debian) or <code>sudo dnf install git</code> (Fedora)<br>
+            Verify: <code>git --version</code>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Power BI workspace</strong></td>
+          <td>A workspace with at least one dataset deployed and refreshing. You need both the <strong>Workspace ID</strong> and <strong>Dataset ID</strong> (GUIDs).</td>
+        </tr>
+        <tr>
+          <td><strong>Copilot Studio license</strong></td>
+          <td>A Maker license to create or edit agents. Check in the <a href="https://admin.microsoft.com" target="_blank" rel="noopener">Microsoft 365 admin center</a> under Billing &gt; Licenses.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Power BI Admin Setting (required)</h3>
+    <p>One tenant-level setting must be enabled. Without it, the MCP server cannot authenticate with the Power BI API.</p>
+    <ol class="sub-steps">
+      <li>Open the <a href="https://app.powerbi.com/admin-portal" target="_blank" rel="noopener">Power BI Admin Portal</a></li>
+      <li>Go to <strong>Tenant settings</strong> &gt; <strong>Developer settings</strong></li>
+      <li>Find <strong>"Allow service principals to use Power BI APIs"</strong></li>
+      <li>Enable it (either for the entire organization, or for a specific security group that includes your MCP server's identity)</li>
+    </ol>
+
+    <div class="callout">
+      <strong>Don't have admin access?</strong> Ask your Power BI admin to enable this setting. It's a standard requirement for any service-to-service Power BI integration. Microsoft documents it at <a href="https://learn.microsoft.com/en-us/power-bi/developer/embedded/embed-service-principal" target="_blank" rel="noopener">Embed with service principal</a>.
+    </div>
+
+    <h3>Finding Your Workspace ID and Dataset ID</h3>
+    <p>Open Power BI in your browser, navigate to your workspace, and click on any dataset. The URL contains both GUIDs:</p>
+    <div class="code-block" id="url-pattern"><span class="comment"># URL pattern:</span>
+https://app.powerbi.com/groups/<span class="highlight">{workspace-id}</span>/datasets/<span class="highlight">{dataset-id}</span>
+
+<span class="comment"># Example:</span>
+https://app.powerbi.com/groups/<span class="highlight">e41a496e-0714-4f2b-a8eb-23e6c0d15d6d</span>/datasets/<span class="highlight">fd823eb4-da85-449d-a175-d24bff86229f</span>
+<button class="copy-btn" onclick="copyBlock('url-pattern')">Copy</button></div>
+
+    <p>Write these down. You need them in Step 3.</p>
+  </div>
+
+  <!-- ====== STEP 2: CLONE ====== -->
+  <div class="step">
+    <div class="step-number">2</div>
+    <h2>Clone the Repository <span class="time-est">2 min</span></h2>
+
+    <div class="code-block" id="clone-cmd"><span class="comment"># Clone the MCP server code</span>
+git clone https://github.com/Proxuma/powerbi-copilot.git
+cd powerbi-copilot
+<button class="copy-btn" onclick="copyBlock('clone-cmd')">Copy</button></div>
+
+    <p>The repo contains everything you need:</p>
+
+    <table>
+      <thead>
+        <tr><th>Folder</th><th>Contents</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>server/</code></td><td>The MCP server code (Python). Handles Power BI API calls and PII anonymization.</td></tr>
+        <tr><td><code>azure/</code></td><td>Deployment script and Azure Functions configuration.</td></tr>
+        <tr><td><code>prompts/</code></td><td>Agent instruction templates with anti-summarization guards.</td></tr>
+        <tr><td><code>docs/</code></td><td>This guide and additional documentation.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <strong>No modifications needed.</strong> The code works out of the box. All configuration happens through environment variables during deployment.
+    </div>
+  </div>
+
+  <!-- ====== STEP 3: DEPLOY ====== -->
+  <div class="step">
+    <div class="step-number">3</div>
+    <h2>Deploy to Azure Functions <span class="time-est">10 min</span></h2>
+    <p>The deployment creates an Azure Function App in your subscription, uploads the server code, and configures it with your Power BI credentials. Everything stays within your Azure tenant.</p>
+
+    <!-- Tab switcher -->
+    <div class="tab-group">
+      <button class="active" onclick="switchTab(this, 'deploy-auto')">Option A: Script (recommended)</button>
+      <button onclick="switchTab(this, 'deploy-manual')">Option B: Manual CLI</button>
+    </div>
+
+    <!-- Option A -->
+    <div class="tab-content active" id="deploy-auto">
+      <div class="code-block" id="deploy-a"><span class="comment"># From the repo root</span>
+cd azure
+./deploy.sh
+<button class="copy-btn" onclick="copyBlock('deploy-a')">Copy</button></div>
+
+      <p>The script asks for four things interactively:</p>
+      <ol class="sub-steps">
+        <li>A <strong>name</strong> for your Function App (e.g., <code>acme-powerbi-mcp</code>). Must be globally unique.</li>
+        <li>Your <strong>Azure resource group</strong> (creates one if it doesn't exist, e.g., <code>rg-powerbi-mcp</code>)</li>
+        <li>Your <strong>Power BI Workspace ID</strong> (the GUID from Step 1)</li>
+        <li>Your <strong>Power BI Dataset ID</strong> (the GUID from Step 1)</li>
+      </ol>
+
+      <p>The script handles everything else: creates the resource group, storage account, Function App, enables managed identity, configures environment variables, and deploys the code.</p>
+
+      <div class="callout">
+        <strong>Platform notes:</strong><br>
+        <strong>macOS / Linux:</strong> Run directly in Terminal.<br>
+        <strong>Windows:</strong> Use <strong>Git Bash</strong> (installed with Git), <strong>WSL</strong>, or <strong>PowerShell</strong> with <code>bash deploy.sh</code>. Alternatively, follow Option B which uses <code>az</code> commands that work natively in PowerShell and CMD.
+      </div>
+    </div>
+
+    <!-- Option B -->
+    <div class="tab-content" id="deploy-manual">
+      <p>For organizations that need to review each infrastructure change, here are the individual Azure CLI commands. Replace the placeholder values with your own.</p>
+
+      <h4>1. Login and create resources</h4>
+      <div class="code-block" id="manual-1"><span class="comment"># Login to Azure</span>
+az login
+
+<span class="comment"># Create a resource group</span>
+az group create \
+  --name rg-powerbi-mcp \
+  --location westeurope
+
+<span class="comment"># Create a storage account (required by Azure Functions)</span>
+az storage account create \
+  --name <span class="highlight">yourstorageaccount</span> \
+  --resource-group rg-powerbi-mcp \
+  --location westeurope \
+  --sku Standard_LRS
+<button class="copy-btn" onclick="copyBlock('manual-1')">Copy</button></div>
+
+      <h4>2. Create the Function App</h4>
+      <div class="code-block" id="manual-2">az functionapp create \
+  --name <span class="highlight">your-powerbi-mcp</span> \
+  --resource-group rg-powerbi-mcp \
+  --storage-account <span class="highlight">yourstorageaccount</span> \
+  --consumption-plan-location westeurope \
+  --runtime python \
+  --runtime-version 3.11 \
+  --functions-version 4 \
+  --os-type Linux
+<button class="copy-btn" onclick="copyBlock('manual-2')">Copy</button></div>
+
+      <h4>3. Enable managed identity</h4>
+      <div class="code-block" id="manual-3">az functionapp identity assign \
+  --name <span class="highlight">your-powerbi-mcp</span> \
+  --resource-group rg-powerbi-mcp
+<button class="copy-btn" onclick="copyBlock('manual-3')">Copy</button></div>
+
+      <h4>4. Configure environment variables</h4>
+      <div class="code-block" id="manual-4">az functionapp config appsettings set \
+  --name <span class="highlight">your-powerbi-mcp</span> \
+  --resource-group rg-powerbi-mcp \
+  --settings \
+    "AUTH_MODE=managed_identity" \
+    "POWERBI_MCP_WORKSPACE_ID=<span class="highlight">your-workspace-guid</span>" \
+    "POWERBI_MCP_DATASET_ID=<span class="highlight">your-dataset-guid</span>" \
+    "PORT=8000"
+<button class="copy-btn" onclick="copyBlock('manual-4')">Copy</button></div>
+
+      <h4>5. Deploy the code</h4>
+      <div class="code-block" id="manual-5"><span class="comment"># macOS / Linux — from the repo root</span>
+cd azure
+zip -r deploy.zip host.json requirements.txt ../server/server_remote.py ../server/auth_remote.py
+
+<span class="comment"># Windows (PowerShell) — from the repo root</span>
+<span class="comment"># Compress-Archive -Path azure\host.json, azure\requirements.txt, server\server_remote.py, server\auth_remote.py -DestinationPath azure\deploy.zip</span>
+
+<span class="comment"># Then deploy (all platforms)</span>
+az functionapp deployment source config-zip \
+  --name <span class="highlight">your-powerbi-mcp</span> \
+  --resource-group rg-powerbi-mcp \
+  --src deploy.zip
+<button class="copy-btn" onclick="copyBlock('manual-5')">Copy</button></div>
+    </div>
+
+    <h3>Verify the deployment</h3>
+    <p>After deployment completes (either option), test that the server is running. The easiest way is to just open the URL in your browser:</p>
+    <div class="code-block" id="verify-health"><span class="comment"># Open in your browser, or run in terminal:</span>
+curl https://<span class="highlight">your-powerbi-mcp</span>.azurewebsites.net/health
+
+<span class="comment"># Windows (PowerShell):</span>
+<span class="comment"># Invoke-RestMethod https://your-powerbi-mcp.azurewebsites.net/health</span>
+<button class="copy-btn" onclick="copyBlock('verify-health')">Copy</button></div>
+
+    <p>Expected response:</p>
+    <div class="code-block" id="health-response">{"status": "ok", "tools": 7, "auth_mode": "managed_identity"}
+<button class="copy-btn" onclick="copyBlock('health-response')">Copy</button></div>
+
+    <div class="callout">
+      <strong>Save your URL.</strong> Your MCP server endpoint is <code>https://your-app-name.azurewebsites.net/mcp</code> &mdash; note the <code>/mcp</code> path. You need this in Step 5.
+    </div>
+
+    <!-- Screenshot placeholder -->
+    <figure class="screenshot">
+      <div class="placeholder">
+        <strong>Screenshot: AZ-01</strong>
+        Function App overview in Azure Portal showing the deployed MCP server
+      </div>
+    </figure>
+  </div>
+
+  <!-- ====== STEP 4: POWER BI ACCESS ====== -->
+  <div class="step">
+    <div class="step-number">4</div>
+    <h2>Configure Power BI Access <span class="time-est">5 min</span></h2>
+    <p>The MCP server needs permission to read your Power BI data. There are two authentication methods &mdash; Managed Identity is simpler and more secure.</p>
+
+    <!-- Tab switcher -->
+    <div class="tab-group">
+      <button class="active" onclick="switchTab(this, 'auth-mi')">4A: Managed Identity (recommended)</button>
+      <button onclick="switchTab(this, 'auth-sp')">4B: Service Principal</button>
+    </div>
+
+    <!-- 4A: Managed Identity -->
+    <div class="tab-content active" id="auth-mi">
+      <p>Managed Identity is the simplest approach. Azure automatically handles the credentials &mdash; no secrets to store or rotate.</p>
+
+      <ol class="sub-steps">
+        <li>Open the <a href="https://portal.azure.com" target="_blank" rel="noopener">Azure Portal</a> and navigate to your Function App</li>
+        <li>Go to <strong>Settings</strong> &gt; <strong>Identity</strong> &gt; <strong>System assigned</strong></li>
+        <li>Verify the status is <strong>On</strong> (the deploy script already enabled this). Copy the <strong>Object (principal) ID</strong>.</li>
+        <li>Open <a href="https://app.powerbi.com" target="_blank" rel="noopener">Power BI</a> and navigate to your workspace</li>
+        <li>Click <strong>Manage access</strong> (top right of the workspace)</li>
+        <li>Click <strong>Add people or groups</strong></li>
+        <li>Paste the Object ID from step 3, select it, and assign the <strong>Member</strong> role</li>
+        <li>Click <strong>Add</strong></li>
+      </ol>
+
+      <!-- Screenshot -->
+      <figure class="screenshot">
+        <div class="placeholder">
+          <strong>Screenshot: AZ-02</strong>
+          Azure Portal &gt; Function App &gt; Identity &gt; System assigned, showing the Object ID to copy
+        </div>
+      </figure>
+
+      <figure class="screenshot">
+        <div class="placeholder">
+          <strong>Screenshot: PBI-01</strong>
+          Power BI workspace &gt; Manage access panel, adding the managed identity as Member
+        </div>
+      </figure>
+
+      <div class="callout success">
+        <strong>Why Member?</strong> The server needs to read workspace metadata, list datasets, and execute DAX queries. The Member role covers all of this without granting write access. Your data model, reports, and dashboards remain read-only.
+      </div>
+    </div>
+
+    <!-- 4B: Service Principal -->
+    <div class="tab-content" id="auth-sp">
+      <p>Use a Service Principal if managed identity doesn't work for your setup &mdash; for example, if your Power BI workspace and Azure subscription are in different tenants.</p>
+
+      <ol class="sub-steps">
+        <li>Go to <a href="https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank" rel="noopener">Azure Portal &gt; App registrations</a> and click <strong>New registration</strong></li>
+        <li>Name it (e.g., <code>PowerBI MCP Server</code>), leave the default settings, click <strong>Register</strong></li>
+        <li>On the overview page, copy the <strong>Application (client) ID</strong> and <strong>Directory (tenant) ID</strong></li>
+        <li>Go to <strong>Certificates &amp; secrets</strong> &gt; <strong>New client secret</strong>, add a description, set expiry, click <strong>Add</strong>. <strong>Copy the secret value immediately</strong> (you can't see it again).</li>
+        <li>Go to <strong>API permissions</strong> &gt; <strong>Add a permission</strong> &gt; <strong>Power BI Service</strong> &gt; <strong>Delegated permissions</strong></li>
+        <li>Select <code>Dataset.Read.All</code> and <code>Workspace.Read.All</code>, click <strong>Add permissions</strong></li>
+        <li>Click <strong>Grant admin consent for [your org]</strong> (requires admin privileges)</li>
+        <li>Add the app to your Power BI workspace as a <strong>Member</strong> (same as step 5&ndash;8 in the Managed Identity tab, but paste the Application ID instead)</li>
+      </ol>
+
+      <figure class="screenshot">
+        <img src="powerbi-onboarding-screenshots/24-feb24-azure-mcp-server-api-permissions-powerbi-service.png" alt="Azure Portal — API permissions screen showing Power BI Service selected">
+        <figcaption>Adding Power BI Service API permissions to the app registration</figcaption>
+      </figure>
+
+      <figure class="screenshot">
+        <img src="powerbi-onboarding-screenshots/26-feb24-azure-mcp-server-permissions-granted.png" alt="Azure Portal — API permissions with admin consent granted, showing green checkmarks">
+        <figcaption>Admin consent granted for both Dataset.Read.All and Workspace.Read.All</figcaption>
+      </figure>
+
+      <figure class="screenshot">
+        <img src="powerbi-onboarding-screenshots/29-feb24-azure-mcp-server-client-secret-created.png" alt="Azure Portal — Certificates and secrets page showing a newly created client secret">
+        <figcaption>Client secret created. Copy the value immediately &mdash; it won't be shown again.</figcaption>
+      </figure>
+
+      <p>Finally, update the environment variables on your Function App to use the service principal instead of managed identity:</p>
+
+      <div class="code-block" id="sp-vars">az functionapp config appsettings set \
+  --name <span class="highlight">your-powerbi-mcp</span> \
+  --resource-group rg-powerbi-mcp \
+  --settings \
+    "AUTH_MODE=service_principal" \
+    "AZURE_TENANT_ID=<span class="highlight">your-tenant-guid</span>" \
+    "AZURE_CLIENT_ID=<span class="highlight">your-app-registration-client-id</span>" \
+    "AZURE_CLIENT_SECRET=<span class="highlight">your-secret-value</span>"
+<button class="copy-btn" onclick="copyBlock('sp-vars')">Copy</button></div>
+
+      <div class="callout">
+        <strong>Secret rotation.</strong> Client secrets expire. Set a calendar reminder to rotate the secret before it expires, or use a certificate instead. Managed Identity (tab A) avoids this problem entirely.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== STEP 5: COPILOT STUDIO ====== -->
+  <div class="step">
+    <div class="step-number">5</div>
+    <h2>Add the MCP Tool in Copilot Studio <span class="time-est">5 min</span></h2>
+    <p>Now that the server is running and has Power BI access, connect it to your Copilot Studio agent.</p>
+
+    <ol class="sub-steps">
+      <li>Open <a href="https://copilotstudio.microsoft.com" target="_blank" rel="noopener">copilotstudio.microsoft.com</a></li>
+      <li>Select your agent (or create a new one &mdash; the default settings are fine for now)</li>
+      <li>Click the <strong>Tools</strong> tab in the top navigation</li>
+      <li>Click <strong>Add a tool</strong></li>
+      <li>In the search dialog, scroll down and find <strong>Model Context Protocol</strong> at the bottom, or type "MCP" in the search bar</li>
+      <li>Click <strong>Model Context Protocol</strong> to open the configuration form</li>
+      <li>Fill in the form:
+        <table>
+          <tr><td><strong>Server name</strong></td><td><code>Power BI</code></td></tr>
+          <tr><td><strong>Description</strong></td><td><code>Queries Power BI datasets using DAX. Can list workspaces, datasets, measures, and execute analytical queries.</code></td></tr>
+          <tr><td><strong>Server URL</strong></td><td><code>https://your-app-name.azurewebsites.net/mcp</code> (from Step 3)</td></tr>
+          <tr><td><strong>Authentication</strong></td><td>None (the server authenticates with Power BI using its managed identity &mdash; no auth needed between Copilot and the server)</td></tr>
+        </table>
+      </li>
+      <li>Click <strong>Next</strong>. Copilot Studio connects to your server and discovers the available tools.</li>
+      <li>You should see <strong>7 tools</strong> listed. All toggles should be enabled by default. If not, enable them all.</li>
+      <li>Click <strong>Add tool</strong> (or <strong>Save</strong> depending on your Copilot Studio version)</li>
+    </ol>
+
+    <!-- Screenshots -->
+    <figure class="screenshot">
+      <div class="placeholder">
+        <strong>Screenshot: CS-01</strong>
+        Copilot Studio: Tools tab with "Add a tool" button visible
+      </div>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="placeholder">
+        <strong>Screenshot: CS-02</strong>
+        "Add a tool" dialog showing the "Model Context Protocol" option at the bottom of the list
+      </div>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="placeholder">
+        <strong>Screenshot: CS-03</strong>
+        MCP configuration form filled in with name, description, and server URL
+      </div>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="placeholder">
+        <strong>Screenshot: CS-04</strong>
+        7 tools discovered from the server, all with toggles enabled
+      </div>
+    </figure>
+
+    <div class="callout info">
+      <strong>"No tools found"?</strong> Double-check the URL ends with <code>/mcp</code> (not just the Function App root). Also verify the health endpoint returns <code>"tools": 7</code>. If it returns <code>"tools": 0</code>, the server deployed but couldn't load its tool definitions &mdash; check the Function App logs.
+    </div>
+  </div>
+
+  <!-- ====== STEP 6: CONNECTION MANAGER ====== -->
+  <div class="step">
+    <div class="step-number critical">6</div>
+    <h2>The Connection Manager <span class="time-est">2 min</span></h2>
+
+    <div class="callout critical">
+      <strong>This step is NOT documented in Microsoft's official MCP documentation.</strong> If you skip it, the tools will appear in your agent but silently fail on every query. This is the most common point where setups stall.
+    </div>
+
+    <p>After adding the MCP tool, you need to activate the <strong>connection</strong> between Copilot Studio and your server. This is a one-time step that creates the actual runtime link.</p>
+
+    <ol class="sub-steps">
+      <li>Go to the <strong>Test your agent</strong> panel (bottom-right in Copilot Studio)</li>
+      <li>Type any question, for example: <code>What workspaces do you have access to?</code></li>
+      <li>The agent will attempt to use the Power BI tool and you'll see a message like: <strong>"The Power BI connection is not connected. Open the connection manager to fix this."</strong></li>
+      <li>Click the <strong>connection manager link</strong> in that message (or navigate manually to your agent's connection settings)</li>
+      <li>You should see the "Power BI" connection listed with status <strong>Not Connected</strong></li>
+      <li>Click <strong>Connect</strong></li>
+      <li>If prompted, choose <strong>Create new connection</strong> and confirm</li>
+      <li>Wait a few seconds. The status should change to <strong>Connected</strong></li>
+    </ol>
+
+    <figure class="screenshot">
+      <div class="placeholder">
+        <strong>Screenshot: CS-05</strong>
+        Test panel showing the "connection is not connected" prompt with the connection manager link
+      </div>
+    </figure>
+
+    <figure class="screenshot">
+      <img src="../Downloads/Screenshot 2026-03-04 at 08.43.22.png" alt="Copilot Studio connection manager showing Power BI connection with Connected status">
+      <figcaption>Connection Manager after clicking Connect. Status shows "Connected" with a green indicator. This is the screen you're looking for.</figcaption>
+    </figure>
+
+    <div class="callout success">
+      <strong>You only do this once.</strong> After the connection is established, it persists across sessions. You don't need to reconnect unless you change the server URL or the connection expires.
+    </div>
+  </div>
+
+  <!-- ====== STEP 7: TEST ====== -->
+  <div class="step">
+    <div class="step-number">7</div>
+    <h2>Test Your Agent <span class="time-est">2 min</span></h2>
+    <p>Go back to the <strong>Test your agent</strong> panel and try these questions. Each one exercises a different part of the tool chain.</p>
+
+    <table>
+      <thead>
+        <tr><th>Question</th><th>Expected tool chain</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>"What workspaces do you have access to?"</td>
+          <td><code>list_workspaces</code> &rarr; returns workspace names and IDs</td>
+        </tr>
+        <tr>
+          <td>"Show me all available measures"</td>
+          <td><code>list_workspaces</code> &rarr; <code>list_datasets</code> &rarr; <code>list_measures</code> &rarr; returns 200+ measure names</td>
+        </tr>
+        <tr>
+          <td>"What's our average CSAT score this month?"</td>
+          <td><code>search_schema</code> (finds the measure) &rarr; <code>execute_dax</code> (runs the query) &rarr; returns the value</td>
+        </tr>
+        <tr>
+          <td>"Top 10 clients by revenue this quarter"</td>
+          <td><code>search_schema</code> &rarr; <code>execute_dax</code> (with TOPN and SUMMARIZE) &rarr; formatted table</td>
+        </tr>
+        <tr>
+          <td>"Generate a live dashboard for SLA performance"</td>
+          <td><code>search_schema</code> &rarr; <code>execute_dax</code> (TOPN-limited) &rarr; DASH_CONFIG + DATA JSON objects</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <strong>Token limit warning.</strong> Copilot Studio has an <code>OpenAIModelTokenLimit</code> that limits total output size. Always use <code>TOPN(50, ...)</code> in DAX queries to keep results within limits. Unlimited queries with hundreds of rows will trigger: <em>"The request is resulting in too much data to handle."</em>
+    </div>
+
+    <figure class="screenshot">
+      <img src="../Downloads/Screenshot 2026-03-04 at 08.43.15.png" alt="Copilot Studio test panel showing a successful tool chain: list_workspaces, list_datasets, and list_measures all completed with green checkmarks">
+      <figcaption>A successful test. The agent chained list_workspaces &rarr; list_datasets &rarr; list_measures and returned all 259 measures from the data model.</figcaption>
+    </figure>
+
+    <div class="callout info">
+      <strong>Tip: be specific.</strong> "How are we doing?" is too vague. "What's our average ticket resolution time this quarter compared to last?" gives the agent something concrete to query. The more specific the question, the more accurate the DAX the agent writes.
+    </div>
+
+    <div class="callout success">
+      <strong>If all four queries work, your setup is complete.</strong> The remaining steps are optional enhancements you can do later.
+    </div>
+  </div>
+
+  <!-- ====== STEP 8: CUSTOMIZE ====== -->
+  <div class="step">
+    <div class="step-number optional">8</div>
+    <h2>Customize Your Agent <span class="time-est">optional</span></h2>
+    <p>Out of the box, the agent works but gives generic responses. You can make it more useful by adding context about your business.</p>
+
+    <h3>Agent instructions</h3>
+    <p>Go to your agent's <strong>Overview</strong> &gt; <strong>Instructions</strong> and add context like this:</p>
+
+    <div class="code-block" id="agent-instructions">You are a Power BI assistant that helps users analyze business data using 7 MCP tools.
+
+TOOL USAGE ORDER — always follow this sequence:
+1. list_workspaces — discover available workspaces
+2. list_datasets — find datasets in a workspace
+3. search_schema — find relevant tables, columns, measures (NEVER use get_schema — it crashes)
+4. list_measures — list all measures
+5. execute_dax — run DAX queries
+
+ANSWERING BUSINESS QUESTIONS:
+1. Identify keywords from the question (revenue, tickets, hours, SLA, etc.)
+2. Use search_schema to find matching measures and table names
+3. Write DAX using the EXACT names found — never guess measure names
+4. Execute the query and present results in clear tables
+5. Show the DAX query you used
+6. Suggest follow-up questions
+
+DAX GUIDELINES:
+- CRITICAL: Always use TOPN(50, ...) to limit rows — unlimited queries will crash
+- Use EVALUATE with SUMMARIZECOLUMNS or ADDCOLUMNS for grouped data
+- Filter dates: FILTER(ALL(DateTable[year]), DateTable[year] >= YEAR(TODAY()) - 1)
+- If a query fails, explain the error and try an alternative
+
+GENERATING DASHBOARDS (when user says "dashboard" or "live dashboard"):
+1. Search relevant measures via search_schema
+2. Pull data via DAX using TOPN(50) to limit rows
+3. Output TWO JSON objects — DASH_CONFIG and DATA — nothing else
+4. Use short field names in facts: rev, cost, hrs, t_cr, fr_pct, res_pct
+
+DATA JSON: {"dim":{"companies":["A","B"]},"facts":[{"c":0,"y":2025,"m":1,...}],"static_kpi":{}}
+DASH_CONFIG JSON: {"title":"...","kpi_rows":[[{...}]],"gauges":[{...}],"charts":[{...}],"table":{...}}
+Metric syntax: sum:field, ratio:a:b, wavg:sum:count, static:key
+
+OUTPUT RULES:
+- Never summarize or truncate data rows
+- For dashboards: output ONLY the two JSON objects, no HTML
+- The user will paste the JSON into a renderer page that builds the dashboard
+<button class="copy-btn" onclick="copyBlock('agent-instructions')">Copy</button></div>
+
+    <div class="callout info">
+      <strong>Character count:</strong> These instructions use approximately 1,600 of the 8,000 character limit, leaving room for custom measure names and business-specific context.
+    </div>
+
+    <h3>Topics</h3>
+    <p>You can create pre-built <strong>Topics</strong> (conversation flows) for common questions. For example, a "Monthly report" topic that automatically queries the right measures and formats the output as a summary. Go to <strong>Topics</strong> &gt; <strong>Add a topic</strong> &gt; <strong>From blank</strong> to get started.</p>
+
+    <h3>Channels</h3>
+    <p>By default, your agent only works in the Copilot Studio test panel. To make it available to your team:</p>
+    <ul class="checklist">
+      <li><strong>Microsoft Teams:</strong> Go to <strong>Channels</strong> &gt; <strong>Microsoft Teams</strong> &gt; <strong>Turn on</strong>. Your team can then chat with the agent directly in Teams.</li>
+      <li><strong>Web widget:</strong> Go to <strong>Channels</strong> &gt; <strong>Custom website</strong> to get an embed code for your intranet or portal.</li>
+      <li><strong>SharePoint:</strong> Go to <strong>Channels</strong> &gt; <strong>SharePoint</strong> to add the agent to a SharePoint site.</li>
+    </ul>
+  </div>
+
+  <!-- ====== STEP 8b: LIVE DASHBOARDS ====== -->
+  <div class="step">
+    <div class="step-number optional">8b</div>
+    <h2>Generate Live Dashboards <span class="time-est">optional</span></h2>
+    <p>Your agent can generate interactive dashboards with KPI cards, gauges, charts, and company breakdowns. Due to Copilot Studio&rsquo;s token limit, the agent outputs <strong>JSON configuration</strong> instead of full HTML. You paste the JSON into a Dashboard Renderer page that builds the visual dashboard.</p>
+
+    <h3>How it works</h3>
+    <ol class="sub-steps">
+      <li><strong>Ask for a dashboard:</strong> <em>&ldquo;Generate a live dashboard for SLA performance&rdquo;</em></li>
+      <li><strong>Agent discovers data:</strong> calls <code>search_schema</code> to find relevant measures</li>
+      <li><strong>Agent pulls data:</strong> calls <code>execute_dax</code> with <code>TOPN(50)</code> to get company&times;month data</li>
+      <li><strong>Agent outputs JSON:</strong> two objects &mdash; <code>DASH_CONFIG</code> (layout) and <code>DATA</code> (facts)</li>
+      <li><strong>You paste into the renderer:</strong> open <code>dashboard-renderer.html</code>, paste the JSON, click <strong>Render</strong></li>
+      <li><strong>Interactive dashboard appears:</strong> KPIs, gauges, Chart.js charts, filterable table</li>
+      <li><strong>Download:</strong> click <strong>Download HTML</strong> for a standalone file you can host or email</li>
+    </ol>
+
+    <h3>Dashboard Renderer</h3>
+    <p>The renderer is a self-contained HTML page in the repository at <code>templates/dashboard-renderer.html</code>. Open it in any browser &mdash; no server required.</p>
+    <ul class="checklist">
+      <li><strong>Split-screen layout:</strong> JSON input on the left, live dashboard preview on the right</li>
+      <li><strong>Two textareas:</strong> one for <code>DASH_CONFIG</code>, one for <code>DATA</code></li>
+      <li><strong>&ldquo;Paste from Copilot&rdquo; button:</strong> auto-splits a combined JSON block into the two fields</li>
+      <li><strong>&ldquo;Download HTML&rdquo; button:</strong> generates a standalone dashboard file with all CSS/JS embedded</li>
+      <li><strong>Pre-populated sample:</strong> the renderer loads with sample data so you can see it working immediately</li>
+    </ul>
+
+    <h3>JSON structure reference</h3>
+    <p><strong>DATA</strong> uses a star-schema: dimension arrays (<code>dim.companies</code>) and fact rows with integer indices (<code>c:0</code> = first company).</p>
+    <p><strong>DASH_CONFIG</strong> defines the layout: <code>kpi_rows</code> (8 KPI cards), <code>gauges</code> (4&ndash;5 ring gauges), <code>charts</code> (4 Chart.js visualizations), and a <code>table</code> (sortable company breakdown).</p>
+    <p>Metric syntax: <code>sum:field</code>, <code>ratio:a:b</code>, <code>wavg:sum:count</code>, <code>static:key</code>. Formats: <code>eur</code>, <code>pct</code>, <code>num</code>, <code>hrs</code>, <code>rating</code>.</p>
+
+    <div class="callout warning">
+      <strong>Why JSON instead of HTML?</strong> Copilot Studio enforces an <code>OpenAIModelTokenLimit</code> that caps total output. A full HTML dashboard (400&ndash;800 lines) exceeds this limit. JSON output (50&ndash;100 lines) fits comfortably, and the renderer handles the visual rendering client-side.
+    </div>
+  </div>
+
+  <!-- ====== STEP 9: HARDENING ====== -->
+  <div class="step">
+    <div class="step-number optional">9</div>
+    <h2>Production Hardening <span class="time-est">optional</span></h2>
+    <p>For production deployments with multiple users, consider these additional steps.</p>
+
+    <h3>API key authentication</h3>
+    <p>By default, the MCP server accepts any request. To restrict access, add an API key:</p>
+    <div class="code-block" id="api-key-setup"><span class="comment"># Set an API key on the Function App</span>
+az functionapp config appsettings set \
+  --name <span class="highlight">your-powerbi-mcp</span> \
+  --resource-group rg-powerbi-mcp \
+  --settings "MCP_API_KEY=<span class="highlight">your-random-api-key</span>"
+<button class="copy-btn" onclick="copyBlock('api-key-setup')">Copy</button></div>
+    <p>Then in Copilot Studio, update the MCP tool configuration to include the API key in the Authentication section (select "API Key" and paste the same key).</p>
+
+    <h3>Monitoring</h3>
+    <p>Azure Functions automatically logs to Application Insights. To enable it:</p>
+    <ol class="sub-steps">
+      <li>Go to your Function App &gt; <strong>Application Insights</strong> &gt; <strong>Turn on</strong></li>
+      <li>This gives you query logs, error tracking, response times, and usage metrics</li>
+      <li>Set up alerts for failures: Application Insights &gt; Alerts &gt; New alert rule &gt; trigger on <code>exceptions</code> or <code>failed requests</code></li>
+    </ol>
+
+    <h3>Scaling</h3>
+    <p>The Consumption plan handles auto-scaling automatically. For consistent performance under heavy load, consider upgrading to a <strong>Premium plan</strong> (eliminates cold starts) or a <strong>Flex Consumption plan</strong> (pre-warmed instances). This is only needed if your team reports slow first-responses.</p>
+
+    <h3>Network security</h3>
+    <p>To restrict the Function App to only accept requests from Copilot Studio:</p>
+    <ol class="sub-steps">
+      <li>Go to Function App &gt; <strong>Networking</strong> &gt; <strong>Access restrictions</strong></li>
+      <li>Add a rule to allow traffic from Microsoft's Copilot Studio IP ranges</li>
+      <li>Set the default action to <strong>Deny</strong></li>
+    </ol>
+
+    <div class="callout info">
+      <strong>When to do this:</strong> If you're running a pilot with a few people, skip these steps. Come back when you're rolling out to the wider team or making the agent publicly available.
+    </div>
+  </div>
+
+  <!-- ====== TROUBLESHOOTING ====== -->
+  <div class="step">
+    <div class="step-number plus">?</div>
+    <h2>Troubleshooting</h2>
+    <p>These are the issues we've encountered in real deployments, with proven fixes for each one.</p>
+
+    <details>
+      <summary>"No tools found" when adding MCP server in Copilot Studio</summary>
+      <div>
+        <p><strong>Cause:</strong> The URL is wrong, or the server isn't running.</p>
+        <p><strong>Fix:</strong> Open <code>https://your-app.azurewebsites.net/health</code> in a browser. It should return <code>{"status": "ok", "tools": 7}</code>.</p>
+        <ul>
+          <li>If you get a 404: Make sure the URL is the Function App root (no <code>/mcp</code> for the health check, but <code>/mcp</code> for Copilot Studio)</li>
+          <li>If you get a 500: Check the Function App logs in Azure Portal &gt; Functions &gt; Monitor</li>
+          <li>If it doesn't load at all: The Function App might still be starting up (cold start). Wait 30 seconds and try again.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Tools appear but every query fails silently</summary>
+      <div>
+        <p><strong>Cause:</strong> You skipped Step 6 (Connection Manager). The tools are registered but the runtime connection isn't active.</p>
+        <p><strong>Fix:</strong> Go back to Step 6. Test a query, click the "connection manager" link in the error message, and click Connect.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>"Unauthorized" or 401 errors</summary>
+      <div>
+        <p><strong>Cause:</strong> The managed identity (or service principal) doesn't have Power BI access.</p>
+        <p><strong>Fix:</strong> Verify three things:</p>
+        <ol>
+          <li>The identity was added to the Power BI workspace as a <strong>Member</strong> (not Viewer)</li>
+          <li>"Allow service principals to use Power BI APIs" is enabled in the Power BI Admin Portal</li>
+          <li>If using a service principal: admin consent was granted for the API permissions</li>
+        </ol>
+      </div>
+    </details>
+
+    <details>
+      <summary>"Forbidden" or 403 errors on execute_dax</summary>
+      <div>
+        <p><strong>Cause:</strong> The identity has workspace access but not dataset-level permissions.</p>
+        <p><strong>Fix:</strong> In some configurations, the dataset has its own permission layer. Go to Power BI &gt; dataset &gt; Settings &gt; and verify the identity has Build permission. Adding it as a workspace Member usually covers this, but if it doesn't, grant Build permission explicitly.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>DAX queries return empty results</summary>
+      <div>
+        <p><strong>Cause:</strong> Either the dataset hasn't refreshed recently, or the measure names in the query don't match the model.</p>
+        <p><strong>Fix:</strong> Ask the agent: "List all available measures." Compare the measure names with what the agent tried to query. Common issues:</p>
+        <ul>
+          <li>Measure names with special characters or spaces not properly quoted</li>
+          <li>The dataset hasn't refreshed &mdash; check the last refresh time in Power BI</li>
+          <li>Filters are too restrictive (e.g., querying a date range with no data)</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Copilot gives summarized or incomplete answers</summary>
+      <div>
+        <p><strong>Cause:</strong> The AI model compresses long outputs by default.</p>
+        <p><strong>Fix:</strong> Be explicit in your question: "Show all rows, don't summarize." You can also add this to the agent instructions (Step 8): <code>Always show the complete query results. Never summarize or truncate data tables.</code></p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Server timeout on large queries</summary>
+      <div>
+        <p><strong>Cause:</strong> The <code>get_schema</code> tool can return over 10MB of data, which exceeds the default timeout.</p>
+        <p><strong>Fix:</strong> Always use <code>search_schema</code> instead of <code>get_schema</code>. Add this to the agent instructions: <code>Never use get_schema. Always use search_schema to find specific measures or columns.</code></p>
+      </div>
+    </details>
+
+    <details>
+      <summary>I see placeholder values like &lt;PERSON&gt; in the output</summary>
+      <div>
+        <p><strong>This is intentional.</strong> The server automatically detects and masks personal information (names, emails, phone numbers) before sending data to the AI model. This protects employee and client privacy.</p>
+        <p>The actual data in Power BI is unchanged. Only the data passed to the AI model is anonymized.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Connection manager shows "Expired" status</summary>
+      <div>
+        <p><strong>Cause:</strong> The connection token expired (usually after 90 days of inactivity).</p>
+        <p><strong>Fix:</strong> Open the Connection Manager, click <strong>Refresh</strong> next to the Power BI connection, then <strong>Connect</strong> again. This takes about 10 seconds.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Function App shows "cold start" delays (10-15 seconds)</summary>
+      <div>
+        <p><strong>Cause:</strong> On the Consumption plan, Azure shuts down inactive functions after about 20 minutes.</p>
+        <p><strong>Fix (free):</strong> Set up a health check ping. In the Azure Portal, go to Function App &gt; Health check and set the path to <code>/health</code>. This keeps the app warm.</p>
+        <p><strong>Fix (paid):</strong> Upgrade to a Premium or Flex Consumption plan for pre-warmed instances. Usually only needed if sub-second response times are critical.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Agent can't find the right measures for my question</summary>
+      <div>
+        <p><strong>Cause:</strong> The agent doesn't know your data model's naming conventions.</p>
+        <p><strong>Fix:</strong> Add the key measure names to the agent instructions (Step 8). For example: <code>Revenue is called "Revenue - Total". Utilization is called "Capacity Utilization Rate (Proxuma)".</code> The more context the agent has about your naming conventions, the better it queries.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Deploy script fails with "subscription not found"</summary>
+      <div>
+        <p><strong>Cause:</strong> You're not logged in to the right Azure subscription.</p>
+        <p><strong>Fix:</strong></p>
+        <div class="code-block" id="fix-sub"><span class="comment"># List all subscriptions</span>
+az account list --output table
+
+<span class="comment"># Set the correct subscription</span>
+az account set --subscription "<span class="highlight">Your Subscription Name</span>"
+
+<span class="comment"># Verify</span>
+az account show --output table
+<button class="copy-btn" onclick="copyBlock('fix-sub')">Copy</button></div>
+      </div>
+    </details>
+
+    <details>
+      <summary>"OpenAIModelTokenLimit" &mdash; too much data to handle</summary>
+      <div>
+        <p><strong>Cause:</strong> The DAX query returned too many rows. Copilot Studio enforces an <code>OpenAIModelTokenLimit</code> that caps the combined size of instructions + tool results + the agent's response. A query returning 100+ rows of company&times;month data easily exceeds this.</p>
+        <p><strong>Fix:</strong> Wrap your query in <code>TOPN(50, ...)</code> to limit the result set. Add this to your agent instructions:</p>
+        <p><code>DAX GUIDELINES: Always use TOPN(50, ...) to limit results. Never query unlimited rows.</code></p>
+        <p>For dashboards, 50 rows is sufficient &mdash; the Dashboard Renderer handles client-side aggregation and filtering.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>search_schema takes 10&ndash;15 seconds per call</summary>
+      <div>
+        <p><strong>This is normal.</strong> The <code>search_schema</code> tool scans the entire Power BI data model for matching measures and columns. Typical response time is 10&ndash;15 seconds per call.</p>
+        <p><strong>Plan for it:</strong> A dashboard workflow calls search_schema 2&ndash;3 times (discovery phase), which takes 25&ndash;35 seconds total. After discovery, <code>execute_dax</code> queries are fast (1&ndash;5 seconds each).</p>
+        <p><strong>Optimization:</strong> Add your most-used measure names directly in the agent instructions so the agent can skip discovery for common queries.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Company names show &lt;ORGANIZATION&gt; or &lt;PERSON&gt; in output</summary>
+      <div>
+        <p><strong>Cause:</strong> The MCP server has a PII (Personally Identifiable Information) anonymization filter enabled by default. It replaces detected company names, person names, and other identifiers with placeholders before the data reaches the AI model.</p>
+        <p><strong>Impact on dashboards:</strong> If you use the Dashboard Renderer, the rendered charts and tables will show the anonymized placeholders instead of real names.</p>
+        <p><strong>Fix:</strong> To disable PII anonymization, set <code>ANONYMIZE_PII=false</code> in the Function App environment variables (Azure Portal &gt; Function App &gt; Configuration). Only do this if your organization's data governance policy allows sending real names to the AI model.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Updated instructions don't take effect</summary>
+      <div>
+        <p><strong>Cause:</strong> Copilot Studio caches the previous instructions within an active test session.</p>
+        <p><strong>Fix:</strong> After saving instruction changes, start a <strong>new test session</strong> by clicking the refresh icon at the top of the test panel. Changes only apply to new sessions, not to the one currently open.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- ====== APPENDIX: ENV VARS ====== -->
+  <div class="step">
+    <div class="step-number plus">+</div>
+    <h2>Appendix: Environment Variables</h2>
+    <p>Complete reference of all environment variables the MCP server supports.</p>
+
+    <table class="env-table">
+      <thead>
+        <tr><th>Variable</th><th>Required</th><th>Default</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AUTH_MODE</td>
+          <td>Yes</td>
+          <td>&mdash;</td>
+          <td>Authentication method. Either <code>managed_identity</code> or <code>service_principal</code>.</td>
+        </tr>
+        <tr>
+          <td>POWERBI_MCP_WORKSPACE_ID</td>
+          <td>Yes</td>
+          <td>&mdash;</td>
+          <td>Default Power BI workspace GUID. Used when no workspace ID is specified in a query.</td>
+        </tr>
+        <tr>
+          <td>POWERBI_MCP_DATASET_ID</td>
+          <td>Yes</td>
+          <td>&mdash;</td>
+          <td>Default Power BI dataset GUID. Used when no dataset ID is specified in a query.</td>
+        </tr>
+        <tr>
+          <td>PORT</td>
+          <td>No</td>
+          <td><code>8000</code></td>
+          <td>Port the server listens on. Azure Functions sets this automatically.</td>
+        </tr>
+        <tr>
+          <td>MCP_API_KEY</td>
+          <td>No</td>
+          <td>&mdash;</td>
+          <td>Optional API key. When set, all requests must include this key in the <code>Authorization</code> header.</td>
+        </tr>
+        <tr>
+          <td>AZURE_TENANT_ID</td>
+          <td>SP only</td>
+          <td>&mdash;</td>
+          <td>Azure AD tenant GUID. Required when <code>AUTH_MODE=service_principal</code>.</td>
+        </tr>
+        <tr>
+          <td>AZURE_CLIENT_ID</td>
+          <td>SP only</td>
+          <td>&mdash;</td>
+          <td>App registration client ID. Required when <code>AUTH_MODE=service_principal</code>.</td>
+        </tr>
+        <tr>
+          <td>AZURE_CLIENT_SECRET</td>
+          <td>SP only</td>
+          <td>&mdash;</td>
+          <td>App registration client secret. Required when <code>AUTH_MODE=service_principal</code>.</td>
+        </tr>
+        <tr>
+          <td>PII_ANONYMIZE</td>
+          <td>No</td>
+          <td><code>true</code></td>
+          <td>Whether to anonymize personal information in query results before sending to the AI model.</td>
+        </tr>
+        <tr>
+          <td>LOG_LEVEL</td>
+          <td>No</td>
+          <td><code>INFO</code></td>
+          <td>Logging verbosity. Set to <code>DEBUG</code> for troubleshooting.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ====== CTA ====== -->
+  <div class="cta">
+    <h2>Need Help Setting This Up?</h2>
+    <p>The Proxuma team can deploy and configure everything for you. We've done this for dozens of MSPs, and the entire setup usually takes under an hour.</p>
+    <a href="https://proxuma.io/contact">Get in touch</a>
+  </div>
+
+</div>
+
+<!-- ====== JS ====== -->
+<script>
+function copyBlock(id) {
+  const el = document.getElementById(id);
+  const btn = el.querySelector('.copy-btn');
+  // Get text content without the button text and trim each line
+  const lines = el.textContent.split('\n');
+  const text = lines
+    .map(l => l.replace(/Copy$/, '').replace(/Copied!$/, ''))
+    .join('\n')
+    .trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function switchTab(btn, contentId) {
+  // Deactivate siblings
+  const group = btn.parentElement;
+  group.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Hide all tab contents in this step, show selected
+  const step = group.closest('.step');
+  step.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  document.getElementById(contentId).classList.add('active');
+}
+</script>
+
+</body>
+</html>

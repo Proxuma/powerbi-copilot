@@ -1,0 +1,99 @@
+{
+  "experiment": "A",
+  "description": "Test Copilot Studio agent's ability to query Power BI and produce structured output",
+  "date": "2026-03-04",
+  "agent": "Power BI Assistant (GPT-5 Chat)",
+  "tests": [
+    {
+      "test": "A1 - Connection test",
+      "prompt": "List all workspaces",
+      "result": "SUCCESS",
+      "tool_calls": ["list_workspaces"],
+      "timing": "~2s",
+      "output": "Returned 3 workspaces: Proxuma BI, Proxuma Demo, Proxuma Power BI",
+      "notes": "Agent correctly used list_workspaces tool"
+    },
+    {
+      "test": "A2 - Small ROW query (3 KPIs)",
+      "prompt": "Search for SLA measures, then run EVALUATE ROW(\"Total Tickets\", [Tickets - Count - Created], ...). Return ONLY the JSON result.",
+      "result": "SUCCESS",
+      "tool_calls": ["search_schema (12.31s)", "execute_dax (0.98s)"],
+      "timing": "~15s total",
+      "output": {
+        "Total Tickets": 67521,
+        "First Response Met": 0.8010002691307078,
+        "Resolution Met": 0.90167966532826
+      },
+      "notes": "Agent produced clean JSON. Small output fits within token limits."
+    },
+    {
+      "test": "A3 - Full SUMMARIZECOLUMNS (unlimited rows)",
+      "prompt": "Pull SLA ticket data by company and month (all companies, year >= 2025).",
+      "result": "FAILED - OpenAIModelTokenLimit",
+      "tool_calls": ["execute_dax (4.80s)"],
+      "timing": "~8s",
+      "error_code": "OpenAIModelTokenLimit",
+      "error_message": "The request is resulting in too much data to handle, please evaluate the amount of data being returned by your actions.",
+      "notes": "DAX query returned data successfully (isError: false) but combined context (tool results + response) exceeded Copilot Studio's token limit. This is the fundamental constraint."
+    },
+    {
+      "test": "A4 - TOPN(20) limited query with structured output",
+      "prompt": "Run TOPN(20, SUMMARIZECOLUMNS(...)) then format as {dim:{companies:[...]}, facts:[{c:0,y:2026,...}]}",
+      "result": "SUCCESS",
+      "tool_calls": ["execute_dax (1.14s)"],
+      "timing": "~5s",
+      "output": {
+        "dim": {
+          "companies": [
+            "<ORGANIZATION>",
+            "Rivers, <PERSON> and <PERSON>",
+            "<ORGANIZATION>, <PERSON> and <PERSON>",
+            "<PERSON>",
+            "Colon and Sons",
+            "Wall PLC",
+            "Palmer, White and <ORGANIZATION>",
+            "Vega, Hansen and Shepard",
+            "Wade, <ORGANIZATION> and <ORGANIZATION>",
+            "Edwards, <PERSON> and <PERSON>"
+          ]
+        },
+        "facts": [
+          {"c":0,"y":2026,"m":1,"t_cr":49,"fr_pct":0.8519,"res_pct":0.7778},
+          {"c":0,"y":2026,"m":1,"t_cr":181,"fr_pct":0.9557,"res_pct":0.9673},
+          {"c":1,"y":2026,"m":1,"t_cr":305,"fr_pct":0.4248,"res_pct":0.6650},
+          {"c":2,"y":2026,"m":1,"t_cr":51,"fr_pct":1.0000,"res_pct":0.9750},
+          {"c":0,"y":2026,"m":1,"t_cr":33,"fr_pct":1.0000,"res_pct":0.9333},
+          {"c":3,"y":2026,"m":1,"t_cr":159,"fr_pct":0.7826,"res_pct":0.8303},
+          {"c":0,"y":2026,"m":1,"t_cr":30,"fr_pct":0.9000,"res_pct":0.9063},
+          {"c":4,"y":2026,"m":1,"t_cr":14,"fr_pct":1.0000,"res_pct":0.8462},
+          {"c":0,"y":2026,"m":1,"t_cr":5,"fr_pct":1.0000,"res_pct":1.0000},
+          {"c":5,"y":2026,"m":1,"t_cr":72,"fr_pct":0.9344,"res_pct":0.9077},
+          {"c":6,"y":2026,"m":1,"t_cr":12,"fr_pct":0.9000,"res_pct":0.8571},
+          {"c":6,"y":2026,"m":1,"t_cr":4,"fr_pct":1.0000,"res_pct":0.3333},
+          {"c":7,"y":2026,"m":1,"t_cr":8,"fr_pct":1.0000,"res_pct":1.0000},
+          {"c":0,"y":2026,"m":1,"t_cr":1,"fr_pct":1.0000,"res_pct":null},
+          {"c":2,"y":2026,"m":1,"t_cr":18,"fr_pct":1.0000,"res_pct":0.7143},
+          {"c":8,"y":2026,"m":1,"t_cr":4,"fr_pct":1.0000,"res_pct":0.7500},
+          {"c":0,"y":2026,"m":1,"t_cr":9,"fr_pct":1.0000,"res_pct":1.0000},
+          {"c":9,"y":2026,"m":1,"t_cr":6,"fr_pct":1.0000,"res_pct":0.6667},
+          {"c":6,"y":2026,"m":1,"t_cr":15,"fr_pct":1.0000,"res_pct":0.7692},
+          {"c":9,"y":2026,"m":1,"t_cr":11,"fr_pct":1.0000,"res_pct":1.0000}
+        ]
+      },
+      "follow_up": "Agent proactively asked: 'Would you like me to extend this to all months of 2026 or prepare a dashboard-ready JSON with KPIs and charts?'",
+      "notes": "TOPN(20) keeps output within token limits. Agent correctly formatted dim/facts star-schema. PII anonymization active (<ORGANIZATION>, <PERSON> placeholders)."
+    }
+  ],
+  "key_findings": {
+    "mcp_connection": "Working - all 7 tools accessible",
+    "search_schema_latency": "~12s per call",
+    "execute_dax_latency": "0.98s - 4.80s depending on query complexity",
+    "token_limit": "OpenAIModelTokenLimit - caps total context (tool results + response)",
+    "small_queries_work": true,
+    "large_queries_fail": true,
+    "topn_workaround": true,
+    "structured_json_output": true,
+    "pii_anonymization": "Active - company names show <ORGANIZATION>/<PERSON> placeholders",
+    "full_html_feasible": false
+  }
+}
