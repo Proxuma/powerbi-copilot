@@ -158,52 +158,21 @@ body {
     flex-shrink: 0;
 }
 
-.editor-sections {
+/* === UNIFIED PASTE AREA === */
+.paste-area {
     flex: 1;
-    overflow-y: auto;
-    padding: 0;
-}
-
-.editor-section {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
-.editor-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-    background: #f1f5f9;
-    border-bottom: 1px solid #e2e8f0;
-    border-top: 1px solid #e2e8f0;
-}
-
-.editor-section-header h3 {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #64748b;
-}
-
-.editor-section-header .badge {
-    font-size: 0.65rem;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
-    background: #f0fdfa;
-    color: #0f766e;
-    border: 1px solid #99f6e4;
-}
-
-.editor-section textarea {
+.paste-area textarea {
     flex: 1;
     width: 100%;
     border: none;
     outline: none;
     resize: none;
-    padding: 12px 16px;
+    padding: 16px 20px;
     font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
     font-size: 0.78rem;
     line-height: 1.6;
@@ -212,18 +181,103 @@ body {
     tab-size: 2;
 }
 
-.editor-section textarea:focus {
+.paste-area textarea:focus {
     background: #fefffe;
 }
 
-.editor-section.config-section {
-    flex: 1;
-    min-height: 0;
+.paste-area textarea::placeholder {
+    color: #94a3b8;
 }
 
-.editor-section.data-section {
-    flex: 1;
-    min-height: 0;
+/* Empty state overlay */
+.paste-empty-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(135deg, #f8fafc 0%, #f0fdfa 100%);
+    transition: opacity 0.2s;
+}
+
+.paste-empty-state.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.paste-empty-state svg {
+    width: 48px;
+    height: 48px;
+    color: #0f766e;
+    opacity: 0.5;
+}
+
+.paste-empty-state h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.paste-empty-state p {
+    font-size: 0.82rem;
+    color: #64748b;
+    text-align: center;
+    line-height: 1.6;
+    max-width: 320px;
+    margin: 0;
+}
+
+.paste-empty-state .paste-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.paste-empty-state kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #475569;
+    box-shadow: 0 1px 0 #e2e8f0;
+}
+
+.paste-status {
+    padding: 6px 16px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #0f766e;
+    background: #f0fdfa;
+    border-top: 1px solid #e2e8f0;
+    display: none;
+}
+
+.paste-status.visible {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.paste-status.error {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+/* Hidden split textareas for internal use */
+.editor-sections-hidden {
+    display: none;
 }
 
 /* === RIGHT PANEL (Preview) === */
@@ -403,22 +457,26 @@ body {
             </button>
         </div>
 
-        <div class="editor-sections">
-            <div class="editor-section config-section">
-                <div class="editor-section-header">
-                    <h3>DASH_CONFIG</h3>
-                    <span class="badge">Layout &amp; metrics</span>
-                </div>
-                <textarea id="ta-config" spellcheck="false"></textarea>
+        <!-- Unified paste area -->
+        <div class="paste-area">
+            <div class="paste-empty-state" id="paste-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                    <path d="M9 14l2 2 4-4"/>
+                </svg>
+                <h3>Paste your Copilot output here</h3>
+                <p>Copy the JSON from Copilot Studio, VS Code, or Claude and paste it below. The dashboard renders instantly.</p>
+                <span class="paste-shortcut"><kbd>Ctrl</kbd>+<kbd>V</kbd> to paste &nbsp;|&nbsp; <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to render</span>
             </div>
+            <textarea id="ta-unified" spellcheck="false" placeholder='Paste JSON here... e.g. {"config": {...}, "data": {...}}'></textarea>
+            <div class="paste-status" id="paste-status"></div>
+        </div>
 
-            <div class="editor-section data-section">
-                <div class="editor-section-header">
-                    <h3>DATA JSON</h3>
-                    <span class="badge">Facts &amp; dimensions</span>
-                </div>
-                <textarea id="ta-data" spellcheck="false"></textarea>
-            </div>
+        <!-- Hidden: split textareas for internal render logic -->
+        <div class="editor-sections-hidden">
+            <textarea id="ta-config"></textarea>
+            <textarea id="ta-data"></textarea>
         </div>
     </div>
 
@@ -1594,10 +1652,31 @@ const DEFAULT_DATA = `{
 // ================================================================
 const taConfig = document.getElementById('ta-config');
 const taData = document.getElementById('ta-data');
+const taUnified = document.getElementById('ta-unified');
+const pasteEmpty = document.getElementById('paste-empty');
+const pasteStatusEl = document.getElementById('paste-status');
 const iframe = document.getElementById('preview-iframe');
 const statusEl = document.getElementById('preview-status');
 const statusText = statusEl.querySelector('.status-text');
 const errorToast = document.getElementById('error-toast');
+
+// Show/hide empty state based on textarea content
+taUnified.addEventListener('input', function() {
+    pasteEmpty.classList.toggle('hidden', this.value.trim().length > 0);
+    pasteStatusEl.classList.remove('visible');
+});
+
+// Click empty state to focus textarea
+pasteEmpty.addEventListener('click', function() {
+    taUnified.focus();
+});
+
+// Detect Mac for keyboard shortcut display
+if (navigator.platform.indexOf('Mac') > -1) {
+    document.querySelectorAll('.paste-shortcut kbd').forEach((kbd, i) => {
+        if (kbd.textContent === 'Ctrl') kbd.textContent = '\u2318';
+    });
+}
 
 let errorTimeout = null;
 let lastRenderedHTML = '';
@@ -1607,6 +1686,9 @@ let lastRenderedHTML = '';
 // ================================================================
 taConfig.value = DEFAULT_CONFIG;
 taData.value = DEFAULT_DATA;
+// Show combined JSON in unified textarea for the demo
+taUnified.value = JSON.stringify({ config: JSON.parse(DEFAULT_CONFIG), data: JSON.parse(DEFAULT_DATA) }, null, 2);
+pasteEmpty.classList.add('hidden');
 
 // ================================================================
 //  UTILITY FUNCTIONS
@@ -1644,15 +1726,59 @@ function validateJSON(str, label) {
 // ================================================================
 //  RENDER DASHBOARD
 // ================================================================
+function splitUnifiedJSON(raw) {
+    // Try to parse as combined {"config": ..., "data": ...}
+    const result = validateJSON(raw, 'JSON');
+    if (!result.ok) return result;
+
+    const obj = result.data;
+
+    if (obj.config && obj.data) {
+        return { ok: true, config: obj.config, data: obj.data };
+    }
+    // Maybe it's just a config (has title + kpi_rows)
+    if (obj.title && obj.kpi_rows) {
+        return { ok: false, error: 'This looks like a config only (no data). The AI should output both config and data together.' };
+    }
+    // Maybe it's just data (has facts)
+    if (obj.facts) {
+        return { ok: false, error: 'This looks like data only (no config). The AI should output both config and data together.' };
+    }
+
+    return { ok: false, error: 'Unrecognized JSON structure. Expected: {"config": {...}, "data": {...}}' };
+}
+
+function showPasteStatus(msg, isError) {
+    pasteStatusEl.textContent = msg;
+    pasteStatusEl.classList.add('visible');
+    pasteStatusEl.classList.toggle('error', !!isError);
+}
+
 function renderDashboard() {
-    const configResult = validateJSON(taConfig.value.trim(), 'DASH_CONFIG');
+    // If unified textarea has content, use it (auto-split)
+    const unified = taUnified.value.trim();
+    if (unified) {
+        const split = splitUnifiedJSON(unified);
+        if (!split.ok) {
+            showError(split.error);
+            showPasteStatus(split.error, true);
+            setStatus('error', 'JSON Error');
+            return;
+        }
+        taConfig.value = JSON.stringify(split.config, null, 2);
+        taData.value = JSON.stringify(split.data, null, 2);
+        showPasteStatus('Config + Data detected', false);
+    }
+
+    // Fallback: read from split textareas
+    const configResult = validateJSON(taConfig.value.trim(), 'Config');
     if (!configResult.ok) {
         showError(configResult.error);
         setStatus('error', 'JSON Error');
         return;
     }
 
-    const dataResult = validateJSON(taData.value.trim(), 'DATA JSON');
+    const dataResult = validateJSON(taData.value.trim(), 'Data');
     if (!dataResult.ok) {
         showError(dataResult.error);
         setStatus('error', 'JSON Error');
@@ -1681,40 +1807,20 @@ function renderDashboard() {
 // ================================================================
 //  PASTE FROM COPILOT
 // ================================================================
-function pasteFromCopilot() {
-    const input = prompt(
-        'Paste the combined JSON from Copilot Studio.\n\n' +
-        'Expected format:\n' +
-        '{"config": {...}, "data": {...}}\n\n' +
-        'Or paste a JSON object and it will be auto-detected.'
-    );
-
-    if (!input || !input.trim()) return;
-
-    const result = validateJSON(input.trim(), 'Pasted JSON');
-    if (!result.ok) {
-        showError(result.error);
-        return;
-    }
-
-    const obj = result.data;
-
-    // Try to detect format
-    if (obj.config && obj.data) {
-        // Standard combined format
-        taConfig.value = JSON.stringify(obj.config, null, 2);
-        taData.value = JSON.stringify(obj.data, null, 2);
+async function pasteFromCopilot() {
+    try {
+        const text = await navigator.clipboard.readText();
+        if (!text || !text.trim()) {
+            showError('Clipboard is empty. Copy the JSON from your AI tool first.');
+            return;
+        }
+        taUnified.value = text.trim();
+        pasteEmpty.classList.add('hidden');
         renderDashboard();
-    } else if (obj.title && obj.kpi_rows) {
-        // This looks like a DASH_CONFIG only
-        taConfig.value = JSON.stringify(obj, null, 2);
-        showError('Detected DASH_CONFIG only. DATA JSON was not updated. Paste a combined {"config": ..., "data": ...} object for both.');
-    } else if (obj.refreshed && obj.facts) {
-        // This looks like DATA only
-        taData.value = JSON.stringify(obj, null, 2);
-        showError('Detected DATA JSON only. DASH_CONFIG was not updated. Paste a combined {"config": ..., "data": ...} object for both.');
-    } else {
-        showError('Could not detect JSON structure. Expected {"config": {...}, "data": {...}}');
+    } catch (err) {
+        // Clipboard API denied — fallback: focus textarea for manual Ctrl+V
+        taUnified.focus();
+        showPasteStatus('Press Ctrl+V to paste from clipboard', false);
     }
 }
 
@@ -1742,11 +1848,14 @@ function downloadHTML() {
 //  CLEAR
 // ================================================================
 function clearAll() {
-    if (!confirm('Clear both textareas and the preview?')) return;
+    if (!confirm('Clear everything and start fresh?')) return;
+    taUnified.value = '';
     taConfig.value = '';
     taData.value = '';
     iframe.srcdoc = '';
     lastRenderedHTML = '';
+    pasteEmpty.classList.remove('hidden');
+    pasteStatusEl.classList.remove('visible');
     setStatus('', 'Idle');
 }
 
@@ -1764,6 +1873,14 @@ document.addEventListener('keydown', function(e) {
         e.preventDefault();
         renderDashboard();
     }
+});
+
+// Auto-render when pasting into unified textarea
+taUnified.addEventListener('paste', function() {
+    setTimeout(function() {
+        pasteEmpty.classList.add('hidden');
+        renderDashboard();
+    }, 50);
 });
 
 // ================================================================
