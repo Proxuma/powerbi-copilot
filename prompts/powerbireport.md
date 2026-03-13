@@ -1,433 +1,330 @@
 # Power BI Report Generator
 
-Generate a beautiful, WordPress-ready HTML report for Power BI data analysis.
+Generate a professional HTML report from Power BI data using natural language questions.
 
 **Business Question:** $ARGUMENTS
 
 **If no question is specified, ask the user what they want to analyze.**
 
-## Protected Pages — NEVER TOUCH
+---
 
-The pages below are **NOT Power BI reports**. They are hand-crafted editorial content with their own CSS class (`.prx-mcp`), their own layout, and their own design. They exist under the same parent pages as reports but are a completely different category.
+## Workflow
 
-**HARD RULES:**
-- NEVER overwrite, regenerate, update, or include these pages in ANY bulk operation
-- NEVER pass these IDs to `push_via_tempfile()`, `$wpdb->update()`, or any deploy script
-- NEVER treat them as reports — they are editorial explainer pages
-- If iterating over child pages of parent 3299 or 3495, ALWAYS filter these IDs out FIRST
-- `deploy_reports_lib.py` has a `PROTECTED_PAGE_IDS` set that blocks pushes programmatically
+Follow these steps in order:
 
-| Page ID | Type | Title | Slug | Parent |
-|---------|------|-------|------|--------|
-| 3401 | Editorial | AI Privacy & Compliance Guide | `ai-privacy-compliance-guide` | 3299 (EN) |
-| 5655 | Editorial | AI Privacy & Compliance Gids | `ai-privacy-compliance-guide` | 3495 (NL) |
-| 3389 | Editorial | Power BI MCP Server | `power-bi-mcp-server` | 3299 (EN) |
-| 4887 | Editorial | Wat is een MCP-server? | `power-bi-mcp-server` | 3495 (NL) |
+### Step 1: Discover the Environment
 
-**Also protected (gallery/index pages — never overwrite with report content):**
+If no workspace or dataset has been specified, auto-discover them:
 
-| Page ID | Type | Title | Parent |
-|---------|------|-------|--------|
-| 3299 | Gallery | AI-Powered Reports (EN index) | — |
-| 3495 | Gallery | AI-Gegenereerde Rapporten (NL index) | — |
+```
+mcp__powerbi__list_workspaces()
+```
 
-**History:** Page 3401 was corrupted on Mar 3, 2026 by a bulk update that didn't skip editorial pages. It was restored Mar 8 from the Feb 11 original. This must never happen again.
+Show the user the available workspaces. Once they pick one (or if there is only one):
 
-## Instructions
+```
+mcp__powerbi__list_datasets(workspace_id="<chosen_workspace_id>")
+```
 
-Follow this exact workflow:
+Show the available datasets. Once confirmed, store the `workspace_id` and `dataset_id` for all subsequent calls.
 
-### Step 1: Extract Keywords
-Extract 2-3 key business terms from the question (e.g., "phase", "budget", "efficiency", "variance", "revenue", "license", "profitability").
+If the user already specified a workspace/dataset (by name or ID), skip straight to Step 2.
 
-### Step 2: Search for Relevant Measures
-For each keyword, use `search_schema` to find relevant measures:
+### Step 2: Extract Keywords
+
+Extract 2-4 key business terms from the question.
+
+**Example:** "How efficient is our first response SLA across queues?" yields keywords: `first response`, `SLA`, `queue`.
+
+### Step 3: Search for Relevant Measures and Columns
+
+For each keyword, search the schema:
 
 ```
 mcp__powerbi__search_schema(
-    workspace_id="1d365f6a-1dbb-4466-88e1-487f6836b452",
-    dataset_id="fd823eb4-da85-449d-a175-d24bff86229f",
+    workspace_id="<workspace_id>",
+    dataset_id="<dataset_id>",
     search_term="<keyword>"
 )
 ```
 
-Also run `list_measures` to see all available measures:
+Also list all measures for a broader view:
+
 ```
 mcp__powerbi__list_measures(
-    workspace_id="1d365f6a-1dbb-4466-88e1-487f6836b452",
-    dataset_id="fd823eb4-da85-449d-a175-d24bff86229f"
+    workspace_id="<workspace_id>",
+    dataset_id="<dataset_id>"
 )
 ```
 
-**NEVER use `get_schema`** - it can return >10MB and crash the session.
+**NEVER use `get_schema`.** It can return more than 10 MB and will crash the session. Always use `search_schema` with specific terms.
 
-### Step 3: Build and Execute DAX Queries
-Based on the measures found, construct targeted DAX queries:
+### Step 4: Build and Execute DAX Queries
+
+Based on the measures and columns found, construct 4-8 targeted DAX queries:
 
 ```
 mcp__powerbi__execute_dax(
-    dataset_id="fd823eb4-da85-449d-a175-d24bff86229f",
+    dataset_id="<dataset_id>",
     dax_query="EVALUATE SUMMARIZECOLUMNS(...)"
 )
 ```
 
-Run 4-8 separate DAX queries to collect enough data for a comprehensive report (KPIs, breakdowns by client/category, trends, comparisons).
+Aim for a mix of:
+- Summary KPIs (totals, averages, percentages)
+- Breakdowns by category (top N items, distributions)
+- Trend data over time (monthly or quarterly)
+- Comparisons (target vs. actual, category vs. category)
 
-### Step 4: Read the CSS Template (COPY-EXACT)
-Read the **locked CSS template** and copy its ENTIRE `<style>` block byte-for-byte into your report:
+Use `TOPN()` or filters to keep result sets small. Never return unbounded queries.
 
-**CSS template (ONLY source of truth for CSS):**
-`~/ClaudeCode/powerbi-reports/templates/teal-frame-css.html`
+### Step 5: Generate the HTML Report
 
-**CRITICAL RULES:**
-- Copy the `<style>` block from the template VERBATIM. Do not rewrite, optimize, reorder, or "improve" any CSS.
-- Do NOT add CSS inside SVG `<defs><style>` tags. The Proxuma logo SVG has its own `<style>` — leave it alone.
-- If you need custom CSS for report-specific visualizations (e.g., bar charts, ring charts), add it in a SEPARATE `<style>` block AFTER the template CSS, scoped under `.prx-report`.
-- Never inline the template CSS from memory. Always read the file and copy.
+Build a self-contained HTML file using the data from your DAX queries. Follow the report structure and CSS framework described below. Use real numbers from the query results. Never fabricate data.
 
-**HTML structure reference (for the teal frame document section):**
-`~/ClaudeCode/powerbi-reports/GOLDEN-STANDARD.html` (lines 404-943)
+### Step 6: Save and Open
 
-**Additional content examples (for data layout ideas only, NOT for CSS):**
-- `~/ClaudeCode/powerbi-reports/proxuma-io-documentation-roi-post.html`
-- `~/ClaudeCode/powerbi-reports/proxuma-io-client-profitability-post.html`
+Save the file to the current working directory with a descriptive name:
 
-### Step 5: Determine Data Sources
-Identify which systems/tools were queried. **Every table referenced in any DAX query MUST have a corresponding badge.** Cross-check your DAX queries against this mapping before generating the report.
-
-Use these badge labels:
-- **PSA** — Autotask PSA (tickets, contracts, companies, time entries, billing). Tables: `BI_Autotask_Tickets`, `BI_Autotask_Contracts`, `BI_Autotask_Companies`, `BI_Autotask_Time_Entries`, `BI_Autotask_Billing_Items`, `BI_Autotask_Projects`, `BI_Autotask_Configuration_Items`, `BI_Autotask_Contract_Service_Units`
-- **RMM** — Datto RMM (devices, alerts, patch status, AV status). Tables: `BI_Datto_*`
-- **Backup** — N-able/Datto Backup (backup jobs, success rates, storage). Tables: `BI_Backup_*`
-- **M365** — Microsoft 365 (licenses, subscriptions, users, usage). Tables: `BI_M365_*`
-- **IT Glue** — IT Glue (documentation, configurations, passwords). Tables: `BI_ITGlue_*`
-- **SmileBack** — SmileBack CSAT (customer satisfaction surveys, ratings). Tables: `BI_SmileBack_*`
-
-**Badge CSS classes:** `badge-psa`, `badge-rmm`, `badge-backup`, `badge-m365`, `badge-itglue`, `badge-smileback`
-
-**Badge colors (add to CSS if not in reference template):**
-```css
-.prx-report .badge-psa { background: #DBEAFE; color: #1E40AF; border-color: #1D4ED8; }
-.prx-report .badge-rmm { background: #FDE68A; color: #78350F; border-color: #B45309; }
-.prx-report .badge-backup { background: #FECACA; color: #7F1D1D; border-color: #DC2626; }
-.prx-report .badge-m365 { background: #E9D5FF; color: #581C87; border-color: #7C3AED; }
-.prx-report .badge-itglue { background: #A7F3D0; color: #064E3B; border-color: #059669; }
-.prx-report .badge-smileback { background: #FEF3C7; color: #713F12; border-color: #D97706; }
+```
+[topic-slug]-report.html
 ```
 
-### Step 6: Generate the Complete HTML Report
-Build the self-contained HTML file following the exact structure below. The output must work as a single paste into a WordPress Custom HTML block.
+Then open it in the user's browser:
 
-## Default Environment
-
-| Resource | ID |
-|----------|-----|
-| Workspace (Proxuma Demo) | `1d365f6a-1dbb-4466-88e1-487f6836b452` |
-| Dataset (Data model Template) | `fd823eb4-da85-449d-a175-d24bff86229f` |
-
-## Output
-
-1. Save the **teal-frame only** HTML to `~/ClaudeCode/powerbi-reports/proxuma-io-[slug]-post.html`
-   - The teal frame is ONLY the `<div class="prx-report">...</div>` content — no morph bar, no search hero, no CTA
-2. **Deploy to WordPress** using `deploy_report()` from `batch_generate.py`:
-   ```python
-   import sys, os
-   sys.path.insert(0, os.path.expanduser('~/ClaudeCode/powerbi-reports'))
-   from batch_generate import deploy_report
-   deploy_report('proxuma-io-[slug]-post.html', PAGE_ID, slug='[slug]', search_query='[question]', title='[Title]', badges=['psa'], lang='en')
-   ```
-   This automatically: wraps with chrome (morph bar, search hero, pipeline, overview, CTA, series nav), injects related reports with BreadcrumbList JSON-LD, and pushes to WordPress via `$wpdb->update()`.
-3. **Repeat for NL version**: Generate the Dutch teal-frame HTML, save as `proxuma-io-[nl-slug]-post.html`, and deploy with `lang='nl'`.
-4. **Add a gallery card** to `~/ClaudeCode/powerbi-reports/proxuma-io-insights-gallery.html` — insert a new `<a class="report-card">` card inside the `.reports-grid` div (before its closing `</div>`), following the exact format of existing cards.
-5. Open the report in browser to verify
-6. Tell user: "Published EN + NL reports with chrome wrapper, related reports, and BreadcrumbList schema."
-
-**If no page ID exists yet**, ask the user for the EN and NL WordPress page IDs before deploying.
+```bash
+open [topic-slug]-report.html
+```
 
 ---
 
-## Teal Frame Output Format
+## Report Structure: "Teal Frame Printed Document"
 
-The AI generates ONLY the teal-frame document. The chrome wrapper (morph bar, search hero, pipeline, overview, CTA, series nav, related reports, JS) is added automatically by `deploy_report()` during deployment.
+The report is a single self-contained HTML file that looks like a professional printed document wrapped in a teal gradient frame. It opens directly in any browser with no dependencies.
 
-**Do NOT include** morph bar CSS/HTML, search hero, CTA block, or any `<script>` tags in the teal-frame file. Those are injected by `wrap_with_chrome()` in `deploy_reports_lib.py`.
-
-The teal-frame HTML file contains only:
+### HTML Skeleton
 
 ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[Report Title] - Power BI Report</title>
+<!-- ALL CSS GOES HERE (see CSS Framework section below) -->
+</head>
+<body>
 <div class="prx-report">
-<!-- CSS block from teal-frame-css.html goes here (copy verbatim) -->
-<!-- Then any report-specific chart CSS in a SEPARATE <style> block -->
 
 <div class="report-frame-outer">
 <div class="doc">
-  <!-- doc-header, doc-title-block, doc-demo, doc-body, doc-footer -->
-</div>
-</div>
-</div>
 
-<script type="application/ld+json">
-{ "@context": "https://schema.org", "@type": "FAQPage", ... }
-</script>
-<script>
-function prxCopyDAX(btn){...}
-</script>
-```
-
----
-
-## Report Structure — V5 "Printed Document" Format
-
-The report consists of TWO layers:
-
-1. **Teal frame document** (the report content) — generated by the AI, saved as the HTML file
-2. **Chrome wrapper** (morph bar, search hero, pipeline, overview, CTA, related reports) — added by `deploy_report()` via `wrap_with_chrome()` + `inject_related_reports()` when pushing to WordPress
-
-The AI generates ONLY the teal frame document. The chrome wrapper is added automatically by `deploy_report()` from `batch_generate.py`.
-
-### Architecture
-
-```
-<style>morph bar CSS + chrome CSS</style>           ← wrap_with_chrome() adds
-<div class="prx-morph-bar">...</div>                ← wrap_with_chrome() adds
-
-<div class="prx-report" id="prx-frame-top">
-  <style>template CSS</style>                       ← from teal-frame-css.html (in teal frame)
-  <nav class="series-nav">...</nav>                 ← wrap_with_chrome() injects
-  <div class="search-hero">...</div>                ← wrap_with_chrome() injects
-  <div class="pipeline-section">...</div>           ← wrap_with_chrome() injects
-  <div class="overview-section">...</div>           ← wrap_with_chrome() injects
-
-  <div class="report-frame-outer">                  ← AI generates from here
-    <div class="doc">
-      .doc-header
-      .doc-title-block
-      .doc-demo
-      .doc-body > .doc-section (numbered)
-      .doc-footer
-    </div>
-  </div>                                            ← AI generates to here
-
-  <div class="related-reports">...</div>            ← inject_related_reports() adds
-  <div class="cta-block">...</div>                  ← wrap_with_chrome() injects
-</div>
-
-<script>morph JS + copy JS</script>                 ← wrap_with_chrome() adds
-<script type="application/ld+json">BreadcrumbList</script>  ← inject_related_reports() adds
-```
-
-**No real client/resource names — always anonymize to "Client A", "Client B", etc.**
-
-### Reference implementation
-
-`~/ClaudeCode/powerbi-reports/generate-test-reports.py` — working generator with chart helpers, `wrap_report()`, and 12 report functions. Copy patterns from this file.
-
----
-
-### Teal Frame Document Structure
-
-The AI generates the content inside `.report-frame-outer`. This is what goes into the HTML file.
-
-#### Document header
-```html
-<div class="prx-report">
-<!-- CSS block from teal-frame-css.html goes here (copy verbatim) -->
-
-<div class="report-frame-outer">
-<div class="doc">
+  <!-- 1. DOCUMENT HEADER -->
   <div class="doc-header">
     <div>
-      <div class="doc-logo">
-        <!-- Proxuma SVG logo — copy from GOLDEN-STANDARD.html -->
-      </div>
       <div class="doc-type">AI-Generated Power BI Report</div>
     </div>
     <div class="doc-header-right">
-      <div class="doc-meta-row"><strong>Date:</strong> March 2026</div>
-      <div class="doc-meta-row"><strong>Source:</strong> Autotask PSA &middot; Power BI</div>
-      <div class="doc-meta-row"><strong>Scope:</strong> [e.g., "67,521 tickets &middot; All clients"]</div>
+      <div class="doc-meta-row"><strong>Date:</strong> [Current month + year]</div>
+      <div class="doc-meta-row"><strong>Source:</strong> [Dataset name] &middot; Power BI</div>
+      <div class="doc-meta-row"><strong>Scope:</strong> [e.g., "12,450 records &middot; All departments"]</div>
     </div>
   </div>
-```
 
-#### Title block + demo banner
-```html
+  <!-- 2. TITLE BLOCK -->
   <div class="doc-title-block">
     <div class="doc-title">[Report Title]</div>
-    <p class="doc-subtitle">[1-2 sentence subtitle describing what was analyzed and key finding]</p>
+    <p class="doc-subtitle">[1-2 sentence subtitle with bold key phrases describing the main finding]</p>
   </div>
 
-  <div class="doc-demo"><strong>Demo Report:</strong> This report uses synthetic data to demonstrate AI-generated insights from Proxuma Power BI. The structure, DAX queries, and analysis reflect real MSP data patterns.</div>
-```
+  <!-- 3. DEMO BANNER (optional, user can remove) -->
+  <div class="doc-demo"><strong>Note:</strong> This report was generated by AI from live Power BI data. Verify critical figures before making decisions.</div>
 
-#### Document body (numbered sections)
-```html
+  <!-- 4. DOCUMENT BODY (numbered sections) -->
   <div class="doc-body">
-    <!-- Sections 1.0 through 8.0 go here -->
-  </div>
-```
 
-#### Document footer
-```html
-  <div class="doc-footer">
-    <span>Proxuma Power BI &middot; AI-Generated Report &middot; proxuma.io/powerbi</span>
-    <span>Generated in &lt; 15 minutes via MCP &middot; March 2026</span>
-  </div>
-</div>
-</div>
-</div>
-```
-
-#### JSON-LD FAQ + Copy JS (after closing `.prx-report`)
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {"@type":"Question","name":"[Q1]","acceptedAnswer":{"@type":"Answer","text":"[A1]"}},
-    {"@type":"Question","name":"[Q2]","acceptedAnswer":{"@type":"Answer","text":"[A2]"}}
-  ]
-}
-</script>
-<script>
-function prxCopyDAX(btn){var c=btn.parentElement.querySelector('code');if(c){navigator.clipboard.writeText(c.textContent).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy Query'},1500)})}}
-</script>
-```
-
----
-
-### Section Components (inside `.doc-body`)
-
-#### Numbered section
-Every data section follows this pattern:
-```html
+    <!-- SECTION 1.0 -->
     <div class="doc-section">
       <div class="doc-section-head">
         <span class="doc-section-num">1.0</span>
         <span class="doc-section-title">[Section Title]</span>
       </div>
-      <p class="doc-section-sub">[1-sentence description of what this section shows]</p>
+      <p class="doc-section-sub">[One sentence describing what this section shows.]</p>
 
-      <!-- DATA: KPIs, charts, tables -->
+      <!-- KPI ROW (use inside any section) -->
+      <div class="doc-kpi-row">
+        <div class="doc-kpi">
+          <div class="doc-kpi-label">METRIC NAME</div>
+          <div class="doc-kpi-value">12,450</div>
+          <div class="doc-kpi-note green">+8.2% vs prior period</div>
+        </div>
+        <div class="doc-kpi">
+          <div class="doc-kpi-label">ANOTHER METRIC</div>
+          <div class="doc-kpi-value">94.3%</div>
+          <div class="doc-kpi-note amber">Target: 95%</div>
+        </div>
+        <!-- 2-4 KPIs per row -->
+      </div>
 
-      <!-- DAX TOGGLE (required per section, at the bottom) -->
+      <!-- DAX EXPLANATION (after section 1.0 only) -->
+      <div class="doc-dax-box" style="margin-top:12px;">
+        <strong>What are these DAX queries?</strong> DAX (Data Analysis Expressions) is the formula language Power BI uses to query data. Each collapsible section below shows the exact query used. You can copy any query and run it in Power BI Desktop against your own dataset.
+      </div>
+
+      <!-- DAX TOGGLE (required at the bottom of every data section) -->
       <div class="dax-toggle" onclick="this.classList.toggle('expanded')">
         <div class="dax-trigger">
           <svg class="dax-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
-          <span>View DAX Query &mdash; [Description]</span>
+          <span>View DAX Query &mdash; [Short description of what this query does]</span>
         </div>
         <div class="dax-content">
-          <pre><code>EVALUATE ...</code></pre>
+          <pre><code>EVALUATE
+SUMMARIZECOLUMNS(
+    ...
+)</code></pre>
           <button class="dax-copy" onclick="event.stopPropagation();prxCopyDAX(this)">Copy Query</button>
         </div>
       </div>
     </div>
-```
 
-Number sections sequentially: 1.0, 2.0, 3.0, etc. through 8.0. The last numbered section (typically 9.0) is always the FAQ.
+    <!-- SECTIONS 2.0 through 7.0: same pattern as 1.0 -->
+    <!-- Each section has: section head, section sub, data visualization(s), dax toggle -->
 
-#### DAX explanation box (after section 1.0 only)
-```html
-      <div class="doc-dax-box" style="margin-top:12px;">
-        <strong>What are these DAX queries?</strong> DAX (Data Analysis Expressions) is the formula language Power BI uses to query data. Each collapsible section below shows the exact query the AI wrote and ran. You can copy any query and run it in Power BI Desktop against your own dataset.
-      </div>
-```
-
-#### KPI row (inside any section)
-```html
-      <div class="doc-kpi-row">
-        <div class="doc-kpi">
-          <div class="doc-kpi-label">METRIC NAME</div>
-          <div class="doc-kpi-value">67,521</div>
-          <div class="doc-kpi-note green">98.8% completion rate</div>
-        </div>
-        <!-- 2-4 more doc-kpi divs -->
-      </div>
-```
-
-Note colors: `green`, `red`, `amber`, `muted` (gray).
-
-#### Findings/insights (inside any section, typically the last data section)
-```html
-      <div class="doc-finding critical">
-        <h4>1. [Numbered, actionable insight title]</h4>
-        <p>[2-3 sentences with specific data points and recommended actions. Bold key numbers.]</p>
-      </div>
-      <div class="doc-finding warning">
-        <h4>2. [Next insight]</h4>
-        <p>[Details]</p>
-      </div>
-      <div class="doc-finding success">
-        <h4>3. [Positive insight or opportunity]</h4>
-        <p>[Details]</p>
-      </div>
-```
-
-Use `.critical` (red left border), `.warning` (amber), `.success` (green).
-
-#### FAQ section (always the last numbered section)
-```html
+    <!-- FINDINGS SECTION (typically second-to-last numbered section) -->
     <div class="doc-section">
       <div class="doc-section-head">
-        <span class="doc-section-num">9.0</span>
+        <span class="doc-section-num">7.0</span>
+        <span class="doc-section-title">Key Findings and Recommendations</span>
+      </div>
+      <p class="doc-section-sub">Data-backed insights ranked by business impact.</p>
+
+      <div class="doc-finding">
+        <div class="doc-finding-icon critical">!</div>
+        <div class="doc-finding-body">
+          <h4>1. [Actionable finding title]</h4>
+          <p>[2-3 sentences with specific numbers and a recommended action. <strong>Bold key figures.</strong>]</p>
+        </div>
+      </div>
+      <div class="doc-finding">
+        <div class="doc-finding-icon warning">!</div>
+        <div class="doc-finding-body">
+          <h4>2. [Another finding]</h4>
+          <p>[Details with numbers.]</p>
+        </div>
+      </div>
+      <div class="doc-finding">
+        <div class="doc-finding-icon ok">&#10003;</div>
+        <div class="doc-finding-body">
+          <h4>3. [Positive finding or opportunity]</h4>
+          <p>[Details.]</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ SECTION (always last numbered section) -->
+    <div class="doc-section">
+      <div class="doc-section-head">
+        <span class="doc-section-num">8.0</span>
         <span class="doc-section-title">Frequently Asked Questions</span>
       </div>
       <div class="doc-faq">
         <div class="faq-item" onclick="this.classList.toggle('open')">
-          <div class="faq-q"><span>[Question text]</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></div>
-          <div class="faq-a"><p>[Answer text]</p></div>
+          <div class="faq-q"><span>[Question]</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></div>
+          <div class="faq-a"><p>[Answer]</p></div>
         </div>
-        <!-- 5-7 FAQ items -->
+        <!-- 4-6 FAQ items -->
       </div>
     </div>
+
+  </div><!-- end doc-body -->
+
+  <!-- 5. DOCUMENT FOOTER -->
+  <div class="doc-footer">
+    <span>Power BI &middot; AI-Generated Report</span>
+    <span>Generated [Current month + year]</span>
+  </div>
+
+</div><!-- end doc -->
+</div><!-- end report-frame-outer -->
+</div><!-- end prx-report -->
+
+<!-- COPY DAX FUNCTION -->
+<script>
+function prxCopyDAX(btn){var c=btn.parentElement.querySelector('code');if(c){navigator.clipboard.writeText(c.textContent).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy Query'},1500)})}}
+</script>
+</body>
+</html>
 ```
+
+### Section Numbering
+
+Number sections sequentially: 1.0, 2.0, 3.0, etc. Aim for 5-8 numbered sections total:
+- Sections 1.0 through 5.0 or 6.0: data sections (KPIs, charts, tables)
+- Second-to-last section: Key Findings and Recommendations
+- Last section: FAQ
 
 ---
 
-### Data Visualizations (inside sections)
+## Data Visualizations
 
-**Available chart types:**
-- **Donut charts** — Pure SVG rings showing percentages. Use `.chart-row` to lay out multiple donuts side by side.
-- **Horizontal bar charts** — `.hbar-chart` > `.hbar-row` > `.hbar-label` + `.hbar-track` > `.hbar-fill.[color]` + `.hbar-val`
-- **Comparison bars** — `.cbar-chart` > `.cbar-group` > `.cbar-group-label` + `.cbar-pair` > `.cbar-bar` (side-by-side pairs with legend)
-- **Segmented bars** — `.seg-chart` > `.seg-row` > `.seg-label` + `.seg-track` > `.seg-piece` (stacked segments with legend)
-- **Line charts** — Pure SVG with grid, axes, polyline paths, dots, and value labels. Use `.line-chart-wrap` > `<svg>`.
-- **Tables** — `<table>` with `.num`, `.num-ok`, `.num-danger`, `.num-warn`, `.client-name`, `.pill-*`, `.pct-badge` classes
-- **Two/three-column grids** — `.two-col` / `.three-col` for side-by-side comparisons
-- **Italic footnotes** — `<p style="font-size:0.82rem; color:#64748b; margin-top:16px; font-style:italic;">` after tables for editorial commentary
+Use these chart types inside sections. Pick the right chart for each data shape.
 
-#### Donut chart HTML pattern
+### Donut Charts (percentages, rates)
+
+Good for showing a single KPI as a percentage (completion rate, SLA compliance).
+
 ```html
 <div class="chart-row">
   <div class="donut-chart lg">
     <svg width="170" height="170" viewBox="0 0 170 170">
       <circle class="donut-bg" cx="85" cy="85" r="55"/>
-      <!-- stroke-dasharray = (percentage/100) * 2πr, remainder = 2πr - filled -->
-      <!-- 2πr for r=55 = 345.58. So 80% = 276.46, remainder = 69.12 -->
+      <!-- stroke-dasharray = (percentage / 100) * 2 * pi * r, then remainder -->
+      <!-- For r=55: circumference = 345.58 -->
+      <!-- 80% filled = 276.46, gap = 69.12 -->
       <circle class="donut-fg green" cx="85" cy="85" r="55" stroke-dasharray="276.46 69.12"/>
       <text class="donut-value" x="85" y="79">80.0%</text>
       <text class="donut-sublabel" x="85" y="101">Target: 85%</text>
     </svg>
     <div class="donut-label">Metric Name</div>
   </div>
-  <!-- more donut-chart divs -->
+  <!-- more donut-chart divs for side-by-side comparison -->
 </div>
 ```
-Color variants: `.green`, `.red`, `.amber`, `.teal`, `.blue`, `.purple`, `.slate`, `.navy`. Use `.lg` for large (170px) or omit for small (140px, use r=55 cx/cy=70).
 
-#### Horizontal bar chart HTML pattern
+**Donut math:** circumference = 2 * pi * 55 = 345.58. Filled = (pct / 100) * 345.58. Gap = 345.58 - filled.
+
+**Color classes for `.donut-fg`:** `green`, `red`, `amber`, `teal`, `blue`, `purple`, `slate`, `navy`.
+
+Use `.lg` class for large donuts (170px). Omit `.lg` for small donuts (use `width="140" height="140"` with `cx="70" cy="70" r="55"`).
+
+### Horizontal Bar Charts (ranked categories)
+
+Good for 4-10 items ranked by value (top queues, categories, departments).
+
 ```html
 <div class="hbar-chart">
   <div class="hbar-row">
-    <div class="hbar-label">Category</div>
+    <div class="hbar-label">Category A</div>
     <div class="hbar-track"><div class="hbar-fill teal" style="width:72%"><span class="hbar-val">72%</span></div></div>
     <div class="hbar-note">1,234</div>
   </div>
+  <div class="hbar-row">
+    <div class="hbar-label">Category B</div>
+    <div class="hbar-track"><div class="hbar-fill teal" style="width:58%"><span class="hbar-val">58%</span></div></div>
+    <div class="hbar-note">982</div>
+  </div>
+  <!-- more rows -->
 </div>
 ```
 
-#### Comparison bar HTML pattern
+**Color classes for `.hbar-fill`:** `teal`, `blue`, `navy`, `green`, `amber`, `red`, `purple`, `slate`.
+
+For very small bars (under 10%), put the value label outside: `<span class="hbar-val outside">3%</span>`.
+
+### Comparison Bars (side-by-side pairs)
+
+Good for comparing two metrics per category (budget vs. actual, metric A vs. metric B).
+
 ```html
 <div class="cbar-chart">
   <div class="cbar-group">
@@ -437,32 +334,240 @@ Color variants: `.green`, `.red`, `.amber`, `.teal`, `.blue`, `.purple`, `.slate
       <div class="cbar-bar" style="width:85%;background:#0f766e"><span>85%</span></div>
     </div>
   </div>
-  <div class="cbar-legend"><span><span class="cbar-swatch" style="background:#3b82f6"></span>Metric A</span><span><span class="cbar-swatch" style="background:#0f766e"></span>Metric B</span></div>
+  <!-- more groups -->
+  <div class="cbar-legend">
+    <span><span class="cbar-swatch" style="background:#3b82f6"></span>Metric A</span>
+    <span><span class="cbar-swatch" style="background:#0f766e"></span>Metric B</span>
+  </div>
 </div>
 ```
 
-#### Line chart HTML pattern
+### Segmented Bars (stacked composition)
+
+Good for showing how a total breaks down into parts (status distribution, type breakdown).
+
+```html
+<div class="seg-chart">
+  <div class="seg-row">
+    <div class="seg-label">Group A</div>
+    <div class="seg-track">
+      <div class="seg-piece" style="width:45%;background:#0f766e"><span>45%</span></div>
+      <div class="seg-piece" style="width:30%;background:#3b82f6"><span>30%</span></div>
+      <div class="seg-piece" style="width:25%;background:#f59e0b"><span>25%</span></div>
+    </div>
+  </div>
+  <!-- more rows -->
+  <div class="seg-legend">
+    <span><span class="seg-swatch" style="background:#0f766e"></span>Type A</span>
+    <span><span class="seg-swatch" style="background:#3b82f6"></span>Type B</span>
+    <span><span class="seg-swatch" style="background:#f59e0b"></span>Type C</span>
+  </div>
+</div>
+```
+
+### Line Charts (trends over time)
+
+Good for 6-12 data points showing change over time (monthly volumes, quarterly trends).
+
 ```html
 <div class="line-chart-wrap"><svg viewBox="0 0 520 200">
-  <!-- Grid lines -->
+  <!-- Horizontal grid lines (y = 170, 140, 110, 80, 50, 20) -->
   <line class="line-grid" x1="45" y1="170" x2="500" y2="170"/>
   <text class="line-y-label" x="40" y="173">0</text>
-  <!-- More grid lines at y=140, 110, 80, 50, 20 -->
+  <line class="line-grid" x1="45" y1="110" x2="500" y2="110"/>
+  <text class="line-y-label" x="40" y="113">50</text>
+  <line class="line-grid" x1="45" y1="50" x2="500" y2="50"/>
+  <text class="line-y-label" x="40" y="53">100</text>
+
+  <!-- X-axis -->
   <line class="line-axis" x1="45" y1="170" x2="500" y2="170"/>
-  <!-- X-axis labels -->
   <text class="line-label" x="45" y="195">Jan</text>
+  <text class="line-label" x="136" y="195">Feb</text>
+  <text class="line-label" x="227" y="195">Mar</text>
+  <!-- more x labels -->
+
   <!-- Data line -->
   <polyline class="line-path teal" points="45,120 136,95 227,80 318,65 409,70 500,55"/>
-  <!-- Dots + value labels -->
+
+  <!-- Dots -->
   <circle class="line-dot teal" cx="45" cy="120"/>
   <text class="line-val" x="45" y="110">42</text>
+  <circle class="line-dot teal" cx="136" cy="95"/>
+  <text class="line-val" x="136" y="85">63</text>
+  <!-- more dots -->
 </svg></div>
-<div class="line-legend"><span><span class="line-legend-dot" style="background:#0f766e"></span>Series A</span></div>
+<div class="line-legend">
+  <span><span class="line-legend-dot" style="background:#0f766e"></span>Series Name</span>
+</div>
 ```
-Calculate Y positions: `y = 170 - ((value - min) / (max - min)) * 150`. X positions evenly spaced from 45 to 500.
 
-#### Chart CSS (add to report `<style>` block after base CSS)
-```css
+**Y position calculation:** `y = 170 - ((value - min) / (max - min)) * 150`. X positions evenly spaced from 45 to 500.
+
+**Color classes:** `teal`, `blue`, `red`, `amber`, `navy`.
+
+### Tables (detailed multi-column data)
+
+Best when exact numbers matter or when comparing many attributes per item.
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Category</th>
+      <th style="text-align:right">Value</th>
+      <th style="text-align:right">Percentage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="client-name">Item A</td>
+      <td><span class="pill pill-blue">Category 1</span></td>
+      <td class="num">1,234</td>
+      <td class="num num-ok">94.2%</td>
+    </tr>
+    <tr>
+      <td class="client-name">Item B</td>
+      <td><span class="pill pill-amber">Category 2</span></td>
+      <td class="num">876</td>
+      <td class="num num-warn">72.1%</td>
+    </tr>
+    <tr>
+      <td class="client-name">Item C</td>
+      <td><span class="pill pill-red">Category 3</span></td>
+      <td class="num">432</td>
+      <td class="num num-danger">48.5%</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+**Numeric highlight classes:** `.num-ok` (green), `.num-warn` (amber), `.num-danger` (red).
+**Pill badge classes:** `.pill-blue`, `.pill-green`, `.pill-amber`, `.pill-red`, `.pill-gray`.
+**Percentage badge:** `<span class="pct-badge pct-ok">94%</span>` with variants `pct-ok`, `pct-mid`, `pct-bad`, `pct-none`.
+
+### Choosing the Right Chart
+
+| Data Shape | Chart Type |
+|------------|------------|
+| Single KPI as percentage | Donut |
+| Ranked list of 4-10 items | Horizontal bar |
+| Two metrics compared per category | Comparison bar |
+| Parts of a whole (composition) | Segmented bar |
+| Change over time (6-12 points) | Line chart |
+| Multi-attribute detail per item | Table |
+
+---
+
+## CSS Framework
+
+All CSS is scoped under `.prx-report` to avoid conflicts. Copy this entire `<style>` block into the `<head>` of every report.
+
+```html
+<style>
+/* === BASE RESET === */
+.prx-report *,.prx-report *::before,.prx-report *::after{box-sizing:border-box;margin:0;padding:0;}
+.prx-report{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#333;line-height:1.7;max-width:1140px;margin:0 auto;padding:0 24px;-webkit-font-smoothing:antialiased;}
+
+/* === TEAL FRAME + DOCUMENT === */
+.prx-report .report-frame-outer{background:linear-gradient(180deg,#0f766e 0%,#115e58 50%,#134e4a 100%);border-radius:12px;padding:50px;margin-bottom:0;}
+.prx-report .doc{background:white;border-radius:4px;box-shadow:0 2px 20px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04);position:relative;}
+.prx-report .doc-header{padding:36px 48px 28px;border-bottom:3px solid #1B365D;display:flex;justify-content:space-between;align-items:flex-start;}
+.prx-report .doc-type{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;}
+.prx-report .doc-header-right{text-align:right;}
+.prx-report .doc-header-right .doc-meta-row{font-size:0.74rem;color:#64748b;line-height:1.8;}
+.prx-report .doc-header-right .doc-meta-row strong{color:#1B365D;font-weight:600;}
+.prx-report .doc-title-block{padding:32px 48px 28px;border-bottom:1px solid #e2e8f0;}
+.prx-report .doc-title{font-family:Georgia,'Times New Roman',serif;font-size:1.7rem;color:#1B365D;line-height:1.25;margin-bottom:8px;}
+.prx-report .doc-subtitle{font-size:0.88rem;color:#64748b;line-height:1.6;}
+.prx-report .doc-subtitle strong{color:#1B365D;}
+.prx-report .doc-body{padding:0 48px;}
+.prx-report .doc-section{padding:28px 0;border-bottom:1px solid #f1f5f9;}
+.prx-report .doc-section:last-child{border-bottom:none;}
+.prx-report .doc-section-head{display:flex;align-items:baseline;gap:14px;margin-bottom:16px;}
+.prx-report .doc-section-num{font-weight:800;font-size:0.82rem;color:#0f766e;flex-shrink:0;}
+.prx-report .doc-section-title{font-weight:700;font-size:1rem;color:#1B365D;}
+.prx-report .doc-section-sub{font-size:0.8rem;color:#64748b;margin-top:2px;}
+
+/* === KPI ROW === */
+.prx-report .doc-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;}
+.prx-report .doc-kpi{padding:18px 20px;border-right:1px solid #e2e8f0;background:#fafbfc;}
+.prx-report .doc-kpi:last-child{border-right:none;}
+.prx-report .doc-kpi-label{font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#94a3b8;margin-bottom:4px;}
+.prx-report .doc-kpi-value{font-size:1.6rem;font-weight:800;color:#1B365D;line-height:1.1;}
+.prx-report .doc-kpi-note{font-size:0.72rem;margin-top:3px;}
+.prx-report .doc-kpi-note.green{color:#10B981;}
+.prx-report .doc-kpi-note.red{color:#ef4444;}
+.prx-report .doc-kpi-note.amber{color:#f59e0b;}
+.prx-report .doc-kpi-note.muted{color:#94a3b8;}
+
+/* === DAX INFO BOX === */
+.prx-report .doc-dax-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:14px 18px;margin-top:16px;font-size:0.8rem;color:#475569;line-height:1.65;}
+.prx-report .doc-dax-box strong{color:#1B365D;}
+
+/* === TABLES === */
+.prx-report table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.prx-report th{text-align:left;padding:10px 12px;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.4px;color:#64748b;background:#f8fafc;border-bottom:2px solid #e2e8f0;font-weight:600;}
+.prx-report td{padding:10px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
+.prx-report tbody tr:hover td{background:#f8fafc;}
+.prx-report .num{font-weight:700;font-size:0.9rem;text-align:right;}
+.prx-report .num-danger{color:#dc2626;}
+.prx-report .num-warn{color:#d97706;}
+.prx-report .num-ok{color:#16a34a;}
+.prx-report .client-name{font-weight:600;color:#1B365D;white-space:nowrap;}
+
+/* === BADGES & PILLS === */
+.prx-report .pct-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.72rem;font-weight:600;}
+.prx-report .pct-bad{background:#fee2e2;color:#991b1b;}
+.prx-report .pct-mid{background:#fef3c7;color:#92400e;}
+.prx-report .pct-ok{background:#d1fae5;color:#065f46;}
+.prx-report .pct-none{background:#f1f5f9;color:#64748b;}
+.prx-report .pill{display:inline-block;padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:600;white-space:nowrap;}
+.prx-report .pill-blue{background:#dbeafe;color:#1e40af;}
+.prx-report .pill-green{background:#d1fae5;color:#065f46;}
+.prx-report .pill-amber{background:#fef3c7;color:#92400e;}
+.prx-report .pill-red{background:#fee2e2;color:#991b1b;}
+.prx-report .pill-gray{background:#f1f5f9;color:#475569;}
+
+/* === DAX TOGGLE === */
+.prx-report .dax-toggle{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;margin-top:16px;}
+.prx-report .dax-toggle .dax-trigger{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-size:0.78rem;font-weight:600;color:#0f766e;background:#f1f5f9;user-select:none;}
+.prx-report .dax-chevron{width:16px;height:16px;flex-shrink:0;transition:transform 0.25s ease;}
+.prx-report .dax-toggle.expanded .dax-chevron{transform:rotate(180deg);}
+.prx-report .dax-content{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
+.prx-report .dax-toggle.expanded .dax-content{max-height:600px;}
+.prx-report .dax-content pre{padding:14px 16px;background:#0f172a;border-radius:0;}
+.prx-report .dax-content code{font-family:'Courier New',Courier,monospace;font-size:0.72rem;line-height:1.65;color:#e2e8f0;background:transparent;}
+.prx-report .dax-copy{display:block;margin:8px 16px 12px auto;border:none;border-radius:4px;padding:5px 14px;font-size:0.72rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background 0.15s,color 0.15s;background:#14b8a6;color:white;}
+.prx-report .dax-copy:hover{background:#0d9488;color:white;}
+
+/* === FINDINGS === */
+.prx-report .doc-finding{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #f1f5f9;}
+.prx-report .doc-finding:last-child{border-bottom:none;}
+.prx-report .doc-finding-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.72rem;font-weight:800;color:white;margin-top:2px;}
+.prx-report .doc-finding-icon.critical{background:#ef4444;}
+.prx-report .doc-finding-icon.warning{background:#f59e0b;}
+.prx-report .doc-finding-icon.ok{background:#10B981;}
+.prx-report .doc-finding-body h4{font-size:1rem;font-weight:700;margin:0 0 4px 0;line-height:1.3;color:#0f172a;}
+.prx-report .doc-finding-body p{font-size:0.85rem;color:#475569;line-height:1.7;margin:0;}
+.prx-report .doc-finding-body strong{color:#1B365D;}
+
+/* === FAQ ACCORDION === */
+.prx-report .doc-faq{border-top:1px solid #e2e8f0;}
+.prx-report .doc-faq .faq-item{border-bottom:1px solid #e2e8f0;cursor:pointer;}
+.prx-report .doc-faq .faq-q{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;font-size:0.88rem;font-weight:600;color:#1B365D;}
+.prx-report .doc-faq .faq-chevron{width:16px;height:16px;flex-shrink:0;transition:transform 0.25s ease;}
+.prx-report .doc-faq .faq-item.open .faq-chevron{transform:rotate(180deg);}
+.prx-report .doc-faq .faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
+.prx-report .doc-faq .faq-item.open .faq-a{max-height:300px;}
+.prx-report .doc-faq .faq-a p{font-size:0.84rem;line-height:1.7;color:#475569;padding-bottom:14px;}
+
+/* === DEMO BANNER + FOOTER === */
+.prx-report .doc-demo{margin:20px 48px 0;padding:12px 16px;background:#fefce8;border:1px solid #fde68a;border-radius:6px;font-size:0.8rem;color:#92400e;}
+.prx-report .doc-demo strong{color:#78350f;}
+.prx-report .doc-footer{margin-top:16px;padding:16px 48px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;}
+.prx-report .doc-footer span{font-size:0.68rem;color:#94a3b8;}
+
 /* === DONUT CHARTS === */
 .prx-report .chart-row{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin:20px 0 8px;}
 .prx-report .chart-row.left{justify-content:flex-start;gap:40px;padding-left:4px;}
@@ -471,10 +576,17 @@ Calculate Y positions: `y = 170 - ((value - min) / (max - min)) * 150`. X positi
 .prx-report .donut-chart svg{transform:rotate(-90deg);}
 .prx-report .donut-bg{fill:none;stroke:#e2e8f0;stroke-width:10;}
 .prx-report .donut-fg{fill:none;stroke-width:10;stroke-linecap:round;}
-.prx-report .donut-fg.green{stroke:#10B981;}.prx-report .donut-fg.red{stroke:#ef4444;}.prx-report .donut-fg.amber{stroke:#f59e0b;}.prx-report .donut-fg.teal{stroke:#0f766e;}.prx-report .donut-fg.blue{stroke:#3b82f6;}.prx-report .donut-fg.purple{stroke:#8b5cf6;}.prx-report .donut-fg.slate{stroke:#64748b;}.prx-report .donut-fg.navy{stroke:#1B365D;}
-.prx-report .donut-value{font-family:'Open Sans',sans-serif;font-size:1.1rem;font-weight:800;fill:#1B365D;transform:rotate(90deg);dominant-baseline:central;text-anchor:middle;}
+.prx-report .donut-fg.green{stroke:#10B981;}
+.prx-report .donut-fg.red{stroke:#ef4444;}
+.prx-report .donut-fg.amber{stroke:#f59e0b;}
+.prx-report .donut-fg.teal{stroke:#0f766e;}
+.prx-report .donut-fg.blue{stroke:#3b82f6;}
+.prx-report .donut-fg.purple{stroke:#8b5cf6;}
+.prx-report .donut-fg.slate{stroke:#64748b;}
+.prx-report .donut-fg.navy{stroke:#1B365D;}
+.prx-report .donut-value{font-size:1.1rem;font-weight:800;fill:#1B365D;transform:rotate(90deg);dominant-baseline:central;text-anchor:middle;}
 .prx-report .donut-chart.lg .donut-value{font-size:1.4rem;}
-.prx-report .donut-sublabel{font-family:'Open Sans',sans-serif;font-size:0.58rem;font-weight:600;fill:#94a3b8;transform:rotate(90deg);dominant-baseline:central;text-anchor:middle;}
+.prx-report .donut-sublabel{font-size:0.58rem;font-weight:600;fill:#94a3b8;transform:rotate(90deg);dominant-baseline:central;text-anchor:middle;}
 .prx-report .donut-label{font-size:0.72rem;font-weight:600;color:#64748b;text-align:center;max-width:120px;line-height:1.3;}
 
 /* === HORIZONTAL BAR CHART === */
@@ -484,14 +596,22 @@ Calculate Y positions: `y = 170 - ((value - min) / (max - min)) * 150`. X positi
 .prx-report .hbar-label{font-size:0.76rem;font-weight:600;color:#1B365D;width:120px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .prx-report .hbar-track{flex:1;height:22px;background:#f1f5f9;border-radius:3px;position:relative;overflow:hidden;}
 .prx-report .hbar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:8px;min-width:2px;}
-.prx-report .hbar-fill.teal{background:#0f766e;}.prx-report .hbar-fill.blue{background:#3b82f6;}.prx-report .hbar-fill.navy{background:#1B365D;}.prx-report .hbar-fill.green{background:#10B981;}.prx-report .hbar-fill.amber{background:#f59e0b;}.prx-report .hbar-fill.red{background:#ef4444;}.prx-report .hbar-fill.purple{background:#8b5cf6;}.prx-report .hbar-fill.slate{background:#94a3b8;}
+.prx-report .hbar-fill.teal{background:#0f766e;}
+.prx-report .hbar-fill.blue{background:#3b82f6;}
+.prx-report .hbar-fill.navy{background:#1B365D;}
+.prx-report .hbar-fill.green{background:#10B981;}
+.prx-report .hbar-fill.amber{background:#f59e0b;}
+.prx-report .hbar-fill.red{background:#ef4444;}
+.prx-report .hbar-fill.purple{background:#8b5cf6;}
+.prx-report .hbar-fill.slate{background:#94a3b8;}
 .prx-report .hbar-val{font-size:0.68rem;font-weight:700;color:white;white-space:nowrap;}
 .prx-report .hbar-val.outside{color:#475569;position:absolute;right:-50px;top:50%;transform:translateY(-50%);}
 .prx-report .hbar-note{font-size:0.68rem;color:#94a3b8;width:60px;flex-shrink:0;text-align:left;}
 
 /* === COMPARISON BAR === */
 .prx-report .cbar-chart{margin:18px 0 8px;}
-.prx-report .cbar-group{margin-bottom:14px;}.prx-report .cbar-group:last-child{margin-bottom:0;}
+.prx-report .cbar-group{margin-bottom:14px;}
+.prx-report .cbar-group:last-child{margin-bottom:0;}
 .prx-report .cbar-group-label{font-size:0.74rem;font-weight:700;color:#1B365D;margin-bottom:5px;}
 .prx-report .cbar-pair{display:flex;gap:6px;align-items:center;}
 .prx-report .cbar-bar{height:16px;border-radius:3px;display:flex;align-items:center;padding:0 8px;min-width:2px;}
@@ -501,7 +621,8 @@ Calculate Y positions: `y = 170 - ((value - min) / (max - min)) * 150`. X positi
 
 /* === SEGMENTED BAR === */
 .prx-report .seg-chart{margin:18px 0 8px;}
-.prx-report .seg-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}.prx-report .seg-row:last-child{margin-bottom:0;}
+.prx-report .seg-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.prx-report .seg-row:last-child{margin-bottom:0;}
 .prx-report .seg-label{font-size:0.74rem;font-weight:600;color:#1B365D;width:100px;flex-shrink:0;text-align:right;}
 .prx-report .seg-track{flex:1;height:22px;display:flex;border-radius:3px;overflow:hidden;}
 .prx-report .seg-piece{height:100%;display:flex;align-items:center;justify-content:center;min-width:1px;}
@@ -515,277 +636,86 @@ Calculate Y positions: `y = 170 - ((value - min) / (max - min)) * 150`. X positi
 .prx-report .line-grid{stroke:#e2e8f0;stroke-width:0.5;}
 .prx-report .line-axis{stroke:#cbd5e1;stroke-width:1;}
 .prx-report .line-path{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-.prx-report .line-path.teal{stroke:#0f766e;}.prx-report .line-path.blue{stroke:#3b82f6;}.prx-report .line-path.red{stroke:#ef4444;}.prx-report .line-path.amber{stroke:#f59e0b;}.prx-report .line-path.navy{stroke:#1B365D;}
-.prx-report .line-area{opacity:0.08;}.prx-report .line-area.teal{fill:#0f766e;}.prx-report .line-area.blue{fill:#3b82f6;}
+.prx-report .line-path.teal{stroke:#0f766e;}
+.prx-report .line-path.blue{stroke:#3b82f6;}
+.prx-report .line-path.red{stroke:#ef4444;}
+.prx-report .line-path.amber{stroke:#f59e0b;}
+.prx-report .line-path.navy{stroke:#1B365D;}
+.prx-report .line-area{opacity:0.08;}
+.prx-report .line-area.teal{fill:#0f766e;}
+.prx-report .line-area.blue{fill:#3b82f6;}
 .prx-report .line-dot{r:4;stroke:white;stroke-width:2;}
-.prx-report .line-dot.teal{fill:#0f766e;}.prx-report .line-dot.blue{fill:#3b82f6;}.prx-report .line-dot.red{fill:#ef4444;}.prx-report .line-dot.amber{fill:#f59e0b;}.prx-report .line-dot.navy{fill:#1B365D;}
-.prx-report .line-val{font-family:'Open Sans',sans-serif;font-size:8px;font-weight:700;fill:#475569;text-anchor:middle;}
-.prx-report .line-label{font-family:'Open Sans',sans-serif;font-size:10px;fill:#64748b;text-anchor:middle;}
-.prx-report .line-y-label{font-family:'Open Sans',sans-serif;font-size:9px;fill:#94a3b8;text-anchor:end;}
+.prx-report .line-dot.teal{fill:#0f766e;}
+.prx-report .line-dot.blue{fill:#3b82f6;}
+.prx-report .line-dot.red{fill:#ef4444;}
+.prx-report .line-dot.amber{fill:#f59e0b;}
+.prx-report .line-dot.navy{fill:#1B365D;}
+.prx-report .line-val{font-size:8px;font-weight:700;fill:#475569;text-anchor:middle;}
+.prx-report .line-label{font-size:10px;fill:#64748b;text-anchor:middle;}
+.prx-report .line-y-label{font-size:9px;fill:#94a3b8;text-anchor:end;}
 .prx-report .line-legend{display:flex;gap:18px;justify-content:center;margin-top:8px;font-size:0.72rem;color:#475569;}
 .prx-report .line-legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+
+/* === RESPONSIVE === */
+@media(max-width:900px){.prx-report .report-frame-outer{padding:28px;}.prx-report .doc-kpi-row{grid-template-columns:repeat(2,1fr);}.prx-report .doc-header{flex-direction:column;gap:12px;}.prx-report .doc-header-right{text-align:left;}}
+@media(max-width:600px){.prx-report .report-frame-outer{padding:16px;}.prx-report .doc-kpi-row{grid-template-columns:1fr;}.prx-report .doc-body{padding:0 20px;}.prx-report .doc-header,.prx-report .doc-title-block{padding-left:20px;padding-right:20px;}.prx-report .doc-demo{margin-left:20px;margin-right:20px;}.prx-report .doc-footer{padding-left:20px;padding-right:20px;}}
+
+/* === PRINT === */
+@media print{.prx-report .dax-toggle{display:none;}.prx-report .dax-copy{display:none;}.prx-report .doc-demo{display:none;}.prx-report .doc-section{break-inside:avoid;}}
+</style>
 ```
-
-**When to use each chart type:**
-- **Donut**: Single KPI as percentage (SLA compliance, utilization, completion rate). Use `.lg` for hero metrics, small for secondary.
-- **Horizontal bar**: Ranked categories (queues, priorities, resources). Good for 4-10 items.
-- **Comparison bar**: Two metrics side by side per category (first response vs resolution SLA).
-- **Segmented bar**: Composition breakdown (ticket types per queue, status distribution).
-- **Line chart**: Trends over time (monthly volumes, SLA trends, 6-12 data points).
-- **Tables**: Detailed multi-column data with sortable impression. Best when exact numbers matter.
-
----
-
-### Chrome Components (added by deploy-reports.py, NOT by the AI)
-
-These elements are injected automatically during WordPress deployment. Listed here for reference only.
-
-#### Series Navigation (injected before teal frame)
-```html
-<nav class="series-nav">
-    <a href="/powerbi">Power BI</a>
-    <span class="sep">&rsaquo;</span>
-    <a href="/powerbi/insights">AI-Powered Reports</a>
-    <span class="sep">&rsaquo;</span>
-    <span class="current">[Topic Name]</span>
-</nav>
-```
-
-#### Search Hero (injected before teal frame)
-```html
-<div class="search-hero">
-    <div class="search-hero-deco"></div>
-    <span class="search-hero-badge">
-        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        AI-GENERATED REPORT
-    </span>
-    <div class="search-bar">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <span class="search-bar-text">[question]<span class="search-bar-cursor"></span></span>
-    </div>
-    <h1>[SEO-optimized Title]</h1>
-    <p class="search-hero-sub">[Meta description text]</p>
-</div>
-```
-
-#### CTA Block (injected after teal frame)
-```html
-<div class="cta-block">
-    <h3>Generate reports like this from your own data</h3>
-    <p>Connect Proxuma's Power BI integration, then use any MCP-compatible AI to ask questions and generate custom reports &mdash; in minutes, not days.</p>
-    <a href="/powerbi/insights" class="cta-btn" style="margin-right:12px;">See more reports</a>
-    <a href="https://proxuma.io/powerbi-self-onboarding/" class="cta-btn">Get started</a>
-</div>
-```
-
-### Deprecated Classes (DO NOT USE)
-
-These old V4 classes are replaced by V5 equivalents:
-
-| Old (V4) | New (V5) | Notes |
-|----------|----------|-------|
-| `.page-hero` | `.search-hero` | Search bar + badge replaces navy gradient |
-| `.question-showcase` | (removed) | Question now in morph bar + search bar |
-| `.report-banner` | `.doc-header` + `.doc-title-block` | Letterhead format |
-| `.section-card` | `.doc-section` | Numbered sections in document |
-| `.inline-dax` | `.dax-toggle` | Different HTML structure |
-| `.kpi-grid` + `.kpi-card` | `.doc-kpi-row` + `.doc-kpi` | Inside sections |
-| `.insight` | `.doc-finding` | Same severity classes |
-| `.article-intro` | (removed) | No editorial prose between sections |
-| `.demo-banner` | `.doc-demo` | Inside the document |
-
----
-
-## Writing Style
-
-- **Problem-solution-action.** Every report starts with a relatable business problem, presents data that answers it, then gives specific actions.
-- **Conversational but professional.** Write like a smart colleague presenting findings, not a generic BI tool.
-- **Bold key phrases** in doc-subtitle and doc-finding text using `<strong>` (inherits navy `#2c3e50`).
-- **Use real numbers** from the DAX queries. Never fabricate data.
-- **Anonymize all client/resource names** to "Client A", "Client B", etc. in the public-facing report. Never expose real company or person names.
-- **Em dashes** (`&mdash;`) not hyphens for parenthetical clauses.
-- **Euro signs** (`&euro;`) for currency when relevant, or `$` for USD.
-- **Section descriptions** are always 1 sentence, descriptive, in `.doc-section-sub`.
-- **Finding cards** are numbered ("1. ...", "2. ...") and contain specific data-backed recommendations.
-- **Footnotes** below tables provide editorial interpretation of the data in italic gray text.
-
-### Humanizer (MANDATORY)
-
-**All narrative text in the report MUST be humanized.** Before finalizing, apply the humanizer skill (`~/.claude/skills/humanizer/SKILL.md`) to all written prose: doc-subtitle, doc-finding text, doc-section-sub descriptions, footnotes, and FAQ answers. Specifically:
-
-- No significance inflation ("pivotal", "crucial", "vital", "testament", "underscores")
-- No promotional language ("groundbreaking", "vibrant", "stunning", "nestled")
-- No AI vocabulary ("delve", "landscape", "tapestry", "foster", "leverage", "garner")
-- No copula avoidance — use "is"/"are"/"has" instead of "serves as"/"stands as"/"boasts"
-- No superficial -ing phrases ("highlighting", "underscoring", "showcasing", "reflecting")
-- No negative parallelisms ("It's not just X; it's Y")
-- No rule-of-three padding ("innovation, collaboration, and excellence")
-- No false ranges ("from X to Y, from A to B")
-- No excessive hedging or filler phrases
-- No generic positive conclusions ("the future looks bright")
-- Vary sentence length and structure naturally
-- Use specific numbers and concrete details over vague claims
-- Write like a real person who looked at the data, not like a report generator
-
----
-
-## SEO Optimization
-
-Every report should be optimized for search engines. Before generating the report:
-
-1. **Check the content planner** at `~/ClaudeCode/autotask-content-planner.html` for matching keywords
-2. **doc-title**: Include the primary keyword (tool name like "Autotask", "IT Glue", "M365") + "MSP" where natural
-3. **doc-section-title headings**: Include secondary keywords — never generic headings like "Overview" or "Analysis"
-4. **doc-subtitle**: Naturally weave in 2-3 target keyword phrases in bold (`<strong>`)
-5. **Breadcrumb**: Match the doc-title topic name
-6. **doc-finding h4 titles**: Include relevant keywords
-7. **FAQ questions**: Target long-tail search queries MSP owners would ask
-
----
-
-## Search Bar Question (CRITICAL)
-
-The search bar in the search hero MUST contain a **real conversational question ending with a question mark**. This is the `search_query` field in report_builder.py config.
-
-**CORRECT:** `what's our average CSAT rating across all clients?`
-**CORRECT:** `how much time does each engineer spend per ticket?`
-**CORRECT:** `which clients are most likely to churn and how much revenue is at risk?`
-
-**WRONG:** `average CSAT rating` (not a question)
-**WRONG:** `capacity variance planned vs actual hours` (just a topic description)
-**WRONG:** `billing item analysis revenue by type and client` (keyword dump)
-
-The question should be lowercase, casual, and match what an MSP owner would actually type into a search bar. Always end with `?`.
 
 ---
 
 ## Memory Safety Rules
 
-1. **NEVER** use `get_schema` - it returns the full model (>10MB)
-2. **ALWAYS** use `search_schema` with specific terms
-3. **LIMIT** DAX results with `TOPN()` or filters
-4. Keep searches focused - max 3-5 search terms per question
-5. Run 4-8 DAX queries to get enough data for 4-7 sections
+1. **NEVER** use `mcp__powerbi__get_schema`. It returns the full model (often over 10 MB) and will crash or hang the session.
+2. **ALWAYS** use `mcp__powerbi__search_schema` with specific search terms.
+3. **LIMIT** DAX results with `TOPN()` or `FILTER()`. Never return unbounded queries.
+4. Keep searches focused: 2-4 keywords per question.
+5. Run 4-8 DAX queries to get enough data for 5-8 sections.
 
 ---
 
-## Verified Power BI Column Names
+## Writing Style
 
-Use these exact column names in DAX queries (verified Feb 2026):
-
-| Column | Table | Notes |
-|--------|-------|-------|
-| `priority_name` | `BI_Autotask_Tickets` | NOT `priority` |
-| `queue_name` | `BI_Autotask_Tickets` | NOT `queueName` |
-| `ticket_type_name` | `BI_Autotask_Tickets` | NOT `ticketType` |
-| `company_name` | `BI_Autotask_Tickets` | Client name |
-| `status_name` | `BI_Autotask_Tickets` | e.g. "Complete" |
-| `ticket_id` | `BI_Autotask_Tickets` | Primary key |
-| `resolution_duration_hours` | `BI_Autotask_Tickets` | Float |
-| `first_response_met` | `BI_Autotask_Tickets` | Int64 (0/1), filter with `+ 0 = 1` |
-| `resolution_met` | `BI_Autotask_Tickets` | Int64 (0/1), filter with `+ 0 = 1` |
-| `resolved_due_age_days` | `BI_Autotask_Tickets` | > 0 means overdue (no `is_sla_overdue` column) |
-| `create_date` | `BI_Autotask_Tickets` | DateTime |
-| `manufacturer_product_name` | `BI_Autotask_Configuration_Items` | Microsoft Part Number |
+- **Professional but conversational.** Write like a colleague presenting findings at a meeting, not like a template generator.
+- **Bold key phrases** in the subtitle and finding descriptions using `<strong>`.
+- **Use real numbers** from the DAX queries. Never fabricate or estimate data.
+- **Section descriptions** are always one sentence, written in `.doc-section-sub`.
+- **Finding cards** are numbered ("1. ...", "2. ...") and contain specific data-backed recommendations with bolded key figures.
+- **Footnotes** below tables (optional) provide editorial interpretation in italic gray text: `<p style="font-size:0.82rem; color:#64748b; margin-top:16px; font-style:italic;">`.
+- **Avoid inflated language.** No "comprehensive", "robust", "cutting-edge", "game-changing", "pivotal", or "delve". Write plainly and let the numbers do the work.
+- **Em dashes** (`&mdash;`) for parenthetical clauses, not hyphens.
 
 ---
 
-## Dual-Language Output
+## Typical Report Layout (5-8 sections)
 
-Every `/powerbireport` invocation creates BOTH English and Dutch versions.
+| Section | Purpose | Typical Visualization |
+|---------|---------|----------------------|
+| 1.0 | Executive KPIs | KPI row (4 cards) |
+| 2.0 | Breakdown by category | Horizontal bar chart or table |
+| 3.0 | Distribution or composition | Segmented bar or donut charts |
+| 4.0 | Trend over time | Line chart |
+| 5.0 | Detailed comparison | Table with pills and badges |
+| 6.0 | Key Findings | Finding cards (critical/warning/ok) |
+| 7.0 | FAQ | Accordion with 4-6 questions |
 
-- **EN:** `/powerbi/insights/[slug]` (parent page 3299)
-- **NL:** `/nl-powerbi/ai-gegenereerde-rapporten/[nl-slug]` (parent page 3495)
-
-### Dutch Translation Guidelines
-
-- Use "je/jij" (NOT "u/uw") for second person
-- Apply `/dutch-msp` code-switching (English tech terms in Dutch prose)
-- Apply `/humanizer` anti-slop checks
-- `doc-type`: "AI-gegenereerd Power BI Rapport"
-- `doc-demo`: "Demorapport: Dit rapport gebruikt synthetische data..."
-- `doc-footer`: "Proxuma Power BI &middot; AI-gegenereerd Rapport"
-- DAX toggle: "Bekijk DAX Query" / "Kopieer Query"
-- FAQ section title: "Veelgestelde Vragen"
-- CTA: "Genereer rapporten als deze vanuit je eigen data"
-
-### Dutch Name Replacement (NL reports only)
-
-NL reports replace American demo names (from Power BI's synthetic dataset) with Dutch equivalents. This happens in two stages in `batch_generate.py`:
-
-1. **`dutchify_results(results)`** — Replaces names in raw DAX query result dicts *before* any truncation. Called right after DAX queries return, before building value_cards and sections. This is the primary mechanism that ensures bar chart labels (`[:25]`), KPI cards (`[:18]`), and other truncated values show Dutch names correctly.
-
-2. **`dutchify_names(html)`** — String-replaces names in the final HTML as a safety net for any narrative text or values that bypassed `dutchify_results()`.
-
-Name mappings (`NL_COMPANY_NAMES` and `NL_RESOURCE_NAMES` dicts) are defined at the top of `batch_generate.py`. If the Power BI demo dataset changes and new company/resource names appear, add them to these dicts before regenerating NL reports.
-
-### Dutch Title Case Rules
-
-Capitalize: nouns (Dutch and English) + first word after colon.
-Lowercase: verbs, pronouns, prepositions, articles, adjectives.
-
-**Correct:** `Ticketverdeling per Categorie & Issuetype: Welke Problemen Lost je MSP Eigenlijk Op?`
-**Wrong:** `Ticketverdeling Per Categorie & Issuetype: Welke Problemen Lost Je Msp Eigenlijk Op?`
+Adapt the number and type of sections based on the data. Some reports may need more breakdown sections, others may need fewer. The findings section is always second-to-last, the FAQ is always last.
 
 ---
 
-## Deployment Workflow
+## Quick Reference: Color Palette
 
-### Single report (via /powerbireport)
-After generating the teal-frame HTML, deploy using Python:
-```python
-import sys, os
-sys.path.insert(0, os.path.expanduser('~/ClaudeCode/powerbi-reports'))
-from batch_generate import deploy_report
-# EN
-deploy_report('proxuma-io-[slug]-post.html', EN_PAGE_ID, slug='[slug]', search_query='[question]', title='[Title]', badges=['psa'], lang='en')
-# NL
-deploy_report('proxuma-io-[nl-slug]-post.html', NL_PAGE_ID, slug='[nl-slug]', search_query='[nl-question]', title='[NL Title]', badges=['psa'], lang='nl')
-```
-
-### Batch regeneration
-```bash
-cd ~/ClaudeCode/powerbi-reports
-python3 batch_generate.py          # All EN reports
-python3 batch_generate_nl.py       # All NL reports
-```
-
-### What `deploy_report()` does:
-1. Reads teal-frame HTML from disk
-2. Wraps with chrome via `wrap_with_chrome()` (morph bar, search hero, pipeline, overview, CTA, series nav, JS)
-3. Injects related reports + BreadcrumbList JSON-LD via `inject_related_reports()`
-4. SCPs wrapped HTML to server as temp file
-5. Updates via `$wpdb->update()` (NEVER `wp_update_post()`)
-6. Flushes cache: `wp cache flush && wp sg purge`
-
-### WordPress push rules
-
-- **NEVER** use `wp_update_post()` or `wp post update` — they run `wp_kses_post()` which strips all `<style>` and `<script>` tags
-- **ALWAYS** use `$wpdb->update()` directly via a PHP script
-- **ALWAYS** flush cache after: `wp cache flush && wp sg purge`
-
-### Page ID mappings (test reports)
-
-| Report | EN Page | NL Page |
-|--------|---------|---------|
-| SLA Compliance | 3990 | 4070 |
-| Priority Distribution | 4004 | 4083 |
-| Queue Performance | 4001 | 4080 |
-| First Hour Fix | 4006 | 4082 |
-| Ticket Volume | 3999 | 4077 |
-
----
-
-## Key Files Reference
-
-| File | Purpose |
-|------|---------|
-| `~/.claude/commands/powerbireport.md` | This spec (the skill definition) |
-| `~/ClaudeCode/powerbi-reports/GOLDEN-STANDARD.html` | Live reference from page 3956 (CSAT) |
-| `~/ClaudeCode/powerbi-reports/templates/teal-frame-css.html` | Locked CSS template (copy verbatim) |
-| `~/ClaudeCode/powerbi-reports/batch_generate.py` | EN batch generator + `deploy_report()` function |
-| `~/ClaudeCode/powerbi-reports/batch_generate_nl.py` | NL batch generator (reuses `deploy_report()`) |
-| `~/ClaudeCode/powerbi-reports/deploy_reports_lib.py` | `wrap_with_chrome()`, `push_via_tempfile()`, chrome CSS |
-| `~/ClaudeCode/powerbi-reports/add-related-reports.py` | `inject_related_reports()`, `build_registry()` |
-| `~/ClaudeCode/powerbi-reports/report_builder.py` | Chart helpers: `donut_row`, `hbar_chart`, `line_chart_svg` |
-| `~/ClaudeCode/powerbi-reports/generate-test-reports.py` | Legacy test generator (12 report functions) |
+| Token | Hex | Use |
+|-------|-----|-----|
+| Teal | `#0f766e` | Frame gradient, section numbers, primary accent |
+| Navy | `#1B365D` | Titles, header border, bold text |
+| Green | `#10B981` | Success states, positive KPI notes |
+| Red | `#ef4444` | Critical findings, danger states |
+| Amber | `#f59e0b` | Warnings, caution states |
+| Blue | `#3b82f6` | Secondary accent, comparison bars |
+| Purple | `#8b5cf6` | Tertiary accent |
+| Slate | `#64748b` | Muted text, labels |
+| Light gray | `#f1f5f9` | Backgrounds, borders |
