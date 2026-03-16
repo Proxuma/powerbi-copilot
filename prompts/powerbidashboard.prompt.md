@@ -20,6 +20,12 @@ Generate a complete HTML file with an interactive dashboard mockup AND step-by-s
 
 ---
 
+### Data Anonymization
+
+All data from MCP tools is pre-anonymized. Client names appear as Client_A/B/C, resource names as Resource_1/2/3, etc. Use these aliases as-is. The user will deanonymize the output locally after generation.
+
+---
+
 ## Workflow
 
 ### Phase 1: Explore the Data Model

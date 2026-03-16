@@ -172,8 +172,20 @@ function prxCopyDAX(btn) {
 - Write like a smart colleague, not a BI tool.
 - Bold key numbers with `<strong>`.
 - Use real numbers from DAX queries. Never fabricate data.
-- Anonymize all client/resource names to "Client A", "Client B", etc.
+- Data is pre-anonymized by the MCP server. Client names appear as Client_A, Client_B, etc. Resource names appear as Resource_1, Resource_2, etc. Use these aliases as-is in the report. Do NOT attempt to guess or replace real names.
 - Findings are numbered with specific data-backed recommendations.
+
+---
+
+## Step 6 — Restore Real Names
+
+After generating the report, tell the user:
+
+> "This report uses anonymized names (Client_A, Resource_1, etc.) because your data is protected by the anonymization layer. To restore real names, either:
+> 1. **Drag and drop** your `mapping.json` file onto the report page (if the restore button is visible), or
+> 2. **Run the CLI:** `python -m server report.html -o report-real.html`
+>
+> The mapping file is at `~/.powerbi-mcp/sessions/latest/mapping.json`"
 
 ---
 
