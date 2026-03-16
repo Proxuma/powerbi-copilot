@@ -1,0 +1,55 @@
+{
+  "experiment": "B",
+  "description": "JSON-only dashboard output mode with hosted renderer",
+  "date": "2026-03-04",
+  "agent": "Power BI Assistant (GPT-5 Chat)",
+  "instructions_updated": true,
+  "instructions_char_count": "~2200/8000",
+  "key_changes": [
+    "Added TOPN(50) requirement to DAX GUIDELINES",
+    "Changed GENERATING DASHBOARDS section: output TWO JSON objects (DASH_CONFIG + DATA) instead of complete HTML",
+    "Added DATA JSON structure spec (dim/facts/static_kpi)",
+    "Added DASH_CONFIG JSON structure spec (title/kpi_rows/gauges/charts/table)",
+    "Added metric syntax reference (sum:field, ratio:a:b, wavg:sum:count, static:key)",
+    "Changed OUTPUT RULES: dashboards output ONLY JSON, user pastes into renderer"
+  ],
+  "renderer": {
+    "file": "templates/dashboard-renderer.html",
+    "size": "1535 lines / 58KB",
+    "features": [
+      "Split-screen: JSON input (left) + live preview (right)",
+      "Two textareas: DASH_CONFIG and DATA",
+      "Paste from Copilot button (parses combined JSON)",
+      "Download HTML button (standalone dashboard)",
+      "Full dashboard.html template embedded as string",
+      "Error handling with toast notifications",
+      "Pre-populated with sample data, auto-renders on load"
+    ]
+  },
+  "proof_of_concept": {
+    "test": "A4 TOPN(20) query already proves JSON-only works",
+    "agent_output": {
+      "dim": {
+        "companies": ["<ORGANIZATION>", "Rivers, <PERSON> and <PERSON>", "<ORGANIZATION>, <PERSON> and <PERSON>", "<PERSON>", "Colon and Sons", "Wall PLC", "Palmer, White and <ORGANIZATION>", "Vega, Hansen and Shepard", "Wade, <ORGANIZATION> and <ORGANIZATION>", "Edwards, <PERSON> and <PERSON>"]
+      },
+      "facts": [
+        {"c":0,"y":2026,"m":1,"t_cr":49,"fr_pct":0.8519,"res_pct":0.7778},
+        {"c":0,"y":2026,"m":1,"t_cr":181,"fr_pct":0.9557,"res_pct":0.9673},
+        {"c":1,"y":2026,"m":1,"t_cr":305,"fr_pct":0.4248,"res_pct":0.6650}
+      ]
+    },
+    "format_matches_renderer": true,
+    "notes": "Agent produced exact dim/facts structure. DASH_CONFIG would need to be requested separately in a follow-up message (agent offered this: 'prepare a dashboard-ready JSON with KPIs and charts?')."
+  },
+  "workflow": [
+    "User: 'Generate a live dashboard for SLA performance'",
+    "Agent: calls search_schema to discover SLA measures",
+    "Agent: calls execute_dax with TOPN(50) to get company x month data",
+    "Agent: outputs DASH_CONFIG JSON + DATA JSON",
+    "User: opens dashboard-renderer.html",
+    "User: pastes DASH_CONFIG into first textarea, DATA into second",
+    "User: clicks 'Render Dashboard' or presses Ctrl+Enter",
+    "Renderer: builds full HTML dashboard with KPIs, gauges, charts, table",
+    "User: optionally clicks 'Download HTML' for standalone file"
+  ]
+}
