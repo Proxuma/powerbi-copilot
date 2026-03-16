@@ -14,6 +14,52 @@ This package connects your AI assistant to Power BI via MCP (Model Context Proto
 | **PII Anonymization** | All data passes through Microsoft Presidio before reaching the AI — names, emails, and other PII are automatically masked |
 | **Setup Wizard** | Auto-discovers workspaces and datasets — no manual GUID hunting |
 
+## Data Anonymization
+
+All data that passes through the MCP server is automatically anonymized before it reaches the AI. Real names, emails, and other PII are replaced with consistent aliases (Client_A, Resource_1, etc.) that the AI uses in its output.
+
+### How it works
+
+1. **On first query**, the server loads all unique values from your configured sensitive columns (company names, resource names, contacts)
+2. **Every response** passes through two anonymization layers:
+   - **Deterministic lookup**: known entities get consistent aliases
+   - **Presidio NLP**: catches unexpected PII in free-text fields
+3. **After report generation**, restore real names locally:
+
+```bash
+# CLI
+python -m server report.html -o report-real.html
+
+# Or drag-and-drop mapping.json onto the report page
+```
+
+### Configuration
+
+Edit `~/.powerbi-mcp/config.json`:
+
+```json
+{
+  "anonymization": {
+    "enabled": true,
+    "sensitive_columns": {
+      "client": ["'YourTable'[Company Name]"],
+      "resource": ["'YourTable'[Full Name]"],
+      "contact": ["'YourTable'[Contact Name]"]
+    },
+    "presidio_enabled": true
+  }
+}
+```
+
+The setup wizard (`python wizard.py`) auto-detects likely sensitive columns and lets you confirm.
+
+### Audit Trail
+
+Every session stores its mapping at `~/.powerbi-mcp/sessions/<id>/mapping.json`. This file never leaves your machine. Use it to:
+- Verify exactly what was anonymized
+- Restore real names in reports
+- Provide compliance documentation
+
 ## Requirements
 
 - **Python 3.10+**
