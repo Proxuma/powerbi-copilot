@@ -2,6 +2,12 @@ import pytest
 from server.anonymizer import Anonymizer
 from server.entity_registry import EntityRegistry
 
+try:
+    from presidio_analyzer import AnalyzerEngine
+    HAS_PRESIDIO = True
+except ImportError:
+    HAS_PRESIDIO = False
+
 
 def _make_registry(mapping: dict[str, str]) -> EntityRegistry:
     """Helper: build a registry with pre-loaded mapping."""
@@ -40,6 +46,7 @@ def test_anonymizer_json_deep_replaces():
     assert result["results"][0]["tables"][0]["rows"][0]["value"] == 42
 
 
+@pytest.mark.skipif(not HAS_PRESIDIO, reason="presidio not installed")
 def test_anonymizer_presidio_catches_unknown_pii():
     registry = _make_registry({})
     anon = Anonymizer(registry=registry, presidio_enabled=True)
@@ -57,6 +64,7 @@ def test_anonymizer_does_not_double_replace():
     assert "PERSON" not in result
 
 
+@pytest.mark.skipif(not HAS_PRESIDIO, reason="presidio not installed")
 def test_anonymizer_tracks_presidio_detections():
     registry = _make_registry({})
     anon = Anonymizer(registry=registry, presidio_enabled=True)

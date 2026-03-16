@@ -9,14 +9,16 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 import requests
-from presidio_analyzer import AnalyzerEngine
-from presidio_anonymizer import AnonymizerEngine
-from presidio_anonymizer.entities import OperatorConfig
 
 # Shared auth module
 from auth import (
     CACHE_DIR, get_powerbi_headers, get_fabric_headers
 )
+
+# New anonymization engine
+from server.entity_registry import EntityRegistry
+from server.anonymizer import Anonymizer
+from server.mapping import MappingStore
 
 # User config — env vars > local config.json > ~/.powerbi-mcp/config.json
 CONFIG_PATH = Path(__file__).parent / "config.json"
@@ -64,80 +66,89 @@ USER_CONFIG = load_config()
 
 server = Server("powerbi-connector")
 
-# Presidio anonymization engines (singleton)
-_analyzer = None
-_anonymizer = None
+# Anonymization state (initialized lazily on first tool call)
+_anon_initialized = False
+_anonymizer_instance = None
+_mapping_store = None
 
-def get_analyzer():
-    """Get or create Presidio analyzer engine."""
-    global _analyzer
-    if _analyzer is None:
-        from presidio_analyzer.nlp_engine import NlpEngineProvider
-        provider = NlpEngineProvider(nlp_configuration={
-            "nlp_engine_name": "spacy",
-            "models": [{"lang_code": "en", "model_name": "en_core_web_sm"}]
-        })
-        nlp_engine = provider.create_engine()
-        _analyzer = AnalyzerEngine(nlp_engine=nlp_engine)
-    return _analyzer
 
-def get_anonymizer():
-    """Get or create Presidio anonymizer engine."""
-    global _anonymizer
-    if _anonymizer is None:
-        _anonymizer = AnonymizerEngine()
-    return _anonymizer
+def _init_anonymizer():
+    """Lazily initialize the two-pass anonymizer on first tool call."""
+    global _anon_initialized, _anonymizer_instance, _mapping_store
 
-def anonymize_text(text: str, language: str = "en") -> str:
-    """Anonymize PII in text using Presidio."""
-    if not text or not isinstance(text, str):
-        return text
+    if _anon_initialized:
+        return _anonymizer_instance
 
-    analyzer = get_analyzer()
-    anonymizer = get_anonymizer()
+    anon_config = USER_CONFIG.get("anonymization", {})
+    enabled = anon_config.get("enabled", True)
 
-    analysis_results = analyzer.analyze(
-        text=text,
-        language=language,
-        score_threshold=0.4
+    if not enabled:
+        _anonymizer_instance = Anonymizer(
+            registry=EntityRegistry(sensitive_columns={}, dax_executor=lambda q: {}),
+            enabled=False,
+        )
+        _anon_initialized = True
+        return _anonymizer_instance
+
+    # Build DAX executor using existing server infrastructure
+    def dax_executor(query: str) -> dict:
+        args = resolve_ids({})
+        dataset_id = args.get("dataset_id", "")
+        if not dataset_id:
+            raise Exception("No dataset_id configured for anonymization registry")
+        response = requests.post(
+            f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/executeQueries",
+            headers=get_powerbi_headers(),
+            json={"queries": [{"query": query}], "serializerSettings": {"includeNulls": True}}
+        )
+        response.raise_for_status()
+        return response.json()
+
+    sensitive_columns = anon_config.get("sensitive_columns", {})
+    registry = EntityRegistry(
+        sensitive_columns=sensitive_columns,
+        dax_executor=dax_executor,
+    )
+    registry.initialize()
+
+    if registry.is_degraded:
+        for warning in registry.get_warnings():
+            print(f"[ANON WARNING] {warning}", flush=True)
+
+    _anonymizer_instance = Anonymizer(
+        registry=registry,
+        presidio_enabled=anon_config.get("presidio_enabled", True),
     )
 
-    operators = {
-        "PERSON": OperatorConfig("replace", {"new_value": "<PERSON>"}),
-        "EMAIL_ADDRESS": OperatorConfig("replace", {"new_value": "<EMAIL>"}),
-        "PHONE_NUMBER": OperatorConfig("replace", {"new_value": "<PHONE>"}),
-        "CREDIT_CARD": OperatorConfig("replace", {"new_value": "<CREDITCARD>"}),
-        "IBAN_CODE": OperatorConfig("replace", {"new_value": "<IBAN>"}),
-        "IP_ADDRESS": OperatorConfig("replace", {"new_value": "<IP_ADDRESS>"}),
-        "LOCATION": OperatorConfig("replace", {"new_value": "<LOCATION>"}),
-        "DATE_TIME": OperatorConfig("replace", {"new_value": "<DATE>"}),
-        "NRP": OperatorConfig("replace", {"new_value": "<NATIONAL_ID>"}),
-        "MEDICAL_LICENSE": OperatorConfig("replace", {"new_value": "<MEDICAL_ID>"}),
-        "URL": OperatorConfig("replace", {"new_value": "<URL>"}),
-        "US_SSN": OperatorConfig("replace", {"new_value": "<SSN>"}),
-        "US_PASSPORT": OperatorConfig("replace", {"new_value": "<PASSPORT>"}),
-        "US_DRIVER_LICENSE": OperatorConfig("replace", {"new_value": "<DRIVER_LICENSE>"}),
-        "CRYPTO": OperatorConfig("replace", {"new_value": "<CRYPTO_WALLET>"}),
-    }
+    # Initialize mapping store
+    retention = anon_config.get("session_retention_days", 90)
+    _mapping_store = MappingStore(retention_days=retention)
+    _mapping_store.new_session()
+    _mapping_store.cleanup()
 
-    anonymized_result = anonymizer.anonymize(
-        text=text,
-        analyzer_results=analysis_results,
-        operators=operators
-    )
+    _anon_initialized = True
+    return _anonymizer_instance
 
-    return anonymized_result.text
 
-def anonymize_json(data):
-    """Anonymize JSON data by processing all string values."""
-    if isinstance(data, str):
-        return anonymize_text(data)
-    elif isinstance(data, dict):
-        return {k: anonymize_json(v) for k, v in data.items()}
-    elif isinstance(data, list):
-        return [anonymize_json(item) for item in data]
-    else:
-        return data
+def _anonymize_text(text: str) -> str:
+    """Anonymize text using the two-pass anonymizer."""
+    anon = _init_anonymizer()
+    return anon.anonymize_text(text)
+
+
+def _anonymize_json(data) -> any:
+    """Anonymize JSON data using the two-pass anonymizer."""
+    anon = _init_anonymizer()
+    return anon.anonymize_json(data)
+
+
+def _save_mapping():
+    """Persist the current mapping to disk after each tool call."""
+    if _anonymizer_instance and _mapping_store:
+        _mapping_store.save(
+            _anonymizer_instance.get_full_mapping(),
+            _anonymizer_instance.get_stats(),
+        )
 
 def resolve_ids(arguments: dict, need_workspace: bool = True, need_dataset: bool = True) -> dict:
     """Resolve workspace/dataset IDs from arguments, falling back to config defaults."""
@@ -283,6 +294,15 @@ async def list_tools():
                 },
                 "required": []
             }
+        ),
+        Tool(
+            name="anonymization_status",
+            description="Show the current anonymization status: whether it's enabled, how many entities are mapped, and session info.",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
         )
     ]
 
@@ -300,7 +320,8 @@ async def call_tool(name: str, arguments: dict):
             output = "Available workspaces:\n\n"
             for ws in workspaces:
                 output += f"- {ws.get('name', 'Unknown')}\n  ID: {ws.get('id')}\n\n"
-            return [TextContent(type="text", text=anonymize_text(output))]
+            _save_mapping()
+            return [TextContent(type="text", text=_anonymize_text(output))]
 
         elif name == "list_datasets":
             args = resolve_ids(arguments, need_workspace=True, need_dataset=False)
@@ -317,7 +338,8 @@ async def call_tool(name: str, arguments: dict):
             output = "Datasets in workspace:\n\n"
             for ds in datasets:
                 output += f"- {ds.get('name', 'Unknown')}\n  ID: {ds.get('id')}\n  Configured by: {ds.get('configuredBy', 'Unknown')}\n\n"
-            return [TextContent(type="text", text=anonymize_text(output))]
+            _save_mapping()
+            return [TextContent(type="text", text=_anonymize_text(output))]
 
         elif name == "execute_dax":
             args = resolve_ids(arguments, need_workspace=False, need_dataset=True)
@@ -334,7 +356,8 @@ async def call_tool(name: str, arguments: dict):
                 }
             )
             response.raise_for_status()
-            anonymized_data = anonymize_json(response.json())
+            anonymized_data = _anonymize_json(response.json())
+            _save_mapping()
             return [TextContent(type="text", text=json.dumps(anonymized_data, indent=2))]
 
         elif name == "get_schema":
@@ -363,14 +386,16 @@ async def call_tool(name: str, arguments: dict):
                                     headers=get_fabric_headers()
                                 )
                                 if result_response.ok:
-                                    anonymized_data = anonymize_json(result_response.json())
+                                    anonymized_data = _anonymize_json(result_response.json())
+                                    _save_mapping()
                                     return [TextContent(type="text", text=json.dumps(anonymized_data, indent=2))]
                             elif data.get("status") == "Failed":
                                 return [TextContent(type="text", text=f"Failed: {data.get('error')}")]
                     return [TextContent(type="text", text="Timeout waiting for schema")]
 
             response.raise_for_status()
-            anonymized_data = anonymize_json(response.json())
+            anonymized_data = _anonymize_json(response.json())
+            _save_mapping()
             return [TextContent(type="text", text=json.dumps(anonymized_data, indent=2))]
 
         elif name == "list_fabric_items":
@@ -387,7 +412,8 @@ async def call_tool(name: str, arguments: dict):
             output = "Items in workspace:\n\n"
             for item in items:
                 output += f"- {item.get('displayName')} ({item.get('type')})\n  ID: {item.get('id')}\n\n"
-            return [TextContent(type="text", text=anonymize_text(output))]
+            _save_mapping()
+            return [TextContent(type="text", text=_anonymize_text(output))]
 
         elif name == "search_schema":
             args = resolve_ids(arguments)
@@ -435,7 +461,8 @@ async def call_tool(name: str, arguments: dict):
             if len(matches) > 10:
                 output += f"... and {len(matches) - 10} more results (refine your search term for more specific results)"
 
-            return [TextContent(type="text", text=anonymize_text(output))]
+            _save_mapping()
+            return [TextContent(type="text", text=_anonymize_text(output))]
 
         elif name == "list_measures":
             args = resolve_ids(arguments)
@@ -460,16 +487,35 @@ async def call_tool(name: str, arguments: dict):
             for m in sorted(measures):
                 output += f"- {m}\n"
 
-            return [TextContent(type="text", text=anonymize_text(output))]
+            _save_mapping()
+            return [TextContent(type="text", text=_anonymize_text(output))]
+
+        elif name == "anonymization_status":
+            anon = _init_anonymizer()
+            stats = anon.get_stats()
+            mapping = anon.get_full_mapping()
+            session_id = _mapping_store.session_id if _mapping_store else "N/A"
+            output = "Anonymization Status\n"
+            output += f"  Enabled: {anon.enabled}\n"
+            output += f"  Session: {session_id}\n"
+            output += f"  Entities mapped: {len(mapping.get('registry', {}))}\n"
+            output += f"  Presidio detections: {len(mapping.get('presidio', {}))}\n"
+            output += f"  Pass 1 replacements: {stats.get('pass1_replacements', 0)}\n"
+            output += f"  Pass 2 replacements: {stats.get('pass2_replacements', 0)}\n"
+            if anon.registry and anon.registry.is_degraded:
+                output += "  WARNING: Registry in degraded mode (Presidio-only fallback)\n"
+                for w in anon.registry.get_warnings():
+                    output += f"    - {w}\n"
+            return [TextContent(type="text", text=output)]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]
 
     except requests.exceptions.HTTPError as e:
         error_msg = f"HTTP Error: {e.response.status_code}\n{e.response.text}"
-        return [TextContent(type="text", text=anonymize_text(error_msg))]
+        return [TextContent(type="text", text=_anonymize_text(error_msg))]
     except Exception as e:
-        return [TextContent(type="text", text=anonymize_text(f"Error: {str(e)}"))]
+        return [TextContent(type="text", text=_anonymize_text(f"Error: {str(e)}"))]
 
 async def main():
     async with stdio_server() as (read_stream, write_stream):

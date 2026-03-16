@@ -154,6 +154,100 @@ def verify_connection(device_code=False):
         return False
 
 
+def detect_sensitive_columns(workspace_id, dataset_id, device_code=False):
+    """Scan schema for likely PII columns and suggest anonymization config."""
+    from auth import get_fabric_headers
+    import base64
+    import time
+
+    print(f"\n{BOLD}  Scanning for sensitive columns...{NC}")
+
+    try:
+        response = requests.post(
+            f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/semanticModels/{dataset_id}/getDefinition",
+            headers=get_fabric_headers(device_code=device_code),
+        )
+
+        schema_data = None
+        if response.status_code == 202:
+            location = response.headers.get("Location")
+            if location:
+                for _ in range(30):
+                    time.sleep(2)
+                    result = requests.get(
+                        location,
+                        headers=get_fabric_headers(device_code=device_code),
+                    )
+                    if result.status_code == 200:
+                        data = result.json()
+                        if data.get("status") == "Succeeded":
+                            result_response = requests.get(
+                                f"{location}/result",
+                                headers=get_fabric_headers(device_code=device_code),
+                            )
+                            if result_response.ok:
+                                schema_data = result_response.json()
+                                break
+        else:
+            response.raise_for_status()
+            schema_data = response.json()
+
+        if not schema_data:
+            warn("Could not fetch schema for column detection")
+            return {}
+
+        import re
+
+        pii_patterns = re.compile(
+            r"\b(Full\s*Name|Company\s*Name|Email|Contact|Phone|Address)\b",
+            re.IGNORECASE,
+        )
+        dimension_patterns = re.compile(r"^(BI_|Dim_)", re.IGNORECASE)
+
+        candidates = {"client": [], "resource": [], "contact": []}
+        parts = schema_data.get("definition", {}).get("parts", [])
+
+        for part in parts:
+            payload = part.get("payload", "")
+            path = part.get("path", "")
+            if part.get("payloadType") != "InlineBase64" or not payload:
+                continue
+
+            decoded = base64.b64decode(payload).decode("utf-8", errors="ignore")
+            table_match = re.search(r"tables/([^/]+)/", path)
+            if not table_match:
+                continue
+            table_name = table_match.group(1)
+
+            if not dimension_patterns.match(table_name):
+                continue
+
+            for line in decoded.split("\n"):
+                col_match = re.match(
+                    r"\s*column\s+'?([^']+)'?", line, re.IGNORECASE
+                )
+                if col_match and pii_patterns.search(col_match.group(1)):
+                    col_name = col_match.group(1)
+                    col_ref = f"'{table_name}'[{col_name}]"
+
+                    lower = col_name.lower()
+                    if "company" in lower or "account" in lower:
+                        candidates["client"].append(col_ref)
+                    elif any(
+                        kw in lower
+                        for kw in ("resource", "technician", "employee")
+                    ):
+                        candidates["resource"].append(col_ref)
+                    elif "contact" in lower or "email" in lower:
+                        candidates["contact"].append(col_ref)
+
+        return {k: v for k, v in candidates.items() if v}
+
+    except Exception as e:
+        warn(f"Column detection failed: {e}")
+        return {}
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Power BI MCP — Setup Wizard",
@@ -286,6 +380,44 @@ def main():
         dataset["id"], dataset["name"],
     )
     info(f"Config saved to {config_path}")
+
+    # Anonymization setup
+    print(f"\n{BOLD}  Data Anonymization Setup{NC}")
+    print(f"  (Prevents real data from reaching AI servers)\n")
+
+    candidates = detect_sensitive_columns(
+        workspace["id"], dataset["id"], device_code=args.device_code
+    )
+
+    if candidates:
+        print(f"  Found {sum(len(v) for v in candidates.values())} likely sensitive columns:\n")
+        for category, cols in candidates.items():
+            print(f"  {BOLD}{category}:{NC}")
+            for col in cols:
+                print(f"    - {col}")
+        print()
+
+        confirm = input(f"  Enable anonymization with these columns? [Y/n]: ").strip().lower()
+        if confirm != "n":
+            config = {}
+            if CONFIG_PATH.exists():
+                with open(CONFIG_PATH) as f:
+                    config = json.load(f)
+            config["anonymization"] = {
+                "enabled": True,
+                "sensitive_columns": candidates,
+                "free_text_columns": [],
+                "presidio_enabled": True,
+                "session_retention_days": 90,
+            }
+            with open(CONFIG_PATH, "w") as f:
+                json.dump(config, f, indent=2)
+            info("Anonymization enabled")
+        else:
+            info("Anonymization skipped (can be enabled later in config.json)")
+    else:
+        warn("No sensitive columns auto-detected")
+        print(f"  You can manually configure anonymization in {CONFIG_PATH}")
 
     # Verify
     print()
